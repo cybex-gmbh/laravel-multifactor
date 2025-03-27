@@ -2,6 +2,12 @@
 
 namespace Cybex\LaravelMultiFactor;
 
+use CybexGmbh\LaravelTwoFactor\Contracts\TwoFactorChallengeViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasAllowedTwoFactorAuthMethods;
+use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasTwoFactorAuthentication;
+use CybexGmbh\LaravelTwoFactor\Http\Middleware\LimitTwoFactorAuthAccess;
+use CybexGmbh\LaravelTwoFactor\Http\Middleware\RedirectIfTwoFactorAuthenticated;
+use CybexGmbh\LaravelTwoFactor\Http\Responses\TwoFactorChallengeViewResponse;
 use Illuminate\Support\ServiceProvider;
 
 class MultiFactorServiceProvider extends ServiceProvider
@@ -14,15 +20,27 @@ class MultiFactorServiceProvider extends ServiceProvider
         /*
          * Optional methods to load your package assets
          */
-        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-multi-factor');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-multi-factor');
-        // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        // $this->loadRoutesFrom(__DIR__.'/routes.php');
+        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-two-factor');
+         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-two-factor');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+
+        $router = $this->app['router'];
+        $router->aliasMiddleware('hasTwoFactorAuthentication', HasTwoFactorAuthentication::class);
+        $router->aliasMiddleware('hasAllowedTwoFactorAuthMethods', HasAllowedTwoFactorAuthMethods::class);
+        $router->aliasMiddleware('redirectIfTwoFactorAuthenticated', RedirectIfTwoFactorAuthenticated::class);
+        $router->aliasMiddleware('limitTwoFactorAuthAccess', LimitTwoFactorAuthAccess::class);
+
+        $this->mergeConfigFrom(__DIR__.'/../config/two-factor.php', 'two-factor');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/multi-factor.php' => config_path('laravel-multi-factor.php'),
             ], 'config');
+
+            $this->publishes([
+                __DIR__ . '/resources/views' => resource_path('views/vendor/two-factor'),
+            ], ['two-factor', 'two-factor.views']);
 
             // Publishing the views.
             /*$this->publishes([
@@ -56,5 +74,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         $this->app->singleton('laravel-multi-factor', function () {
             return new MultiFactor;
         });
+
+        $this->app->singleton(TwoFactorChallengeViewResponseContract::class, TwoFactorChallengeViewResponse::class);
     }
 }
