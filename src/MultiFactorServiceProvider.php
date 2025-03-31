@@ -7,7 +7,6 @@ use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasAllowedTwoFactorAuthMethods;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasTwoFactorAuthentication;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\LimitTwoFactorAuthAccess;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\RedirectIfTwoFactorAuthenticated;
-use CybexGmbh\LaravelTwoFactor\Http\Responses\TwoFactorChallengeViewResponse;
 use Illuminate\Support\ServiceProvider;
 
 class MultiFactorServiceProvider extends ServiceProvider
@@ -36,10 +35,10 @@ class MultiFactorServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/multi-factor.php' => config_path('laravel-multi-factor.php'),
-            ], 'config');
+            ], ['multi-factor', 'multi-factor.config']);
 
             $this->publishes([
-                __DIR__ . '/resources/views' => resource_path('views/vendor/two-factor'),
+                __DIR__ . '/../resources/views' => resource_path('views/vendor/laravel-two-factor'),
             ], ['two-factor', 'two-factor.views']);
 
             // Publishing the views.
@@ -67,14 +66,11 @@ class MultiFactorServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__ . '/../config/multi-factor.php', 'laravel-multi-factor');
-
         // Register the main class to use with the facade
         $this->app->singleton('laravel-multi-factor', function () {
             return new MultiFactor;
         });
 
-        $this->app->singleton(TwoFactorChallengeViewResponseContract::class, TwoFactorChallengeViewResponse::class);
+        $this->app->singleton(TwoFactorChallengeViewResponseContract::class, fn($app, $params): TwoFactorChallengeViewResponseContract => new (config('two-factor.views.challenge'))(...$params));
     }
 }
