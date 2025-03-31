@@ -60,7 +60,7 @@ class TwoFactorAuthController extends Controller
         return view('laravel-two-factor::choose-method', compact('userMethods'));
     }
 
-    public function handleTwoFactorAuthMethod(TwoFactorAuthMethod $method): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function handleTwoFactorAuthMethod(TwoFactorAuthMethod $method)
     {
         return $this->twoFactorAuthService->handleTwoFactorAuthMethod(Auth::user(), $method);
     }

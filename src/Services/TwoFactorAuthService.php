@@ -3,26 +3,23 @@
 namespace CybexGmbh\LaravelTwoFactor\Services;
 
 use App\Models\User;
+use CybexGmbh\LaravelTwoFactor\Contracts\TwoFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
-use CybexGmbh\LaravelTwoFactor\Http\Responses\TwoFactorChallengeViewResponse;
 use CybexGmbh\LaravelTwoFactor\Notifications\TwoFactorCodeNotification;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 
 class TwoFactorAuthService
 {
-    public function handleTwoFactorAuthMethod(User $user, TwoFactorAuthMethod $method): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function handleTwoFactorAuthMethod(User $user, TwoFactorAuthMethod $method)
     {
         return match ($method) {
             TwoFactorAuthMethod::EMAIL => $this->handleEmailAuthentication($user, $method),
         };
     }
 
-    protected function handleEmailAuthentication(User $user, TwoFactorAuthMethod $method): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    protected function handleEmailAuthentication(User $user, TwoFactorAuthMethod $method)
     {
         $sessionKey = TwoFactorAuthSession::EMAIL_SENT;
 
@@ -31,8 +28,7 @@ class TwoFactorAuthService
             $sessionKey->put();
         }
 
-        return view('laravel-two-factor::email-challenge', compact(['user', 'method']));
-//        return view(TwoFactorChallengeViewResponse::class, compact(['user', 'method']));
+        return app(TwoFactorChallengeViewResponseContract::class, [$user, $method]);
     }
 
     public function send(User|Authenticatable|null $user, TwoFactorAuthMethod $method): RedirectResponse
