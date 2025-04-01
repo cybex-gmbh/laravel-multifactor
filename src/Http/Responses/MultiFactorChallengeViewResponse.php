@@ -2,11 +2,11 @@
 
 namespace CybexGmbh\LaravelTwoFactor\Http\Responses;
 
-use CybexGmbh\LaravelTwoFactor\Contracts\TwoFactorChallengeViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
 use Illuminate\Foundation\Auth\User;
 
-class TwoFactorChallengeViewResponse implements TwoFactorChallengeViewResponseContract
+class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewResponseContract
 {
     protected User $user;
     protected TwoFactorAuthMethod $method;

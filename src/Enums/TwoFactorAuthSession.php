@@ -26,4 +26,9 @@ enum TwoFactorAuthSession: string
     {
         session()->put($this->value, $value);
     }
+
+    public function remove(): void
+    {
+        session()->remove($this->value);
+    }
 }
