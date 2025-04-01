@@ -3,7 +3,7 @@
 namespace CybexGmbh\LaravelTwoFactor\Services;
 
 use App\Models\User;
-use CybexGmbh\LaravelTwoFactor\Contracts\TwoFactorChallengeViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
 use CybexGmbh\LaravelTwoFactor\Notifications\TwoFactorCodeNotification;
@@ -28,7 +28,7 @@ class TwoFactorAuthService
             $sessionKey->put();
         }
 
-        return app(TwoFactorChallengeViewResponseContract::class, [$user, $method]);
+        return app(MultiFactorChallengeViewResponseContract::class, [$user, $method]);
     }
 
     public function send(User|Authenticatable|null $user, TwoFactorAuthMethod $method): RedirectResponse

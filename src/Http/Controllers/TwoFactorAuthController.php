@@ -4,6 +4,10 @@ namespace CybexGmbh\LaravelTwoFactor\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChooseViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorDeleteViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSetupViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMode;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
@@ -12,9 +16,12 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use function Illuminate\Support\Facades\abort;
 use function Illuminate\Support\Facades\redirect;
@@ -31,7 +38,7 @@ class TwoFactorAuthController extends Controller
         $this->twoFactorAuthService = $twoFactorAuthService;
     }
 
-    public function show(): View|RedirectResponse
+    public function show(): mixed
     {
         $user = Auth::user();
         $userMethods = $user->getTwoFactorAuthMethods();
@@ -57,7 +64,7 @@ class TwoFactorAuthController extends Controller
             return Redirect::route('2fa.method', ['method' => $userMethods[0]]);
         }
 
-        return view('laravel-two-factor::choose-method', compact('userMethods'));
+        return app(MultiFactorChooseViewResponseContract::class, [$userMethods]);
     }
 
     public function handleTwoFactorAuthMethod(TwoFactorAuthMethod $method)
@@ -91,7 +98,7 @@ class TwoFactorAuthController extends Controller
             return Redirect::route('2fa.setup.method', ['method' => $methods[0]]);
         }
 
-        return view('laravel-two-factor::setup', compact('methods'));
+        return app(MultiFactorSetupViewResponseContract::class, $methods);
     }
 
     public function handleDeletion(): \Illuminate\Contracts\Foundation\Application|Factory|View|Application|RedirectResponse
@@ -103,28 +110,52 @@ class TwoFactorAuthController extends Controller
             return $this->deleteTwoFactorAuthMethod($methods[0], $back);
         }
 
-        return view('laravel-two-factor::delete-choose', compact('methods', 'back'));
+        return app(MultiFactorDeleteViewResponseContract::class, compact('methods', 'back'));
     }
 
     public function deleteTwoFactorAuthMethod(TwoFactorAuthMethod $method, RedirectResponse $back): RedirectResponse
     {
         Auth::user()->twoFactorAuthMethods()->where('type', $method)->delete();
-        session()->remove(TwoFactorAuthSession::VERIFIED->value);
+        TwoFactorAuthSession::VERIFIED->remove();
 
         return $back;
     }
 
-    public function verifyTwoFactorAuthCode(TwoFactorAuthMethod $method, User $user = null, int $code = null): Application|Redirector|RedirectResponse
+    public function verifyTwoFactorAuthCode(Request $request, TwoFactorAuthMethod $method, User $user = null, int $code = null): Application|Redirector|RedirectResponse
     {
-        $code ??= request()->integer('code') ?? abort(403);
+        $code ??= $request->integer('code') ?? throw new HttpException(403);
 
         if ($code !== TwoFactorAuthSession::CODE->get()) {
-            abort(403);
+            // abort(403);
+            throw new HttpException(403);
         }
 
         TwoFactorAuthSession::clear();
         TwoFactorAuthSession::VERIFIED->put();
 
-        return redirect('/projects');
+        return Redirect::intended();
+    }
+
+    public function emailLogin(Request $request): RedirectResponse
+    {
+        $user = User::whereEmail($request->input('email'))->first();
+
+        if (!$user) {
+            return Redirect::back()->withErrors(['email' => __('auth.failed')]);
+        }
+
+        Auth::login($user);
+
+        return Redirect::intended();
+    }
+
+    public function twoFactorSettings(User $user)
+    {
+        if (Auth::user()->is($user) && TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::OPTIONAL) {
+            return app(MultiFactorSettingsViewResponseContract::class, [$user]);
+        }
+
+        // abort(403);
+        throw new HttpException(403);
     }
 }
