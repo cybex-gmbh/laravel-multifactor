@@ -2,7 +2,12 @@
 
 namespace Cybex\LaravelMultiFactor;
 
-use CybexGmbh\LaravelTwoFactor\Contracts\TwoFactorChallengeViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChooseViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorDeleteViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorLoginViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSetupViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasAllowedTwoFactorAuthMethods;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasTwoFactorAuthentication;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\LimitTwoFactorAuthAccess;
@@ -71,6 +76,11 @@ class MultiFactorServiceProvider extends ServiceProvider
             return new MultiFactor;
         });
 
-        $this->app->singleton(TwoFactorChallengeViewResponseContract::class, fn($app, $params): TwoFactorChallengeViewResponseContract => new (config('two-factor.views.challenge'))(...$params));
+        $this->app->singleton(MultiFactorChallengeViewResponseContract::class, fn($app, $params): MultiFactorChallengeViewResponseContract => new (config('two-factor.views.challenge'))(...$params));
+        $this->app->singleton(MultiFactorLoginViewResponseContract::class, fn($app, $params): MultiFactorLoginViewResponseContract => new (config('two-factor.views.login'))(...$params));
+        $this->app->singleton(MultiFactorSetupViewResponseContract::class, fn($app, $params): MultiFactorSetupViewResponseContract => new (config('two-factor.views.setup'))(...$params));
+        $this->app->singleton(MultiFactorChooseViewResponseContract::class, fn($app, $params): MultiFactorChooseViewResponseContract => new (config('two-factor.views.choose'))(...$params));
+        $this->app->singleton(MultiFactorDeleteViewResponseContract::class, fn($app, $params): MultiFactorDeleteViewResponseContract => new (config('two-factor.views.delete'))(...$params));
+        $this->app->singleton(MultiFactorSettingsViewResponseContract::class, fn($app, $params): MultiFactorSettingsViewResponseContract => new (config('two-factor.views.settings'))(...$params));
     }
 }

@@ -2,7 +2,7 @@
     <x-slot name="title">Login</x-slot>
 
     <x-auth-card>
-        <form method="POST" action="{{ route('login.email.2fa') }}">
+        <form method="POST" action="{{ route('2fa.email.login') }}">
             @csrf
 
             <!-- Email Address -->
