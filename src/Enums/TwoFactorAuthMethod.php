@@ -32,4 +32,11 @@ enum TwoFactorAuthMethod: string
     {
         return in_array($this->value, Auth::user()->getTwoFactorAuthMethodsNames());
     }
+
+    public function getSvg()
+    {
+        return match ($this) {
+            self::EMAIL => 'laravel-two-factor::svg.email',
+        };
+    }
 }

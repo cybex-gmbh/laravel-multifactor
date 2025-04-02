@@ -14,6 +14,7 @@ use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasEmailLogin;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\LimitTwoFactorAuthAccess;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\RedirectIfTwoFactorAuthenticated;
 use CybexGmbh\LaravelTwoFactor\View\Components\Layout;
+use CybexGmbh\LaravelTwoFactor\View\Components\Svg;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -41,7 +42,8 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('limitTwoFactorAuthAccess', LimitTwoFactorAuthAccess::class);
         $router->aliasMiddleware('hasEmailLogin', HasEmailLogin::class);
 
-        $this->mergeConfigFrom(__DIR__.'/../config/two-factor.php', 'two-factor');
+        Blade::component(Layout::class, 'app-layout');
+        Blade::component(Svg::class, 'svg');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -51,6 +53,14 @@ class MultiFactorServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ . '/../resources/views' => resource_path('views/vendor/laravel-two-factor'),
             ], ['two-factor', 'two-factor.views']);
+
+//            $this->publishes([
+//                __DIR__ . '/../resources/css/multi-factor.css' => public_path('vendor/laravel-two-factor/multi-factor.css'),
+//            ], ['two-factor', 'two-factor.public']);
+
+            $this->publishes([
+                __DIR__ . '/../public' => public_path('vendor/laravel-two-factor'),
+            ], ['two-factor', 'two-factor.public']);
 
             // Publishing the views.
             /*$this->publishes([
