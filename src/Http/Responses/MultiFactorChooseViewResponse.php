@@ -16,6 +16,6 @@ class MultiFactorChooseViewResponse implements MultiFactorChooseViewResponseCont
     {
         $userMethods = $this->userMethods;
 
-        return view('laravel-two-factor::choose-method', compact('userMethods'));
+        return view('laravel-two-factor::choose-method-custom', compact('userMethods'));
     }
 }
