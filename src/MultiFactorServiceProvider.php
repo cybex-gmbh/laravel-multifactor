@@ -10,8 +10,12 @@ use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSetupViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasAllowedTwoFactorAuthMethods;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasTwoFactorAuthentication;
+use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasEmailLogin;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\LimitTwoFactorAuthAccess;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\RedirectIfTwoFactorAuthenticated;
+use CybexGmbh\LaravelTwoFactor\View\Components\Layout;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class MultiFactorServiceProvider extends ServiceProvider
@@ -24,8 +28,9 @@ class MultiFactorServiceProvider extends ServiceProvider
         /*
          * Optional methods to load your package assets
          */
+        $this->mergeConfigFrom(__DIR__.'/../config/two-factor.php', 'two-factor');
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-two-factor');
-         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-two-factor');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-two-factor');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
 
@@ -34,6 +39,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('hasAllowedTwoFactorAuthMethods', HasAllowedTwoFactorAuthMethods::class);
         $router->aliasMiddleware('redirectIfTwoFactorAuthenticated', RedirectIfTwoFactorAuthenticated::class);
         $router->aliasMiddleware('limitTwoFactorAuthAccess', LimitTwoFactorAuthAccess::class);
+        $router->aliasMiddleware('hasEmailLogin', HasEmailLogin::class);
 
         $this->mergeConfigFrom(__DIR__.'/../config/two-factor.php', 'two-factor');
 
@@ -64,6 +70,11 @@ class MultiFactorServiceProvider extends ServiceProvider
             // Registering package commands.
             // $this->commands([]);
         }
+
+        $this->app->booted(function () {
+            Route::getRoutes()->refreshNameLookups();
+            Route::getRoutes()->getByName(config('two-factor.routes.login.name'))->middleware('hasEmailLogin');
+        });
     }
 
     /**
