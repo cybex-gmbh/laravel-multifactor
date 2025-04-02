@@ -23,12 +23,6 @@ use Illuminate\Support\Facades\Redirect;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-use function Illuminate\Support\Facades\abort;
-use function Illuminate\Support\Facades\redirect;
-use function Illuminate\Support\Facades\request;
-use function Illuminate\Support\Facades\session;
-use function Illuminate\Support\Facades\view;
-
 class TwoFactorAuthController extends Controller
 {
     protected TwoFactorAuthService $twoFactorAuthService;
