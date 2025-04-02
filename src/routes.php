@@ -5,12 +5,15 @@ use CybexGmbh\LaravelTwoFactor\Http\Controllers\TwoFactorAuthController;
 
 Route::middleware(['web'])->group(function () {
     Route::middleware(['guest'])->group(function () {
-        Route::post('two-factor-auth/email-login', [TwoFactorAuthController::class, 'emailLogin'])->name('2fa.email.login');
+        if (config('two-factor.routes.email-login.enabled') && $path = config('two-factor.routes.email-login.path')) {
+            Route::post($path, [TwoFactorAuthController::class, 'emailLogin'])->name('2fa.email.login');
+        }
     });
 
     Route::middleware(['auth'])->group(function () {
-
-        Route::get('two-factor-auth/user/{user}/settings', [TwoFactorAuthController::class, 'twoFactorSettings'])->name('2fa.settings');
+        if (config('two-factor.routes.settings.enabled') && $path = config('two-factor.routes.settings.path')) {
+            Route::get($path, [TwoFactorAuthController::class, 'twoFactorSettings'])->name('2fa.settings');
+        }
 
         Route::get('two-factor-auth/delete', [TwoFactorAuthController::class, 'handleDeletion'])->name('2fa.delete');
 
