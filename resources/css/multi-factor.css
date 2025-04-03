@@ -10,25 +10,21 @@ h1, p {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.center {
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     width: 30em;
     height: 40em;
     margin: 20px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border-radius: 25px;
-}
-
-.align-center {
-    display: flex;
-    justify-content: center;
-}
-
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .flex-container {
