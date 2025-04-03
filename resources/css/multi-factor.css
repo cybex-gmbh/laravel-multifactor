@@ -1,4 +1,5 @@
 body {
+    background-color: antiquewhite;
     height: 100vh;
     margin: 0;
     display: flex;
@@ -6,35 +7,56 @@ body {
     align-items: center;
 }
 
-h1, p {
+.legacy-auth-card {
+    display: flex;
+    flex-direction: column;
+    width: 35em;
+    padding-bottom: 50px;
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+}
+
+.auth-card {
+    display: flex;
+    flex-direction: column;
+    width: 35em;
+    /*padding-bottom: 50px;*/
+    padding: 10px 50px 50px 50px;
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+
+h1, p {
+    /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
 }
 
-.main {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 30em;
-    height: 40em;
-    margin: 20px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-radius: 25px;
+.header {
+    line-height: 1;
 }
 
-.flex-container {
+.header, .flex-row-legacy {
+    margin: 0 30px;
+    padding: 10px 20px;
+}
+
+.flex-row-legacy {
     display: flex;
-    align-items: center;
+    align-items: start;
     justify-content: flex-start;
     gap: 30px;
-    padding: 10px 20px;
     border-bottom: 1px solid #e3e2e8;
-    margin: 0 30px;
+}
+
+.flex-row {
+    display: flex;
+    gap: 30px;
+    border-bottom: 1px solid #e3e2e8;
+    padding: 10px 0;
 }
 
 .btn {
@@ -49,4 +71,34 @@ h1, p {
     border-radius: 50%;
     display: inline-block;
     padding: 10px;
+}
+
+.flex-center-end {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.text-small-gray {
+    font-size: 0.875rem;
+    color: #4B5563;
+}
+
+.text-small-gray:hover {
+    color: #1F2937;
+}
+
+.underline-inline-primary {
+    text-decoration: underline;
+    display: inline;
+    color: #1C3D5A; /* Adjust this color to match your primary darker color */
+}
+
+.margin-left-3 {
+    margin-left: 0.75rem;
+}
+
+.btn-primary {
+    /* Add your primary button styles here */
 }
