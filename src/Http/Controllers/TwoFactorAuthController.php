@@ -73,6 +73,8 @@ class TwoFactorAuthController extends Controller
 
     public function handleTwoFactorAuthSetup(TwoFactorAuthMethod $method): RedirectResponse
     {
+        TwoFactorAuthSession::SETUP_IN_PROCESS->put();
+
         return $this->twoFactorAuthService->handleTwoFactorAuthSetup(Auth::user(), $method);
     }
 
@@ -95,7 +97,7 @@ class TwoFactorAuthController extends Controller
         return app(MultiFactorSetupViewResponseContract::class, $methods);
     }
 
-    public function handleDeletion(): \Illuminate\Contracts\Foundation\Application|Factory|View|Application|RedirectResponse
+    public function handleDeletion(): mixed
     {
         $methods = Auth::user()->getTwoFactorAuthMethods();
         $back = Redirect::back();
@@ -107,12 +109,12 @@ class TwoFactorAuthController extends Controller
         return app(MultiFactorDeleteViewResponseContract::class, compact('methods', 'back'));
     }
 
-    public function deleteTwoFactorAuthMethod(TwoFactorAuthMethod $method, RedirectResponse $back): RedirectResponse
+    public function deleteTwoFactorAuthMethod(TwoFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
         Auth::user()->twoFactorAuthMethods()->where('type', $method)->delete();
         TwoFactorAuthSession::VERIFIED->remove();
 
-        return $back;
+        return $back ?? redirect()->back();
     }
 
     public function verifyTwoFactorAuthCode(Request $request, TwoFactorAuthMethod $method, User $user = null, int $code = null): Application|Redirector|RedirectResponse

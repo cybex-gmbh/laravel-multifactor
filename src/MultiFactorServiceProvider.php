@@ -14,6 +14,7 @@ use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasEmailLogin;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\LimitTwoFactorAuthAccess;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\RedirectIfTwoFactorAuthenticated;
 use CybexGmbh\LaravelTwoFactor\View\Components\AuthCard;
+use CybexGmbh\LaravelTwoFactor\View\Components\Form\Input;
 use CybexGmbh\LaravelTwoFactor\View\Components\LegacyAuthCard;
 use CybexGmbh\LaravelTwoFactor\View\Components\Layout;
 use CybexGmbh\LaravelTwoFactor\View\Components\Svg;
@@ -44,10 +45,11 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('limitTwoFactorAuthAccess', LimitTwoFactorAuthAccess::class);
         $router->aliasMiddleware('hasEmailLogin', HasEmailLogin::class);
 
-        Blade::component(Layout::class, 'app-layout');
+        Blade::component(Layout::class, 'two-factor-layout');
         Blade::component(Svg::class, 'svg');
         Blade::component(LegacyAuthCard::class, 'legacy-auth-card');
-        Blade::component(AuthCard::class, 'auth-card');
+        Blade::component(AuthCard::class, 'multi-factor-auth-card');
+        Blade::component(Input::class, 'input');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
