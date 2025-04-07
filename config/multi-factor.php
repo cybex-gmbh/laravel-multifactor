@@ -34,7 +34,7 @@ return [
             'path' => 'two-factor-auth/email-login',
         ],
         'settings' => [
-            'enabled' => false,
+            'enabled' => true,
             'path' => 'two-factor-auth/user/{user}/settings',
         ],
         'login' => [
