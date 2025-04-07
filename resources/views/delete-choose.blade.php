@@ -1,8 +1,8 @@
-<x-app-layout>
+<x-two-factor-layout>
     <x-slot name="title">Delete 2FA Method</x-slot>
 
-    <x-auth-card>
-        <x-slot name="header">
+    <x-multi-factor-auth-card>
+        <x-slot name="subtext">
             <p>Choose one of these methods to delete</p>
         </x-slot>
 
@@ -12,6 +12,6 @@
                 <p><strong>{{ ucfirst($method->value) }}</strong></p>
             </a>
         @endforeach
-    </x-auth-card>
-</x-app-layout>
+    </x-multi-factor-auth-card>
+</x-two-factor-layout>
 

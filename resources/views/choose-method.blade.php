@@ -1,16 +1,16 @@
-<x-app-layout>
+<x-two-factor-layout>
     <x-slot name="title">Choose 2FA Method</x-slot>
 
-    <x-auth-card>
-        <x-slot name="header">
+    <x-multi-factor-auth-card>
+        <x-slot name="subtext">
             <p>Choose one of these methods to log in</p>
         </x-slot>
 
         @foreach($userMethods as $method)
-            <a class="flex-row" href="{{ route('2fa.method', $method) }}">
+            <a class="link flex-row underline" href="{{ route('2fa.method', $method) }}">
                 <x-svg method="{{ $method }}"></x-svg>
                 <p><strong>{{ ucfirst($method->value) }}</strong></p>
             </a>
         @endforeach
-    </x-auth-card>
-</x-app-layout>
+    </x-multi-factor-auth-card>
+</x-two-factor-layout>

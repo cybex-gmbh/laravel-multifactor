@@ -11,6 +11,8 @@
 </head>
 
 <body>
-{{ $slot }}
+<div class="multi-factor-main">
+    {{ $slot }}
+</div>
 </body>
 </html>

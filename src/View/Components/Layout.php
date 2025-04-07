@@ -8,6 +8,6 @@ class Layout extends Component
 {
     public function render()
     {
-        return view('laravel-two-factor::layouts.app');
+        return view('laravel-two-factor::layouts.two-factor');
     }
 }
