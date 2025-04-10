@@ -10,24 +10,26 @@ Route::middleware(['web'])->group(function () {
         }
     });
 
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth'])->as('2fa.')->group(function () {
         if (config('two-factor.routes.settings.enabled') && $path = config('two-factor.routes.settings.path')) {
             Route::middleware(['hasTwoFactorAuthentication', 'hasAllowedTwoFactorAuthMethods'])->group(function () use ($path) {
-                Route::get($path, [TwoFactorAuthController::class, 'twoFactorSettings'])->name('2fa.settings');
+                Route::get($path, [TwoFactorAuthController::class, 'twoFactorSettings'])->name('settings');
             });
         }
 
-        Route::delete('two-factor-auth/delete/{method}', [TwoFactorAuthController::class, 'deleteTwoFactorAuthMethod'])->name('2fa.delete.method');
-        Route::get('two-factor-auth/setup/{method?}', [TwoFactorAuthController::class, 'setup'])->name('2fa.setup');
+        Route::prefix('2fa')->group(function () {
+            Route::delete('delete/{method}', [TwoFactorAuthController::class, 'deleteTwoFactorAuthMethod'])->name('delete.method');
+            Route::get('setup/{method?}', [TwoFactorAuthController::class, 'setup'])->name('setup');
 
-        Route::middleware(['redirectIfTwoFactorAuthenticated'])->group(function () {
-            Route::get('2fa', [TwoFactorAuthController::class, 'show'])->name('2fa.show');
+            Route::middleware(['redirectIfTwoFactorAuthenticated'])->group(function () {
+                Route::get('', [TwoFactorAuthController::class, 'show'])->name('show');
 
-            Route::middleware(['limitTwoFactorAuthAccess'])->group(function () {
-                Route::get('2fa/{method}', [TwoFactorAuthController::class, 'handleTwoFactorAuthMethod'])->name('2fa.method');
-                Route::post('2fa/{method}/send', [TwoFactorAuthController::class, 'send'])->name('2fa.method.send');
-                Route::post('2fa/{method}/verify', [TwoFactorAuthController::class, 'verifyTwoFactorAuthCode'])->name('2fa.verify');
-                Route::get('2fa/{method}/login/{user}/{code}', [TwoFactorAuthController::class, 'verifyTwoFactorAuthCode'])->middleware('signed')->name('2fa.login');
+                Route::middleware(['limitTwoFactorAuthAccess'])->group(function () {
+                    Route::get('{method}', [TwoFactorAuthController::class, 'handleTwoFactorAuthMethod'])->name('method');
+                    Route::post('{method}/send', [TwoFactorAuthController::class, 'send'])->name('method.send');
+                    Route::post('{method}/verify', [TwoFactorAuthController::class, 'verifyTwoFactorAuthCode'])->name('verify');
+                    Route::get('{method}/login/{user}/{code}', [TwoFactorAuthController::class, 'verifyTwoFactorAuthCode'])->middleware('signed')->name('login');
+                });
             });
         });
     });
