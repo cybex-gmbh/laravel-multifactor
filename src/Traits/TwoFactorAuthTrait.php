@@ -35,7 +35,7 @@ trait TwoFactorAuthTrait
         return array_intersect($user2FAMethods, $configuredMethods);
     }
 
-    public function getUnallowedMethods(): array
+    public function getUnallowedMethodsNames(): array
     {
         $user2FAMethods = $this->getTwoFactorAuthMethodsNames();
 
