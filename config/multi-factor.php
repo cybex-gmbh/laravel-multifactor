@@ -16,7 +16,7 @@ return [
         'email',
     ],
     // 'optional' or 'required' or 'force'
-    'mode' => env('TWO_FACTOR_AUTHENTICATION_MODE', 'optional'),
+    'mode' => env('TWO_FACTOR_AUTHENTICATION_MODE', 'force'),
     'forceMethod' => env('TWO_FACTOR_AUTHENTICATION_FORCE_METHOD', 'email'),
 
     'views' => [
@@ -31,11 +31,11 @@ return [
     'routes' => [
         'email-login' => [
             'enabled' => env('TWO_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN', true),
-            'path' => 'two-factor-auth/email-login',
+            'path' => '2fa/email-login',
         ],
         'settings' => [
             'enabled' => true,
-            'path' => 'two-factor-auth/user/{user}/settings',
+            'path' => '2fa/user/{user}/settings',
         ],
         'login' => [
             'name' => 'login',
