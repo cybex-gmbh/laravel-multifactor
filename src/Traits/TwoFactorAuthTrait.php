@@ -34,4 +34,17 @@ trait TwoFactorAuthTrait
 
         return array_intersect($user2FAMethods, $configuredMethods);
     }
+
+    public function getUnallowedMethods(): array
+    {
+        $user2FAMethods = $this->getTwoFactorAuthMethodsNames();
+
+        if (TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::FORCE) {
+            $configuredMethods = [TwoFactorAuthMethodEnum::getForceMethod()->value];
+        } else {
+            $configuredMethods = TwoFactorAuthMethodEnum::getAllowedMethodsNames();
+        }
+
+        return array_diff($user2FAMethods, $configuredMethods);
+    }
 }

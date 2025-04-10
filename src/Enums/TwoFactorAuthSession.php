@@ -7,7 +7,6 @@ enum TwoFactorAuthSession: string
     case CODE = 'two_factor_auth_code';
     case EMAIL_SENT = 'two_factor_auth_email_sent';
     case VERIFIED = 'two_factor_auth_verified';
-    case SETUP_IN_PROCESS = 'two_factor_auth_setup_in_process';
 
     public static function clear(): void
     {

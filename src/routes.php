@@ -12,16 +12,16 @@ Route::middleware(['web'])->group(function () {
 
     Route::middleware(['auth'])->group(function () {
         if (config('two-factor.routes.settings.enabled') && $path = config('two-factor.routes.settings.path')) {
-            Route::get($path, [TwoFactorAuthController::class, 'twoFactorSettings'])->name('2fa.settings');
+            Route::middleware(['hasTwoFactorAuthentication', 'hasAllowedTwoFactorAuthMethods'])->group(function () use ($path) {
+                Route::get($path, [TwoFactorAuthController::class, 'twoFactorSettings'])->name('2fa.settings');
+            });
         }
 
-        Route::get('two-factor-auth/delete', [TwoFactorAuthController::class, 'handleDeletion'])->name('2fa.delete');
         Route::delete('two-factor-auth/delete/{method}', [TwoFactorAuthController::class, 'deleteTwoFactorAuthMethod'])->name('2fa.delete.method');
+        Route::get('two-factor-auth/setup/{method?}', [TwoFactorAuthController::class, 'setup'])->name('2fa.setup');
 
         Route::middleware(['redirectIfTwoFactorAuthenticated'])->group(function () {
             Route::get('2fa', [TwoFactorAuthController::class, 'show'])->name('2fa.show');
-            Route::get('two-factor-auth/setup', [TwoFactorAuthController::class, 'setup'])->name('2fa.setup');
-            Route::get('two-factor-auth/setup/{method}', [TwoFactorAuthController::class, 'handleTwoFactorAuthSetup'])->name('2fa.setup.method');
 
             Route::middleware(['limitTwoFactorAuthAccess'])->group(function () {
                 Route::get('2fa/{method}', [TwoFactorAuthController::class, 'handleTwoFactorAuthMethod'])->name('2fa.method');

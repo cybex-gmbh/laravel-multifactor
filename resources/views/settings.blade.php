@@ -17,12 +17,6 @@
 
             <div>
                 <div>
-                    @if (session('status') == 'two-factor-authentication-enabled')
-                        <div class="text-sm">
-                            Please finish configuring two factor authentication below.
-                        </div>
-                    @endif
-
                     @if (auth()->user()->twoFactorAuthMethods()->exists())
                         <div class="flex-row align-center green">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="svg size-6">
@@ -61,7 +55,7 @@
                         </form>
                     @else
                         <p>{{ __('Disabled') }}</p>
-                        <form method="GET" action="{{ route('2fa.setup.method', $method) }}">
+                        <form method="GET" action="{{ route('2fa.setup', $method) }}">
                             @csrf
                             <x-form.button type="submit" class="button">{{ __('Enable') }}</x-form.button>
                         </form>
@@ -70,7 +64,7 @@
             @endforeach
         </div>
 
-        <div class="flex">
+        {{--<div class="flex">
             @if (!auth()->user()->twoFactorAuthMethods()->exists())
                 <form method="GET" action="{{ route('2fa.setup') }}">
                     @csrf
@@ -86,6 +80,6 @@
                     <x-form.button type="submit" class="button danger" confirm="Disable Two Factor Authentication?">{{ __('Disable Two-Factor Authentication') }}</x-form.button>
                 </form>
             @endif
-        </div>
+        </div>--}}
     </x-multi-factor-auth-card>
 </x-two-factor-layout>

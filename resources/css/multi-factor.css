@@ -94,6 +94,7 @@ body {
 
 .underline {
     border-bottom: 1px solid #e3e2e8;
+    margin-bottom: 20px;
 }
 
 .flex-row-end {
