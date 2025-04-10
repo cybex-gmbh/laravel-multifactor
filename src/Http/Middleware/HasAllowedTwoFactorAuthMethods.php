@@ -25,7 +25,6 @@ class HasAllowedTwoFactorAuthMethods
             return $next($request);
         }
 
-        TwoFactorAuthSession::SETUP_IN_PROCESS->put();
         return redirect()->route('2fa.setup');
     }
 }

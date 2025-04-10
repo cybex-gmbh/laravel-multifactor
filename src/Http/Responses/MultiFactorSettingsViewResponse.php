@@ -18,8 +18,13 @@ class MultiFactorSettingsViewResponse implements MultiFactorSettingsViewResponse
     {
         $user = $this->user;
 
-        $methods = $user->getTwoFactorAuthMethods();
-        $methods = $methods ?: TwoFactorAuthMethod::getAllowedMethods();
+        $userMethods = $user->getTwoFactorAuthMethods();
+        $allowedMethods = TwoFactorAuthMethod::getAllowedMethods();
+
+        // refactor to method in User Model
+        $methods = array_filter($allowedMethods, function ($method) use ($userMethods) {
+            return in_array($method, $userMethods) || !in_array($method, $userMethods);
+        });
 
         return view('laravel-two-factor::settings', compact('user', 'methods'));
     }

@@ -6,12 +6,9 @@ use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSetupViewResponseContract;
 
 class MultiFactorSetupViewResponse implements MultiFactorSetupViewResponseContract
 {
-    protected array $methods;
+    public function __construct(protected array $methods)
+    {}
 
-    public function __construct(array $methods)
-    {
-        $this->methods = $methods;
-    }
     public function toResponse($request)
     {
         $methods = $this->methods;
