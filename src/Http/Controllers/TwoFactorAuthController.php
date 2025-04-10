@@ -2,8 +2,8 @@
 
 namespace CybexGmbh\LaravelTwoFactor\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
+use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChooseViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorDeleteViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSettingsViewResponseContract;
@@ -11,12 +11,10 @@ use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSetupViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMode;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
-use CybexGmbh\LaravelTwoFactor\Services\TwoFactorAuthService;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -25,13 +23,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TwoFactorAuthController extends Controller
 {
-    protected TwoFactorAuthService $twoFactorAuthService;
-
-    public function __construct(TwoFactorAuthService $twoFactorAuthService)
-    {
-        $this->twoFactorAuthService = $twoFactorAuthService;
-    }
-
     public function show(): mixed
     {
         $user = Auth::user();
@@ -49,7 +40,10 @@ class TwoFactorAuthController extends Controller
 
             case TwoFactorAuthMode::OPTIONAL:
                 if (!count(array_intersect($user->getTwoFactorAuthMethodsNames(), TwoFactorAuthMethod::getAllowedMethodsNames()))) {
-                    TwoFactorAuthSession::VERIFIED->put();
+                    $methodsToSetup = array_diff(TwoFactorAuthMethod::getAllowedMethodsNames(), $user->getTwoFactorAuthMethodsNames());
+
+                    // refactor this, to complicated
+                    return app(MultiFactorChooseViewResponseContract::class, [array_map(fn($method) => TwoFactorAuthMethod::from($method), $methodsToSetup)]);
                 }
                 break;
         }
@@ -61,22 +55,20 @@ class TwoFactorAuthController extends Controller
         return app(MultiFactorChooseViewResponseContract::class, [$userMethods]);
     }
 
-    public function handleTwoFactorAuthMethod(TwoFactorAuthMethod $method)
+    public function handleTwoFactorAuthMethod(TwoFactorAuthMethod $method): MultiFactorChallengeViewResponseContract
     {
-        return $this->twoFactorAuthService->handleTwoFactorAuthMethod(Auth::user(), $method);
+        return match ($method) {
+            TwoFactorAuthMethod::EMAIL => $method->getHandler()->authenticate(),
+            TwoFactorAuthMethod::TOTP => TwoFactorAuthMethod::EMAIL->getHandler()->authenticate(),
+        };
     }
 
     public function send(TwoFactorAuthMethod $method): RedirectResponse
     {
-        return $this->twoFactorAuthService->send(Auth::user(), $method);
+        return $method->getHandler()->send();
     }
 
-    public function handleTwoFactorAuthSetup(TwoFactorAuthMethod $method): RedirectResponse
-    {
-        return $this->twoFactorAuthService->handleTwoFactorAuthSetup(Auth::user(), $method);
-    }
-
-    public function setup(TwoFactorAuthMethod $method = null): RedirectResponse|MultiFactorSetupViewResponseContract
+    public function setup(TwoFactorAuthMethod $method = null): RedirectResponse|MultiFactorSetupViewResponseContract|MultiFactorChooseViewResponseContract
     {
         $mode = TwoFactorAuthMode::fromConfig();
         $forceMethod = TwoFactorAuthMethod::getForceMethod();
@@ -91,7 +83,8 @@ class TwoFactorAuthController extends Controller
             return Redirect::route('2fa.method', ['method' => $methods[0]]);
         }
 
-        return app(MultiFactorChooseViewResponseContract::class, $methods);
+        // either make this to array with [] brackets or remove the array deconstruction ... in the service provider for the choose view
+        return app(MultiFactorChooseViewResponseContract::class, [$methods]);
     }
 
     public function handleDeletion(): mixed
@@ -118,22 +111,19 @@ class TwoFactorAuthController extends Controller
         $code ??= $request->integer('code') ?? throw new HttpException(403);
 
         if ($code !== TwoFactorAuthSession::CODE->get()) {
-            // abort(403);
-            throw new HttpException(403);
+            abort(403);
         }
 
         if (!$method->isUserMethod()) {
-            Auth::user()->twoFactorAuthMethods()->firstOrCreate([
-                'type' => $method,
-            ]);
+            $redirect = $method->getHandler()->setup();
 
-            array_map(fn($method) => $this->deleteTwoFactorAuthMethod(TwoFactorAuthMethod::from($method)), Auth::user()->getUnallowedMethods());
+            array_map(fn($method) => $this->deleteTwoFactorAuthMethod(TwoFactorAuthMethod::from($method)), Auth::user()->getUnallowedMethodsNames());
         }
 
         TwoFactorAuthSession::clear();
         TwoFactorAuthSession::VERIFIED->put();
 
-        return Redirect::intended();
+        return $redirect ?? Redirect::intended();
     }
 
     public function emailLogin(Request $request): RedirectResponse
@@ -155,7 +145,6 @@ class TwoFactorAuthController extends Controller
             return app(MultiFactorSettingsViewResponseContract::class, [$user]);
         }
 
-        // abort(403);
-        throw new HttpException(403);
+         abort(403);
     }
 }
