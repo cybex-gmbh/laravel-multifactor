@@ -3,6 +3,7 @@
 namespace CybexGmbh\LaravelTwoFactor\Http\Middleware;
 
 use Closure;
+use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMode;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,11 @@ class HasTwoFactorAuthentication
         $user = Auth::user();
 
         if ($user->twoFactorAuthMethods()->exists() && !TwoFactorAuthSession::VERIFIED->get()) {
+
+            if (TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::OPTIONAL && !$user->getAllowed2FAMethods() && $user->getUnallowedMethodsNames()) {
+                TwoFactorAuthSession::VERIFIED->put();
+                return $next($request);
+            }
 
             return redirect()->route('2fa.show');
         }
