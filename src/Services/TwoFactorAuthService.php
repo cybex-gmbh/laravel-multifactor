@@ -64,7 +64,6 @@ class TwoFactorAuthService
             'type' => TwoFactorAuthMethod::EMAIL,
         ]);
 
-        session()->remove(TwoFactorAuthSession::SETUP_IN_PROCESS->value);
         return redirect()->route('2fa.show');
     }
 }

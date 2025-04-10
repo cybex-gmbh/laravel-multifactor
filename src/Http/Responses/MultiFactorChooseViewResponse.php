@@ -3,6 +3,7 @@
 namespace CybexGmbh\LaravelTwoFactor\Http\Responses;
 
 use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChooseViewResponseContract;
+use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
 
 class MultiFactorChooseViewResponse implements MultiFactorChooseViewResponseContract
 {
@@ -15,7 +16,8 @@ class MultiFactorChooseViewResponse implements MultiFactorChooseViewResponseCont
     public function toResponse($request)
     {
         $userMethods = $this->userMethods;
+        $isVerified = TwoFactorAuthSession::VERIFIED->get();
 
-        return view('laravel-two-factor::choose-method', compact('userMethods'));
+        return view('laravel-two-factor::choose-method', compact(['userMethods', 'isVerified']));
     }
 }

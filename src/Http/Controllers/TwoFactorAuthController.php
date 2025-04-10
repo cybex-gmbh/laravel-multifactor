@@ -49,7 +49,10 @@ class TwoFactorAuthController extends Controller
 
             case TwoFactorAuthMode::OPTIONAL:
                 if (!count(array_intersect($user->getTwoFactorAuthMethodsNames(), TwoFactorAuthMethod::getAllowedMethodsNames()))) {
-                    TwoFactorAuthSession::VERIFIED->put();
+                    $methodsToSetup = array_diff(TwoFactorAuthMethod::getAllowedMethodsNames(), $user->getTwoFactorAuthMethodsNames());
+
+                    // refactor this, to complicated
+                    return app(MultiFactorChooseViewResponseContract::class, [array_map(fn($method) => TwoFactorAuthMethod::from($method), $methodsToSetup)]);
                 }
                 break;
         }
@@ -76,7 +79,7 @@ class TwoFactorAuthController extends Controller
         return $this->twoFactorAuthService->handleTwoFactorAuthSetup(Auth::user(), $method);
     }
 
-    public function setup(TwoFactorAuthMethod $method = null): RedirectResponse|MultiFactorSetupViewResponseContract
+    public function setup(TwoFactorAuthMethod $method = null): RedirectResponse|MultiFactorSetupViewResponseContract|MultiFactorChooseViewResponseContract
     {
         $mode = TwoFactorAuthMode::fromConfig();
         $forceMethod = TwoFactorAuthMethod::getForceMethod();
@@ -91,7 +94,8 @@ class TwoFactorAuthController extends Controller
             return Redirect::route('2fa.method', ['method' => $methods[0]]);
         }
 
-        return app(MultiFactorChooseViewResponseContract::class, $methods);
+        // either make this to array with [] brackets or remove the array deconstruction ... in the service provider for the choose view
+        return app(MultiFactorChooseViewResponseContract::class, [$methods]);
     }
 
     public function handleDeletion(): mixed
@@ -127,7 +131,7 @@ class TwoFactorAuthController extends Controller
                 'type' => $method,
             ]);
 
-            array_map(fn($method) => $this->deleteTwoFactorAuthMethod(TwoFactorAuthMethod::from($method)), Auth::user()->getUnallowedMethods());
+            array_map(fn($method) => $this->deleteTwoFactorAuthMethod(TwoFactorAuthMethod::from($method)), Auth::user()->getUnallowedMethodsNames());
         }
 
         TwoFactorAuthSession::clear();
