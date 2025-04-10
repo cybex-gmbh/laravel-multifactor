@@ -47,4 +47,18 @@ trait TwoFactorAuthTrait
 
         return array_diff($user2FAMethods, $configuredMethods);
     }
+
+    /**
+     * @param array $allowedMethods
+     * @param $userMethods
+     * @return array
+     */
+    public function getUserMethodsWithRemainingAllowedMethods(array $allowedMethods, $userMethods): array
+    {
+        $methods = array_filter($allowedMethods, function ($method) use ($userMethods) {
+            return in_array($method, $userMethods) || !in_array($method, $userMethods);
+        });
+
+        return $methods;
+    }
 }
