@@ -18,31 +18,23 @@ class LimitTwoFactorAuthAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $userMethods = Auth::user()->getTwoFactorAuthMethods();
         $method = $request->route('method');
         $isVerified = TwoFactorAuthSession::VERIFIED->get();
-        $isSetupInProgress = TwoFactorAuthSession::SETUP_IN_PROCESS->get();
-        $configuredMode = TwoFactorAuthMode::fromConfig();
-        $optionalMode = TwoFactorAuthMode::OPTIONAL;
 
-        if (!$method->isAllowed()) {
-            if ($isSetupInProgress && !$isVerified && $configuredMode === $optionalMode) {
-                return redirect()->route('2fa.show');
-            }
-
-            if ($isVerified) {
-                return redirect()->route('2fa.setup');
-            }
+        if (($method->isAllowed() && !$method->isUserMethod()) && !$isVerified) {
+            return redirect()->route('2fa.show');
         }
 
-        if (!$method->isUserMethod() && !$isVerified) {
-            if ($userMethods) {
-                return redirect()->route('2fa.show');
+        if (!$method->isAllowed() && !$method->isUserMethod() && !$isVerified) {
+            return redirect()->route('2fa.show');
+        }
+
+        if ((!$method->isAllowed() || $method->isUserMethod()) && $isVerified) {
+            if (TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::FORCE) {
+                return redirect()->back();
             }
 
-            if ($configuredMode === $optionalMode && !$isSetupInProgress) {
-                return redirect()->route('projects.index');
-            }
+            return redirect()->route('2fa.settings', Auth::user());
         }
 
         return $next($request);

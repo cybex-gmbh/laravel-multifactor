@@ -10,8 +10,9 @@ use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSetupViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasAllowedTwoFactorAuthMethods;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasTwoFactorAuthentication;
-use CybexGmbh\LaravelTwoFactor\Http\Middleware\HasEmailLogin;
+use CybexGmbh\LaravelTwoFactor\Http\Middleware\EnforceEmailOnlyLogin;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\LimitTwoFactorAuthAccess;
+use CybexGmbh\LaravelTwoFactor\Http\Middleware\RedirectIfInSetup;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\RedirectIfTwoFactorAuthenticated;
 use CybexGmbh\LaravelTwoFactor\View\Components\AuthCard;
 use CybexGmbh\LaravelTwoFactor\View\Components\Form\Input;
@@ -43,11 +44,10 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('hasAllowedTwoFactorAuthMethods', HasAllowedTwoFactorAuthMethods::class);
         $router->aliasMiddleware('redirectIfTwoFactorAuthenticated', RedirectIfTwoFactorAuthenticated::class);
         $router->aliasMiddleware('limitTwoFactorAuthAccess', LimitTwoFactorAuthAccess::class);
-        $router->aliasMiddleware('hasEmailLogin', HasEmailLogin::class);
+        $router->aliasMiddleware('enforceEmailOnlyLogin', EnforceEmailOnlyLogin::class);
 
         Blade::component(Layout::class, 'two-factor-layout');
         Blade::component(Svg::class, 'svg');
-        Blade::component(LegacyAuthCard::class, 'legacy-auth-card');
         Blade::component(AuthCard::class, 'multi-factor-auth-card');
         Blade::component(Input::class, 'input');
 
@@ -89,7 +89,7 @@ class MultiFactorServiceProvider extends ServiceProvider
 
         $this->app->booted(function () {
             Route::getRoutes()->refreshNameLookups();
-            Route::getRoutes()->getByName(config('two-factor.routes.login.name'))->middleware('hasEmailLogin');
+            Route::getRoutes()->getByName(config('two-factor.routes.login.name'))->middleware('enforceEmailOnlyLogin');
         });
     }
 
@@ -105,7 +105,7 @@ class MultiFactorServiceProvider extends ServiceProvider
 
         $this->app->singleton(MultiFactorChallengeViewResponseContract::class, fn($app, $params): MultiFactorChallengeViewResponseContract => new (config('two-factor.views.challenge'))(...$params));
         $this->app->singleton(MultiFactorLoginViewResponseContract::class, fn($app, $params): MultiFactorLoginViewResponseContract => new (config('two-factor.views.login'))(...$params));
-        $this->app->singleton(MultiFactorSetupViewResponseContract::class, fn($app, $params): MultiFactorSetupViewResponseContract => new (config('two-factor.views.setup'))(...$params));
+        $this->app->singleton(MultiFactorSetupViewResponseContract::class, fn($app, $params): MultiFactorSetupViewResponseContract => new (config('two-factor.views.setup'))($params));
         $this->app->singleton(MultiFactorChooseViewResponseContract::class, fn($app, $params): MultiFactorChooseViewResponseContract => new (config('two-factor.views.choose'))(...$params));
         $this->app->singleton(MultiFactorDeleteViewResponseContract::class, fn($app, $params): MultiFactorDeleteViewResponseContract => new (config('two-factor.views.delete'))(...$params));
         $this->app->singleton(MultiFactorSettingsViewResponseContract::class, fn($app, $params): MultiFactorSettingsViewResponseContract => new (config('two-factor.views.settings'))(...$params));

@@ -5,9 +5,8 @@ namespace CybexGmbh\LaravelTwoFactor\Http\Middleware;
 use Closure;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class HasTwoFactorAuthentication
 {
@@ -20,11 +19,12 @@ class HasTwoFactorAuthentication
     {
         $user = Auth::user();
 
-        if ($user && $user->twoFactorAuthMethods()->exists() && !TwoFactorAuthSession::VERIFIED->get()) {
+        if ($user->twoFactorAuthMethods()->exists() && !TwoFactorAuthSession::VERIFIED->get()) {
 
             return redirect()->route('2fa.show');
         }
 
+        TwoFactorAuthSession::VERIFIED->put();
         return $next($request);
     }
 }
