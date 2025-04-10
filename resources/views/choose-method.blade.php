@@ -3,7 +3,11 @@
 
     <x-multi-factor-auth-card>
         <x-slot name="subtext">
-            <p>Choose one of these methods to log in</p>
+            @if ($isVerified)
+                <p>Choose one of these methods to setup</p>
+            @else
+                <p>Choose one of these methods to log in</p>
+            @endif
         </x-slot>
 
         @foreach($userMethods as $method)

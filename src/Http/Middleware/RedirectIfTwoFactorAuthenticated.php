@@ -19,7 +19,7 @@ class RedirectIfTwoFactorAuthenticated
     {
         if (TwoFactorAuthSession::VERIFIED->get() && TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::FORCE && $request->route('method')?->isUserMethod()) {
             return redirect()->intended();
-       }
+        }
 
         return $next($request);
     }
