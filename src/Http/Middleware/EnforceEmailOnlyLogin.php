@@ -8,7 +8,7 @@ use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
 use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMode;
 use Illuminate\Http\Request;
 
-class HasEmailLogin
+class EnforceEmailOnlyLogin
 {
     /**
      * Handle an incoming request.

@@ -48,7 +48,7 @@ class TwoFactorAuthController extends Controller
                 break;
 
             case TwoFactorAuthMode::OPTIONAL:
-                if (!count(array_intersect($user->getTwoFactorAuthMethodsNames(), TwoFactorAuthMethod::getAllowedMethodsNames())) && !TwoFactorAuthSession::SETUP_IN_PROCESS->get()) {
+                if (!count(array_intersect($user->getTwoFactorAuthMethodsNames(), TwoFactorAuthMethod::getAllowedMethodsNames()))) {
                     TwoFactorAuthSession::VERIFIED->put();
                 }
                 break;
@@ -73,28 +73,25 @@ class TwoFactorAuthController extends Controller
 
     public function handleTwoFactorAuthSetup(TwoFactorAuthMethod $method): RedirectResponse
     {
-        TwoFactorAuthSession::SETUP_IN_PROCESS->put();
-
         return $this->twoFactorAuthService->handleTwoFactorAuthSetup(Auth::user(), $method);
     }
 
-    public function setup(): View|Application|Factory|\Illuminate\Contracts\Foundation\Application|RedirectResponse
+    public function setup(TwoFactorAuthMethod $method = null): RedirectResponse|MultiFactorSetupViewResponseContract
     {
-        TwoFactorAuthSession::SETUP_IN_PROCESS->put();
-
         $mode = TwoFactorAuthMode::fromConfig();
         $forceMethod = TwoFactorAuthMethod::getForceMethod();
-        $methods = TwoFactorAuthMethod::getAllowedMethods();
+        $method = $method?->isAllowed() ? [$method] : null;
+        $methods = $method ?? TwoFactorAuthMethod::getAllowedMethods();
 
         if ($mode === TwoFactorAuthMode::FORCE) {
-            return Redirect::route('2fa.setup.method', ['method' => $forceMethod]);
+            return Redirect::route('2fa.method', ['method' => $forceMethod]);
         }
 
         if (count($methods) === 1) {
-            return Redirect::route('2fa.setup.method', ['method' => $methods[0]]);
+            return Redirect::route('2fa.method', ['method' => $methods[0]]);
         }
 
-        return app(MultiFactorSetupViewResponseContract::class, $methods);
+        return app(MultiFactorChooseViewResponseContract::class, $methods);
     }
 
     public function handleDeletion(): mixed
@@ -112,7 +109,6 @@ class TwoFactorAuthController extends Controller
     public function deleteTwoFactorAuthMethod(TwoFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
         Auth::user()->twoFactorAuthMethods()->where('type', $method)->delete();
-        TwoFactorAuthSession::VERIFIED->remove();
 
         return $back ?? redirect()->back();
     }
@@ -124,6 +120,14 @@ class TwoFactorAuthController extends Controller
         if ($code !== TwoFactorAuthSession::CODE->get()) {
             // abort(403);
             throw new HttpException(403);
+        }
+
+        if (!$method->isUserMethod()) {
+            Auth::user()->twoFactorAuthMethods()->firstOrCreate([
+                'type' => $method,
+            ]);
+
+            array_map(fn($method) => $this->deleteTwoFactorAuthMethod(TwoFactorAuthMethod::from($method)), Auth::user()->getUnallowedMethods());
         }
 
         TwoFactorAuthSession::clear();
