@@ -2,11 +2,21 @@
 
 namespace CybexGmbh\LaravelTwoFactor\Enums;
 
+use CybexGmbh\LaravelTwoFactor\Contracts\TwoFactorAuthMethod as TwoFactorAuthMethodContract;
 use Illuminate\Support\Facades\Auth;
+use CybexGmbh\LaravelTwoFactor\Classes\TwoFactorAuthMethodHandler\EmailHandler;
 
 enum TwoFactorAuthMethod: string
 {
     case EMAIL = 'email';
+    case TOTP = 'totp';
+
+    public function getHandler(): TwoFactorAuthMethodContract
+    {
+        return match ($this) {
+            self::EMAIL => app(EmailHandler::class),
+        };
+    }
 
     public static function getAllowedMethods(): array
     {
