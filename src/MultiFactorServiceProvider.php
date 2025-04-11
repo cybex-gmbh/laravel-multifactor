@@ -14,12 +14,15 @@ use CybexGmbh\LaravelTwoFactor\Http\Middleware\EnforceEmailOnlyLogin;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\LimitTwoFactorAuthAccess;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\RedirectIfInSetup;
 use CybexGmbh\LaravelTwoFactor\Http\Middleware\RedirectIfTwoFactorAuthenticated;
+use CybexGmbh\LaravelTwoFactor\Listeners\HandleUserLogout;
 use CybexGmbh\LaravelTwoFactor\View\Components\AuthCard;
 use CybexGmbh\LaravelTwoFactor\View\Components\Form\Input;
 use CybexGmbh\LaravelTwoFactor\View\Components\LegacyAuthCard;
 use CybexGmbh\LaravelTwoFactor\View\Components\Layout;
 use CybexGmbh\LaravelTwoFactor\View\Components\Svg;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -50,6 +53,8 @@ class MultiFactorServiceProvider extends ServiceProvider
         Blade::component(Svg::class, 'svg');
         Blade::component(AuthCard::class, 'multi-factor-auth-card');
         Blade::component(Input::class, 'input');
+
+        Event::listen(Logout::class, HandleUserLogout::class);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
