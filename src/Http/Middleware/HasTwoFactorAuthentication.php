@@ -22,7 +22,7 @@ class HasTwoFactorAuthentication
 
         if ($user->twoFactorAuthMethods()->exists() && !TwoFactorAuthSession::VERIFIED->get()) {
 
-            if (TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::OPTIONAL && $user->getUnallowedMethodsNames()) {
+            if (TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::OPTIONAL && !$user->getAllowed2FAMethods() && $user->getUnallowedMethodsNames()) {
                 TwoFactorAuthSession::VERIFIED->put();
                 return $next($request);
             }
