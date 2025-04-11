@@ -40,10 +40,7 @@ class TwoFactorAuthController extends Controller
 
             case TwoFactorAuthMode::OPTIONAL:
                 if (!count(array_intersect($user->getTwoFactorAuthMethodsNames(), TwoFactorAuthMethod::getAllowedMethodsNames()))) {
-                    $methodsToSetup = array_diff(TwoFactorAuthMethod::getAllowedMethodsNames(), $user->getTwoFactorAuthMethodsNames());
-
-                    // refactor this, to complicated
-                    return app(MultiFactorChooseViewResponseContract::class, [array_map(fn($method) => TwoFactorAuthMethod::from($method), $methodsToSetup)]);
+                    return app(MultiFactorChooseViewResponseContract::class, TwoFactorAuthMethod::getMethodsByNames($user->getRemainingAllowedMethodsNames()));
                 }
                 break;
         }
@@ -52,7 +49,7 @@ class TwoFactorAuthController extends Controller
             return Redirect::route('2fa.method', ['method' => $userMethods[0]]);
         }
 
-        return app(MultiFactorChooseViewResponseContract::class, [$userMethods]);
+        return app(MultiFactorChooseViewResponseContract::class, $userMethods);
     }
 
     public function handleTwoFactorAuthMethod(TwoFactorAuthMethod $method): MultiFactorChallengeViewResponseContract
@@ -84,7 +81,7 @@ class TwoFactorAuthController extends Controller
         }
 
         // either make this to array with [] brackets or remove the array deconstruction ... in the service provider for the choose view
-        return app(MultiFactorChooseViewResponseContract::class, [$methods]);
+        return app(MultiFactorChooseViewResponseContract::class, $methods);
     }
 
     public function handleDeletion(): mixed
