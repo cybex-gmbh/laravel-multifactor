@@ -33,6 +33,11 @@ enum TwoFactorAuthMethod: string
         return self::from(config('two-factor.forceMethod'));
     }
 
+    public static function getMethodsByNames(array $names): array
+    {
+        return array_map(fn($name) => self::from($name), $names);
+    }
+
     public function isAllowed(): bool
     {
         return in_array($this->value, self::getAllowedMethodsNames());

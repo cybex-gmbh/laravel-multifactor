@@ -61,4 +61,8 @@ trait TwoFactorAuthTrait
 
         return $methods;
     }
+
+    public function getRemainingAllowedMethodsNames(): array {
+        return array_diff(TwoFactorAuthMethodEnum::getAllowedMethodsNames(), $this->getTwoFactorAuthMethodsNames());
+    }
 }
