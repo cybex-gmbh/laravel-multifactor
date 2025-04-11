@@ -21,11 +21,7 @@ class LimitTwoFactorAuthAccess
         $method = $request->route('method');
         $isVerified = TwoFactorAuthSession::VERIFIED->get();
 
-        if (($method->isAllowed() && !$method->isUserMethod()) && !$isVerified) {
-            return redirect()->route('2fa.show');
-        }
-
-        if (!$method->isAllowed() && !$method->isUserMethod() && !$isVerified) {
+        if (!$method->isUserMethod() && !$isVerified) {
             return redirect()->route('2fa.show');
         }
 
