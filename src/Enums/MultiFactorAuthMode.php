@@ -1,8 +1,8 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Enums;
+namespace CybexGmbh\LaravelMultiFactor\Enums;
 
-enum TwoFactorAuthMode: string
+enum MultiFactorAuthMode: string
 {
     case FORCE = 'force';
     case REQUIRED = 'required';
@@ -10,6 +10,6 @@ enum TwoFactorAuthMode: string
 
     public static function fromConfig(): self
     {
-        return self::from(config('two-factor.mode'));
+        return self::from(config('multi-factor.mode'));
     }
 }

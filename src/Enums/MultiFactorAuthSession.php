@@ -1,8 +1,8 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Enums;
+namespace CybexGmbh\LaravelMultiFactor\Enums;
 
-enum TwoFactorAuthSession: string
+enum MultiFactorAuthSession: string
 {
     case CODE = 'two_factor_auth_code';
     case EMAIL_SENT = 'two_factor_auth_email_sent';

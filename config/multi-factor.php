@@ -4,20 +4,21 @@
  * You can place your custom package configuration in here.
  */
 
-use CybexGmbh\LaravelTwoFactor\Http\Responses\MultiFactorChooseViewResponse;
-use CybexGmbh\LaravelTwoFactor\Http\Responses\MultiFactorDeleteViewResponse;
-use CybexGmbh\LaravelTwoFactor\Http\Responses\MultiFactorLoginViewResponse;
-use CybexGmbh\LaravelTwoFactor\Http\Responses\MultiFactorSettingsViewResponse;
-use CybexGmbh\LaravelTwoFactor\Http\Responses\MultiFactorSetupViewResponse;
-use CybexGmbh\LaravelTwoFactor\Http\Responses\MultiFactorChallengeViewResponse;
+use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorChallengeViewResponse;
+use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorChooseViewResponse;
+use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorDeleteViewResponse;
+use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorLoginViewResponse;
+use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorSettingsViewResponse;
+use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorSetupViewResponse;
 
 return [
     'allowedMethods' => [
         'email',
+        'totp',
     ],
     // 'optional' or 'required' or 'force'
-    'mode' => env('TWO_FACTOR_AUTHENTICATION_MODE', 'force'),
-    'forceMethod' => env('TWO_FACTOR_AUTHENTICATION_FORCE_METHOD', 'email'),
+    'mode' => env('MULTI_FACTOR_AUTHENTICATION_MODE', 'optional'),
+    'forceMethod' => env('MULTI_FACTOR_AUTHENTICATION_FORCE_METHOD', 'email'),
 
     'views' => [
         'challenge' => MultiFactorChallengeViewResponse::class,
@@ -30,12 +31,12 @@ return [
 
     'routes' => [
         'email-login' => [
-            'enabled' => env('TWO_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN', true),
-            'path' => '2fa/email-login',
+            'enabled' => env('MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN', true),
+            'path' => 'mfa/email-login',
         ],
         'settings' => [
             'enabled' => true,
-            'path' => '2fa/user/{user}/settings',
+            'path' => 'mfa/user/{user}/settings',
         ],
         'login' => [
             'name' => 'login',

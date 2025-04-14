@@ -1,32 +1,32 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Traits;
+namespace CybexGmbh\LaravelMultiFactor\Traits;
 
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMode;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod as TwoFactorAuthMethodEnum;
-use CybexGmbh\LaravelTwoFactor\Models\TwoFactorAuthMethod;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod as TwoFactorAuthMethodEnum;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use CybexGmbh\LaravelMultiFactor\Models\MultiFactorAuthMethod;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-trait TwoFactorAuthTrait
+trait MultiFactorAuthTrait
 {
-    public function twoFactorAuthMethods(): BelongsToMany
+    public function multiFactorAuthMethods(): BelongsToMany
     {
-        return $this->belongsToMany(TwoFactorAuthMethod::class, 'two_factor_auth_method_user');
+        return $this->belongsToMany(MultiFactorAuthMethod::class, 'multi_factor_auth_method_user');
     }
 
-    public function getTwoFactorAuthMethodsNames() {
-        return $this->twoFactorAuthMethods->map(fn($method) => $method->type->value)->toArray();
+    public function getMultiFactorAuthMethodsNames() {
+        return $this->multiFactorAuthMethods->map(fn($method) => $method->type->value)->toArray();
     }
 
-    public function getTwoFactorAuthMethods() {
-        return $this->twoFactorAuthMethods->pluck('type')->toArray();
+    public function getMultiFactorAuthMethods() {
+        return $this->multiFactorAuthMethods->pluck('type')->toArray();
     }
 
     public function getAllowed2FAMethods(): array
     {
-        $user2FAMethods = $this->getTwoFactorAuthMethodsNames();
+        $user2FAMethods = $this->getMultiFactorAuthMethodsNames();
 
-        if (TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::FORCE) {
+        if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE) {
             $configuredMethods = [TwoFactorAuthMethodEnum::getForceMethod()->value];
         } else {
             $configuredMethods = TwoFactorAuthMethodEnum::getAllowedMethodsNames();
@@ -37,9 +37,9 @@ trait TwoFactorAuthTrait
 
     public function getUnallowedMethodsNames(): array
     {
-        $user2FAMethods = $this->getTwoFactorAuthMethodsNames();
+        $user2FAMethods = $this->getMultiFactorAuthMethodsNames();
 
-        if (TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::FORCE) {
+        if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE) {
             $configuredMethods = [TwoFactorAuthMethodEnum::getForceMethod()->value];
         } else {
             $configuredMethods = TwoFactorAuthMethodEnum::getAllowedMethodsNames();
@@ -63,6 +63,6 @@ trait TwoFactorAuthTrait
     }
 
     public function getRemainingAllowedMethodsNames(): array {
-        return array_diff(TwoFactorAuthMethodEnum::getAllowedMethodsNames(), $this->getTwoFactorAuthMethodsNames());
+        return array_diff(TwoFactorAuthMethodEnum::getAllowedMethodsNames(), $this->getMultiFactorAuthMethodsNames());
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Enums;
+namespace CybexGmbh\LaravelMultiFactor\Enums;
 
-use CybexGmbh\LaravelTwoFactor\Contracts\TwoFactorAuthMethod as TwoFactorAuthMethodContract;
+use CybexGmbh\LaravelMultiFactor\Classes\TwoFactorAuthMethodHandler\EmailHandler;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as TwoFactorAuthMethodContract;
 use Illuminate\Support\Facades\Auth;
-use CybexGmbh\LaravelTwoFactor\Classes\TwoFactorAuthMethodHandler\EmailHandler;
 
-enum TwoFactorAuthMethod: string
+enum MultiFactorAuthMethod: string
 {
     case EMAIL = 'email';
     case TOTP = 'totp';
@@ -20,7 +20,7 @@ enum TwoFactorAuthMethod: string
 
     public static function getAllowedMethods(): array
     {
-        return array_map(fn($value) => self::from($value), config('two-factor.allowedMethods'));
+        return array_map(fn($value) => self::from($value), config('multi-factor.allowedMethods'));
     }
 
     public static function getAllowedMethodsNames(): array
@@ -30,7 +30,7 @@ enum TwoFactorAuthMethod: string
 
     public static function getForceMethod(): self
     {
-        return self::from(config('two-factor.forceMethod'));
+        return self::from(config('multi-factor.forceMethod'));
     }
 
     public static function getMethodsByNames(array $names): array
@@ -45,13 +45,13 @@ enum TwoFactorAuthMethod: string
 
     public function isUserMethod(): bool
     {
-        return in_array($this->value, Auth::user()->getTwoFactorAuthMethodsNames());
+        return in_array($this->value, Auth::user()->getMultiFactorAuthMethodsNames());
     }
 
     public function getSvg()
     {
         return match ($this) {
-            self::EMAIL => 'laravel-two-factor::svg.email',
+            self::EMAIL => 'laravel-multi-factor::svg.email',
         };
     }
 }
