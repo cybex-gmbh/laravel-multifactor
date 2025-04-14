@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\View\Components\Form;
+namespace CybexGmbh\LaravelMultiFactor\View\Components\Form;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -35,6 +35,6 @@ class Input extends Component
      */
     public function render(): View
     {
-        return view('laravel-two-factor::components.form.input');
+        return view('laravel-multi-factor::components.form.input');
     }
 }

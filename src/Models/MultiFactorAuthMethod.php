@@ -1,14 +1,14 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Models;
+namespace CybexGmbh\LaravelMultiFactor\Models;
 
+use App\Models\User;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod as TwoFactorAuthMethodEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\User;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod as TwoFactorAuthMethodEnum;
 
-class TwoFactorAuthMethod extends Model
+class MultiFactorAuthMethod extends Model
 {
     use HasFactory;
 
@@ -22,6 +22,6 @@ class TwoFactorAuthMethod extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'two_factor_auth_method_user');
+        return $this->belongsToMany(User::class, 'multi_factor_auth_method_user');
     }
 }
