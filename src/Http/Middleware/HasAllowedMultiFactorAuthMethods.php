@@ -1,14 +1,13 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Http\Middleware;
+namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMode;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class HasAllowedTwoFactorAuthMethods
+class HasAllowedMultiFactorAuthMethods
 {
     /**
      * Handle an incoming request.
@@ -21,10 +20,10 @@ class HasAllowedTwoFactorAuthMethods
 
         $allowed2faMethods = $user->getAllowed2FAMethods();
 
-        if ($allowed2faMethods || TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::OPTIONAL) {
+        if ($allowed2faMethods || MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::OPTIONAL) {
             return $next($request);
         }
 
-        return redirect()->route('2fa.setup');
+        return redirect()->route('mfa.setup');
     }
 }

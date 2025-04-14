@@ -1,19 +1,19 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Classes\TwoFactorAuthMethodHandler;
+namespace CybexGmbh\LaravelMultiFactor\Classes\TwoFactorAuthMethodHandler;
 
-use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChallengeViewResponseContract;
-use CybexGmbh\LaravelTwoFactor\Contracts\TwoFactorAuthMethod as TwoFactorAuthMethodInterface;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
-use CybexGmbh\LaravelTwoFactor\Notifications\TwoFactorCodeNotification;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as TwoFactorAuthMethodInterface;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
+use CybexGmbh\LaravelMultiFactor\Notifications\MultiFactorCodeNotification;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 class EmailHandler implements TwoFactorAuthMethodInterface
 {
-    protected TwoFactorAuthMethod $method = TwoFactorAuthMethod::EMAIL;
+    protected MultiFactorAuthMethod $method = MultiFactorAuthMethod::EMAIL;
     protected User $user;
 
     public function __construct()
@@ -23,7 +23,7 @@ class EmailHandler implements TwoFactorAuthMethodInterface
 
     public function authenticate(): MultifactorChallengeViewResponseContract
     {
-        $sessionKey = TwoFactorAuthSession::EMAIL_SENT;
+        $sessionKey = MultiFactorAuthSession::EMAIL_SENT;
 
         if (!session()->has($sessionKey->value)) {
             $this->send();
@@ -38,21 +38,21 @@ class EmailHandler implements TwoFactorAuthMethodInterface
         $code = random_int(100000, 999999);
         $userKey = $this->user->getKey();
 
-        TwoFactorAuthSession::CODE->put($code);
+        MultiFactorAuthSession::CODE->put($code);
 
-        $this->user->notify(new TwoFactorCodeNotification(TwoFactorAuthMethod::EMAIL, $code, $userKey));
+        $this->user->notify(new MultiFactorCodeNotification(MultiFactorAuthMethod::EMAIL, $code, $userKey));
 
         return redirect()->back();
     }
 
     public function setup(): RedirectResponse
     {
-        $this->user->twoFactorAuthMethods()->firstOrCreate([
-            'type' => TwoFactorAuthMethod::EMAIL,
+        $this->user->multiFactorAuthMethods()->firstOrCreate([
+            'type' => MultiFactorAuthMethod::EMAIL,
         ]);
 
-        if (TwoFactorAuthSession::VERIFIED->get()) {
-            return redirect()->route('2fa.settings', $this->user);
+        if (MultiFactorAuthSession::VERIFIED->get()) {
+            return redirect()->route('mfa.settings', $this->user);
         }
 
         return redirect()->intended();

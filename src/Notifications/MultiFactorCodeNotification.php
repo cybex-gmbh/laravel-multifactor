@@ -1,22 +1,22 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Notifications;
+namespace CybexGmbh\LaravelMultiFactor\Notifications;
 
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
 
-class TwoFactorCodeNotification extends Notification
+class MultiFactorCodeNotification extends Notification
 {
     use Queueable;
 
-    protected TwoFactorAuthMethod $method;
+    protected MultiFactorAuthMethod $method;
     protected int $code;
     protected int $userKey;
 
-    public function __construct(TwoFactorAuthMethod $method, int $code, int $userKey)
+    public function __construct(MultiFactorAuthMethod $method, int $code, int $userKey)
     {
         $this->method = $method;
         $this->code = $code;
@@ -30,8 +30,9 @@ class TwoFactorCodeNotification extends Notification
 
     public function toMail(): MailMessage
     {
+        // only send signed route if configured
         $url = URL::temporarySignedRoute(
-            '2fa.login',
+            'mfa.login',
             now()->addMinutes(10),
             [
                 'method' => $this->method,

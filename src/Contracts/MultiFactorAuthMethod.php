@@ -1,10 +1,10 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Contracts;
+namespace CybexGmbh\LaravelMultiFactor\Contracts;
 
 use Illuminate\Http\RedirectResponse;
 
-interface TwoFactorAuthMethod
+interface MultiFactorAuthMethod
 {
     public function authenticate(): MultiFactorChallengeViewResponseContract;
     public function send(): RedirectResponse;
