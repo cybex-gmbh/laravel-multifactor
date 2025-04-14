@@ -27,7 +27,7 @@ class HasMultiFactorAuthentication
                 return $next($request);
             }
 
-            return redirect()->route('2fa.show');
+            return redirect()->route('mfa.show');
         }
 
         MultiFactorAuthSession::VERIFIED->put();

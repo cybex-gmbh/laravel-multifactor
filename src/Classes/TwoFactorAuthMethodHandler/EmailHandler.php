@@ -52,7 +52,7 @@ class EmailHandler implements TwoFactorAuthMethodInterface
         ]);
 
         if (MultiFactorAuthSession::VERIFIED->get()) {
-            return redirect()->route('2fa.settings', $this->user);
+            return redirect()->route('mfa.settings', $this->user);
         }
 
         return redirect()->intended();

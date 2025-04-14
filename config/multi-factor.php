@@ -17,8 +17,8 @@ return [
         'totp',
     ],
     // 'optional' or 'required' or 'force'
-    'mode' => env('TWO_FACTOR_AUTHENTICATION_MODE', 'required'),
-    'forceMethod' => env('TWO_FACTOR_AUTHENTICATION_FORCE_METHOD', 'email'),
+    'mode' => env('MULTI_FACTOR_AUTHENTICATION_MODE', 'optional'),
+    'forceMethod' => env('MULTI_FACTOR_AUTHENTICATION_FORCE_METHOD', 'email'),
 
     'views' => [
         'challenge' => MultiFactorChallengeViewResponse::class,
@@ -31,12 +31,12 @@ return [
 
     'routes' => [
         'email-login' => [
-            'enabled' => env('TWO_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN', true),
-            'path' => '2fa/email-login',
+            'enabled' => env('MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN', true),
+            'path' => 'mfa/email-login',
         ],
         'settings' => [
             'enabled' => true,
-            'path' => '2fa/user/{user}/settings',
+            'path' => 'mfa/user/{user}/settings',
         ],
         'login' => [
             'name' => 'login',

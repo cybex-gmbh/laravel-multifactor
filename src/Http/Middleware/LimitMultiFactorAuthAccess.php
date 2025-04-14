@@ -22,7 +22,7 @@ class LimitMultiFactorAuthAccess
         $isVerified = MultiFactorAuthSession::VERIFIED->get();
 
         if (!$isVerified && !$method->isUserMethod()) {
-            return redirect()->route('2fa.show');
+            return redirect()->route('mfa.show');
         }
 
         if ($isVerified && (!$method->isAllowed() || $method->isUserMethod())) {
@@ -30,7 +30,7 @@ class LimitMultiFactorAuthAccess
                 return redirect()->back();
             }
 
-            return redirect()->route('2fa.settings', Auth::user());
+            return redirect()->route('mfa.settings', Auth::user());
         }
 
         return $next($request);

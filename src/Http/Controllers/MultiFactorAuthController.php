@@ -33,7 +33,7 @@ class MultiFactorAuthController extends Controller
                 $forceMethod = MultiFactorAuthMethod::getForceMethod();
 
                 if ($forceMethod->isUserMethod()) {
-                    return Redirect::route('2fa.method', ['method' => $forceMethod]);
+                    return Redirect::route('mfa.method', ['method' => $forceMethod]);
                 }
                 break;
 
@@ -45,7 +45,7 @@ class MultiFactorAuthController extends Controller
         }
 
         if (count($userMethods) === 1) {
-            return Redirect::route('2fa.method', ['method' => $userMethods[0]]);
+            return Redirect::route('mfa.method', ['method' => $userMethods[0]]);
         }
 
         return app(MultiFactorChooseViewResponseContract::class, $userMethods);
@@ -72,11 +72,11 @@ class MultiFactorAuthController extends Controller
         $methods = $method ?? MultiFactorAuthMethod::getAllowedMethods();
 
         if ($mode === MultiFactorAuthMode::FORCE) {
-            return Redirect::route('2fa.method', ['method' => $forceMethod]);
+            return Redirect::route('mfa.method', ['method' => $forceMethod]);
         }
 
         if (count($methods) === 1) {
-            return Redirect::route('2fa.method', ['method' => $methods[0]]);
+            return Redirect::route('mfa.method', ['method' => $methods[0]]);
         }
 
         // either make this to array with [] brackets or remove the array deconstruction ... in the service provider for the choose view

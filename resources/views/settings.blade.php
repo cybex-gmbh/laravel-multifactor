@@ -43,19 +43,19 @@
             </div>
 
             @foreach($methods as $method)
-                <span class="flex-row align-center underline" href="{{ route('2fa.method', $method) }}">
+                <span class="flex-row align-center underline" href="{{ route('mfa.method', $method) }}">
                     <x-svg method="{{ $method }}"></x-svg>
                     <p><strong>{{ ucfirst($method->value) }}</strong></p>
                     @if (in_array($method, $user->getMultiFactorAuthMethods()))
                         <p>{{ __('Enabled') }}</p>
-                        <form method="POST" action="{{ route('2fa.delete.method', $method) }}">
+                        <form method="POST" action="{{ route('mfa.delete.method', $method) }}">
                             @csrf
                             @method('DELETE')
                             <x-form.button type="submit" class="button danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-form.button>
                         </form>
                     @else
                         <p>{{ __('Disabled') }}</p>
-                        <form method="GET" action="{{ route('2fa.setup', $method) }}">
+                        <form method="GET" action="{{ route('mfa.setup', $method) }}">
                             @csrf
                             <x-form.button type="submit" class="button">{{ __('Enable') }}</x-form.button>
                         </form>
@@ -66,7 +66,7 @@
 
         {{--<div class="flex">
             @if (!auth()->user()->multiFactorAuthMethods()->exists())
-                <form method="GET" action="{{ route('2fa.setup') }}">
+                <form method="GET" action="{{ route('mfa.setup') }}">
                     @csrf
 
                     <button type="submit" class="button btn-large">
@@ -74,7 +74,7 @@
                     </button>
                 </form>
             @else
-                <form method="GET" action="{{ route('2fa.delete') }}">
+                <form method="GET" action="{{ route('mfa.delete') }}">
                     @csrf
 
                     <x-form.button type="submit" class="button danger" confirm="Disable Two Factor Authentication?">{{ __('Disable Multi-Factor Authentication') }}</x-form.button>

@@ -24,6 +24,6 @@ class HasAllowedMultiFactorAuthMethods
             return $next($request);
         }
 
-        return redirect()->route('2fa.setup');
+        return redirect()->route('mfa.setup');
     }
 }

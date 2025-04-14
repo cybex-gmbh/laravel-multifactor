@@ -30,8 +30,9 @@ class MultiFactorCodeNotification extends Notification
 
     public function toMail(): MailMessage
     {
+        // only send signed route if configured
         $url = URL::temporarySignedRoute(
-            '2fa.login',
+            'mfa.login',
             now()->addMinutes(10),
             [
                 'method' => $this->method,

@@ -6,18 +6,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['web'])->group(function () {
     Route::middleware(['guest'])->group(function () {
         if (config('multi-factor.routes.email-login.enabled') && $path = config('multi-factor.routes.email-login.path')) {
-            Route::post($path, [MultiFactorAuthController::class, 'emailLogin'])->name('2fa.email.login');
+            Route::post($path, [MultiFactorAuthController::class, 'emailLogin'])->name('mfa.email.login');
         }
     });
 
-    Route::middleware(['auth'])->as('2fa.')->group(function () {
+    Route::middleware(['auth'])->as('mfa.')->group(function () {
         if (config('multi-factor.routes.settings.enabled') && $path = config('multi-factor.routes.settings.path')) {
             Route::middleware(['hasMultiFactorAuthentication', 'hasAllowedMultiFactorAuthMethods'])->group(function () use ($path) {
                 Route::get($path, [MultiFactorAuthController::class, 'twoFactorSettings'])->name('settings');
             });
         }
 
-        Route::prefix('2fa')->group(function () {
+        Route::prefix('mfa')->group(function () {
             Route::delete('delete/{method}', [MultiFactorAuthController::class, 'deleteTwoFactorAuthMethod'])->name('delete.method');
             Route::get('setup/{method?}', [MultiFactorAuthController::class, 'setup'])->name('setup');
 
