@@ -30,22 +30,27 @@ class MultiFactorCodeNotification extends Notification
 
     public function toMail(): MailMessage
     {
-        // only send signed route if configured
-        $url = URL::temporarySignedRoute(
-            'mfa.login',
-            now()->addMinutes(10),
-            [
-                'method' => $this->method,
-                'user' => $this->userKey,
-                'code' => $this->code
-            ]
-        );
+        if (config('multi-factor.routes.email-login.enabled')) {
+            $url = URL::temporarySignedRoute(
+                'mfa.login',
+                now()->addMinutes(10),
+                [
+                    'method' => $this->method,
+                    'user' => $this->userKey,
+                    'code' => $this->code
+                ]
+            );
+        }
+
+        $hasLoginUrl = isset($url);
 
         return (new MailMessage)
             ->subject('New Login Request')
-            ->line('Click the link below to login:')
-            ->action('Login', $url)
-            ->line('You can alternatively use the following 2FA codee: ' . $this->code)
-            ->line('The url and code will expire in 10 minutes.');
+            ->when($hasLoginUrl, fn($message) => $message
+                ->line('Click the link below to login:')
+                ->action('Login', $url)
+                ->line('OR'))
+            ->line(sprintf('You can use the following MFA code: %s', $this->code))
+            ->line(sprintf('The %s will expire in 10 minutes.', $hasLoginUrl ? 'link and code' : 'code'));
     }
 }
