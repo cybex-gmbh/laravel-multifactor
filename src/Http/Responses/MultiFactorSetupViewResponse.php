@@ -1,8 +1,8 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Http\Responses;
+namespace CybexGmbh\LaravelMultiFactor\Http\Responses;
 
-use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSetupViewResponseContract;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSetupViewResponseContract;
 
 class MultiFactorSetupViewResponse implements MultiFactorSetupViewResponseContract
 {
@@ -13,6 +13,6 @@ class MultiFactorSetupViewResponse implements MultiFactorSetupViewResponseContra
     {
         $methods = $this->methods;
 
-        return view('laravel-two-factor::setup', compact('methods'));
+        return view('laravel-multi-factor::setup', compact('methods'));
     }
 }

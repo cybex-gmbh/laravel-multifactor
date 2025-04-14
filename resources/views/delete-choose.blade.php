@@ -1,4 +1,4 @@
-<x-two-factor-layout>
+<x-multi-factor-layout>
     <x-slot name="title">Delete 2FA Method</x-slot>
 
     <x-multi-factor-auth-card>
@@ -13,5 +13,5 @@
             </a>
         @endforeach
     </x-multi-factor-auth-card>
-</x-two-factor-layout>
+</x-multi-factor-layout>
 

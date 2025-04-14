@@ -1,9 +1,9 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Http\Responses;
+namespace CybexGmbh\LaravelMultiFactor\Http\Responses;
 
-use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorSettingsViewResponseContract;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Illuminate\Foundation\Auth\User;
 
 class MultiFactorSettingsViewResponse implements MultiFactorSettingsViewResponseContract
@@ -18,11 +18,11 @@ class MultiFactorSettingsViewResponse implements MultiFactorSettingsViewResponse
     {
         $user = $this->user;
 
-        $userMethods = $user->getTwoFactorAuthMethods();
-        $allowedMethods = TwoFactorAuthMethod::getAllowedMethods();
+        $userMethods = $user->getMultiFactorAuthMethods();
+        $allowedMethods = MultiFactorAuthMethod::getAllowedMethods();
 
         $methods = $user->getUserMethodsWithRemainingAllowedMethods($allowedMethods, $userMethods);
 
-        return view('laravel-two-factor::settings', compact('user', 'methods'));
+        return view('laravel-multi-factor::settings', compact('user', 'methods'));
     }
 }

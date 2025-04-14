@@ -1,17 +1,17 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Http\Responses;
+namespace CybexGmbh\LaravelMultiFactor\Http\Responses;
 
-use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorChallengeViewResponseContract;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Illuminate\Foundation\Auth\User;
 
 class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewResponseContract
 {
     protected User $user;
-    protected TwoFactorAuthMethod $method;
+    protected MultiFactorAuthMethod $method;
 
-    public function __construct(User $user, TwoFactorAuthMethod $method)
+    public function __construct(User $user, MultiFactorAuthMethod $method)
     {
         $this->user = $user;
         $this->method = $method;
@@ -21,6 +21,6 @@ class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewRespon
         $user = $this->user;
         $method = $this->method;
 
-        return view('laravel-two-factor::email-challenge', compact('user', 'method'));
+        return view('laravel-multi-factor::email-challenge', compact('user', 'method'));
     }
 }

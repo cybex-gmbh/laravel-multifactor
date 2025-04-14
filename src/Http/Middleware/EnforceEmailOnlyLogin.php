@@ -1,11 +1,11 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Http\Middleware;
+namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
-use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorLoginViewResponseContract;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMethod;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMode;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Illuminate\Http\Request;
 
 class EnforceEmailOnlyLogin
@@ -17,8 +17,8 @@ class EnforceEmailOnlyLogin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (config('two-factor.routes.email-login.enabled') && TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::FORCE && TwoFactorAuthMethod::getForceMethod(
-            ) === TwoFactorAuthMethod::EMAIL) {
+        if (config('multi-factor.routes.email-login.enabled') && MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE && MultiFactorAuthMethod::getForceMethod(
+            ) === MultiFactorAuthMethod::EMAIL) {
 
             $response = app(MultiFactorLoginViewResponseContract::class);
             return response($response->toResponse($request));

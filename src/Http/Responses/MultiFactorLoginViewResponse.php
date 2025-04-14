@@ -1,13 +1,13 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Http\Responses;
+namespace CybexGmbh\LaravelMultiFactor\Http\Responses;
 
-use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorLoginViewResponseContract;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
 
 class MultiFactorLoginViewResponse implements MultiFactorLoginViewResponseContract
 {
     public function toResponse($request)
     {
-        return view('laravel-two-factor::email-login');
+        return view('laravel-multi-factor::email-login');
     }
 }

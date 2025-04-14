@@ -1,15 +1,15 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Http\Middleware;
+namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMode;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class LimitTwoFactorAuthAccess
+class LimitMultiFactorAuthAccess
 {
     /**
      * Handle an incoming request.
@@ -19,14 +19,14 @@ class LimitTwoFactorAuthAccess
     public function handle(Request $request, Closure $next): Response
     {
         $method = $request->route('method');
-        $isVerified = TwoFactorAuthSession::VERIFIED->get();
+        $isVerified = MultiFactorAuthSession::VERIFIED->get();
 
         if (!$isVerified && !$method->isUserMethod()) {
             return redirect()->route('2fa.show');
         }
 
         if ($isVerified && (!$method->isAllowed() || $method->isUserMethod())) {
-            if (TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::FORCE) {
+            if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE) {
                 return redirect()->back();
             }
 

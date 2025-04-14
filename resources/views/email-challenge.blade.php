@@ -1,4 +1,4 @@
-<x-two-factor-layout>
+<x-multi-factor-layout>
     <x-slot name="title">Two Factor Login</x-slot>
 
     <x-multi-factor-auth-card>
@@ -27,4 +27,4 @@
             </x-form.button>
         </div>
     </x-multi-factor-auth-card>
-</x-two-factor-layout>
+</x-multi-factor-layout>

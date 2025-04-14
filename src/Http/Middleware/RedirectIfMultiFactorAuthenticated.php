@@ -1,14 +1,14 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Http\Middleware;
+namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthMode;
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class RedirectIfTwoFactorAuthenticated
+class RedirectIfMultiFactorAuthenticated
 {
     /**
      * Handle an incoming request.
@@ -17,7 +17,7 @@ class RedirectIfTwoFactorAuthenticated
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (TwoFactorAuthSession::VERIFIED->get() && TwoFactorAuthMode::fromConfig() === TwoFactorAuthMode::FORCE && $request->route('method')?->isUserMethod()) {
+        if (MultiFactorAuthSession::VERIFIED->get() && MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE && $request->route('method')?->isUserMethod()) {
             return redirect()->intended();
         }
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Http\Responses;
+namespace CybexGmbh\LaravelMultiFactor\Http\Responses;
 
-use CybexGmbh\LaravelTwoFactor\Contracts\MultiFactorDeleteViewResponseContract;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorDeleteViewResponseContract;
 use Illuminate\Http\RedirectResponse;
 
 class MultiFactorDeleteViewResponse implements MultiFactorDeleteViewResponseContract
@@ -21,6 +21,6 @@ class MultiFactorDeleteViewResponse implements MultiFactorDeleteViewResponseCont
         $userMethods = $this->userMethods;
         $back = $this->back;
 
-        return view('laravel-two-factor::delete-choose', compact('userMethods', 'back'));
+        return view('laravel-multi-factor::delete-choose', compact('userMethods', 'back'));
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace CybexGmbh\LaravelTwoFactor\Listeners;
+namespace CybexGmbh\LaravelMultiFactor\Listeners;
 
-use CybexGmbh\LaravelTwoFactor\Enums\TwoFactorAuthSession;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Auth\Events\Logout;
 
 class HandleUserLogout
@@ -15,7 +15,7 @@ class HandleUserLogout
         $user = $event->user;
 
         if ($user) {
-            TwoFactorAuthSession::clear();
+            MultiFactorAuthSession::clear();
         }
     }
 }
