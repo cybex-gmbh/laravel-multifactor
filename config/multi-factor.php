@@ -29,17 +29,15 @@ return [
         'settings' => MultiFactorSettingsViewResponse::class,
     ],
 
-    'routes' => [
+    'features' => [
         'email-login' => [
             'enabled' => env('MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN', true),
-            'path' => 'mfa/email-login',
+            'routePath' => 'mfa/email-login',
+            'applicationLoginRouteName' => 'login',
         ],
         'settings' => [
             'enabled' => true,
-            'path' => 'mfa/user/{user}/settings',
+            'routePath' => 'mfa/user/{user}/settings',
         ],
-        'login' => [
-            'name' => 'login',
-        ]
     ],
 ];
