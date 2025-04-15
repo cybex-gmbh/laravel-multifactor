@@ -40,7 +40,7 @@ enum MultiFactorAuthMethod: string
 
     public static function isEmailOnlyLoginActive(): bool
     {
-        return config('multi-factor.routes.email-login.enabled');
+        return config('multi-factor.features.email-login.enabled');
     }
 
     public function isAllowed(): bool

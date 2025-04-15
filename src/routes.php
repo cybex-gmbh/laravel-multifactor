@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function () {
     Route::middleware(['guest'])->group(function () {
-        if (MultiFactorAuthMethod::isEmailOnlyLoginActive() && $path = config('multi-factor.routes.email-login.path')) {
+        if (MultiFactorAuthMethod::isEmailOnlyLoginActive() && $path = config('multi-factor.features.email-login.routePath')) {
             Route::post($path, [MultiFactorAuthController::class, 'emailLogin'])->name('mfa.email.login');
         }
     });
 
     Route::middleware(['auth'])->as('mfa.')->group(function () {
-        if (config('multi-factor.routes.settings.enabled') && $path = config('multi-factor.routes.settings.path')) {
+        if (config('multi-factor.features.settings.enabled') && $path = config('multi-factor.features.settings.routePath')) {
             Route::middleware(['hasMultiFactorAuthentication', 'hasAllowedMultiFactorAuthMethods'])->group(function () use ($path) {
                 Route::get($path, [MultiFactorAuthController::class, 'twoFactorSettings'])->name('settings');
             });
