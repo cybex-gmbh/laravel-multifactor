@@ -43,24 +43,27 @@
             </div>
 
             @foreach($methods as $method)
-                <span class="flex-row align-center underline" href="{{ route('mfa.method', $method) }}">
+                <div class="grid align-center underline" href="{{ route('mfa.method', $method) }}">
                     <x-svg method="{{ $method }}"></x-svg>
-                    <p><strong>{{ ucfirst($method->value) }}</strong></p>
+                    <p class="text-center"><strong>{{ ucfirst($method->value) }}</strong></p>
+
                     @if (in_array($method, $user->getMultiFactorAuthMethods()))
-                        <p>{{ __('Enabled') }}</p>
+                        <p class="text-center">{{ __('Enabled') }}</p>
+
                         <form method="POST" action="{{ route('mfa.delete.method', $method) }}">
                             @csrf
                             @method('DELETE')
-                            <x-form.button type="submit" class="button danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-form.button>
+                            <x-form.button type="submit" class="button button-danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-form.button>
                         </form>
                     @else
-                        <p>{{ __('Disabled') }}</p>
+                        <p class="text-center">{{ __('Disabled') }}</p>
+
                         <form method="GET" action="{{ route('mfa.setup', $method) }}">
                             @csrf
                             <x-form.button type="submit" class="button">{{ __('Enable') }}</x-form.button>
                         </form>
                     @endif
-                </span>
+                </div>
             @endforeach
         </div>
 

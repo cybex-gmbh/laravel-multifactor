@@ -3,7 +3,7 @@ body {
 }
 
 .multi-factor-main {
-    background-color: antiquewhite;
+    background-color: #f3f4f6;
     height: 100vh;
     margin: 0;
     display: flex;
@@ -40,19 +40,15 @@ body {
 
 .button {
     display: inline-block;
-    outline: 0;
     cursor: pointer;
     border: none;
-    padding: 0 56px;
     height: 45px;
-    line-height: 45px;
+    width: 110px;
     border-radius: 7px;
-    background-color: #0070f3;
     color: white;
-    font-weight: 400;
-    font-size: 16px;
-    box-shadow: 0 4px 14px 0 rgb(0 118 255 / 39%);
     transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    background-color: #0070f3;
+    box-shadow: 0 4px 14px 0 rgb(0 118 255 / 39%);
 }
 
 .button:hover {
@@ -60,20 +56,22 @@ body {
     box-shadow: 0 6px 20px rgb(0 118 255 / 23%);
 }
 
+.button-danger {
+    background-color: #ef4444;
+    box-shadow: 0 4px 14px 0 rgb(213 37 37 / 39%);
+}
+
+.button-danger:hover {
+    background: rgba(220, 38, 38, 0.9);
+    box-shadow: 0 4px 14px 0 rgb(213 37 37 / 23%);
+}
+
 .green {
     color: #4ade80;
 }
 
-.danger {
-    background-color: #ef4444;
-}
-
 .text-danger {
     color: #ef4444;
-}
-
-.danger:hover {
-    background-color: #dc2626;
 }
 
 .text-sm {
@@ -86,6 +84,18 @@ body {
     flex-direction: row;
     gap: 30px;
     padding: 10px 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 60px repeat(auto-fill, 80px);
+    gap: 30px;
+    width: 100%;
+    padding: 10px 0;
+}
+
+.text-center {
+    text-align: center;
 }
 
 .align-center {
@@ -146,8 +156,4 @@ body {
 
 .margin-left-3 {
     margin-left: 0.75rem;
-}
-
-.btn-primary {
-    /* Add your primary button styles here */
 }
