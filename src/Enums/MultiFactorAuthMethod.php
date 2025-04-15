@@ -38,6 +38,11 @@ enum MultiFactorAuthMethod: string
         return array_map(fn($name) => self::from($name), $names);
     }
 
+    public static function isEmailOnlyLoginActive(): bool
+    {
+        return config('multi-factor.routes.email-login.enabled');
+    }
+
     public function isAllowed(): bool
     {
         return in_array($this->value, self::getAllowedMethodsNames());

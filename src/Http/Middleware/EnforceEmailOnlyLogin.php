@@ -17,7 +17,7 @@ class EnforceEmailOnlyLogin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (config('multi-factor.routes.email-login.enabled') && MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE && MultiFactorAuthMethod::getForceMethod(
+        if (MultiFactorAuthMethod::isEmailOnlyLoginActive() && MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE && MultiFactorAuthMethod::getForceMethod(
             ) === MultiFactorAuthMethod::EMAIL) {
 
             $response = app(MultiFactorLoginViewResponseContract::class);
