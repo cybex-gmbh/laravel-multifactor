@@ -15,7 +15,8 @@ This package provides a flexible multi-factor authentication solution for Larave
 - PHP 8.1 or higher
 - Laravel 9.x or higher
 
-## Multi-factor Modes
+## Features
+### Multi-factor Modes
 
 This package supports three modes:
 - **Optional**: Multi-factor authentication is optional for users. They can choose to enable it in their profile settings.
@@ -25,19 +26,23 @@ This package supports three modes:
 In Force Mode, you must specify the method to use. The package supports currently the following methods:
 - **Email**: Users receive a login url and or a one-time code via email to authenticate.
 
-Install the package via Composer:
+### Email Only Login
+
+Users can log in using a unique email link, enabling authentication with just their email address.
+
+## Installation
 
 ```bash
 composer require cybex-gmbh/laravel-multi-factor
 ```
 
-Publish the Configuration File:
+### Publish the Configuration File
 
 ```bash
 php artisan vendor:publish --provider="CybexGmbh\LaravelMultiFactor\LaravelMultiFactorServiceProvider" --tag="multi-factor.config"
 ```
 
-Configure the Package:
+### Configure the Package
 
 Open the `config/multi-factor.php` file and adjust the settings as needed. For example:
 
@@ -45,7 +50,7 @@ Open the `config/multi-factor.php` file and adjust the settings as needed. For e
 - **`mode`**: Set the mode to `optional`, `required`, or `force`.
 - **`forceMethod`**: Specify the method to use when the mode is set to `force`.
 
-Add Environment Variables:
+### Add Environment Variables
 
 ```env
 MULTI_FACTOR_AUTHENTICATION_MODE=optional
@@ -53,15 +58,24 @@ MULTI_FACTOR_AUTHENTICATION_FORCE_METHOD=email
 MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=true
 ```
 
-Migrate the Database:
+### Migrate the Database
 
 ```bash
 php artisan migrate
 ```
 
-Update User Model:
+### Apply Middlewares
 
-Ensure your `User` model implements the `MultiFactorAuthTrait` for the necessary methods:
+Guard your applications routes with multi-factor authentication using these middlewares:
+
+```php
+Route::middleware(['hasMultiFactorAuthentication', 'hasAllowedMultiFactorAuthMethods'])->group(function () {
+});
+```
+
+### Multi-Factor Authentication Trait
+
+Implement the `MultiFactorAuthTrait` in your `User` model:
 
 ```php
 use CybexGmbh\LaravelMultiFactor\Traits\MultiFactorAuthTrait;
@@ -70,6 +84,24 @@ class User extends Authenticatable
 {
     use MultiFactorAuthTrait;
 }
+```
+
+### Email Only Login
+
+Set your application's login route name in the multi-factor configuration:
+
+```php
+'features' => [
+    'email-login' => [
+        'applicationLoginRouteName' => 'login',
+    ],
+],
+```
+
+To this disable this feature set the `MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN` env variable to `false`:
+
+```env
+MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=false
 ```
 
 ### Customizing Views (Optional)
