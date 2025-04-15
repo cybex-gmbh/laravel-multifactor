@@ -30,7 +30,7 @@ class MultiFactorCodeNotification extends Notification
 
     public function toMail(): MailMessage
     {
-        if (config('multi-factor.routes.email-login.enabled')) {
+        if (MultiFactorAuthMethod::isEmailOnlyLoginActive()) {
             $url = URL::temporarySignedRoute(
                 'mfa.login',
                 now()->addMinutes(10),
