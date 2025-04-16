@@ -7,6 +7,7 @@ enum MultiFactorAuthSession: string
     case CODE = 'two_factor_auth_code';
     case EMAIL_SENT = 'two_factor_auth_email_sent';
     case VERIFIED = 'two_factor_auth_verified';
+    case SETUP_AFTER_LOGIN = 'two_factor_auth_setup_after_login';
 
     public static function clear(): void
     {
