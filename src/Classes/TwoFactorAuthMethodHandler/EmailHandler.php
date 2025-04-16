@@ -51,10 +51,12 @@ class EmailHandler implements TwoFactorAuthMethodInterface
             'type' => MultiFactorAuthMethod::EMAIL,
         ]);
 
-        if (MultiFactorAuthSession::VERIFIED->get()) {
-            return redirect()->route('mfa.settings', $this->user);
+        if (MultiFactorAuthSession::SETUP_AFTER_LOGIN->get()) {
+            MultiFactorAuthSession::SETUP_AFTER_LOGIN->remove();
+
+            return redirect()->intended();
         }
 
-        return redirect()->intended();
+        return redirect()->route('mfa.settings', $this->user);
     }
 }
