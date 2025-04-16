@@ -53,6 +53,11 @@ enum MultiFactorAuthMethod: string
         return in_array($this->value, Auth::user()->getMultiFactorAuthMethodsNames());
     }
 
+    public function isForceMethod(): bool
+    {
+        return $this === self::getForceMethod();
+    }
+
     public function getSvg()
     {
         return match ($this) {

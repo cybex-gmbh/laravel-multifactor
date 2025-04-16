@@ -3,6 +3,7 @@
 namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Http\Request;
@@ -23,6 +24,10 @@ class LimitMultiFactorAuthAccess
 
         if (!$isVerified && !$method->isUserMethod()) {
             return redirect()->route('mfa.show');
+        }
+
+        if (!$isVerified && MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE && !$method->isForceMethod()) {
+            return redirect()->route('mfa.method', ['method' => MultiFactorAuthmethod::getForceMethod()]);
         }
 
         if ($isVerified && (!$method->isAllowed() || $method->isUserMethod())) {
