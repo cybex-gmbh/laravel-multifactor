@@ -2,7 +2,9 @@
 
 namespace CybexGmbh\LaravelMultiFactor\Notifications;
 
+use Carbon\Carbon;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -12,15 +14,11 @@ class MultiFactorCodeNotification extends Notification
 {
     use Queueable;
 
-    protected MultiFactorAuthMethod $method;
-    protected int $code;
-    protected int $userKey;
+    protected string $url;
 
-    public function __construct(MultiFactorAuthMethod $method, int $code, int $userKey)
+    public function __construct(?string $url)
     {
-        $this->method = $method;
-        $this->code = $code;
-        $this->userKey = $userKey;
+        $this->url = $url;
     }
 
     public function via(): array
@@ -30,27 +28,13 @@ class MultiFactorCodeNotification extends Notification
 
     public function toMail(): MailMessage
     {
-        if (MultiFactorAuthMethod::isEmailOnlyLoginActive()) {
-            $url = URL::temporarySignedRoute(
-                'mfa.login',
-                now()->addMinutes(10),
-                [
-                    'method' => $this->method,
-                    'user' => $this->userKey,
-                    'code' => $this->code
-                ]
-            );
-        }
-
-        $hasLoginUrl = isset($url);
-
         return (new MailMessage)
             ->subject('New Login Request')
-            ->when($hasLoginUrl, fn($message) => $message
+            ->when($this->url, fn($message) => $message
                 ->line('Click the link below to login:')
-                ->action('Login', $url)
+                ->action('Login', $this->url)
                 ->line('OR'))
-            ->line(sprintf('You can use the following MFA code: %s', $this->code))
-            ->line(sprintf('The %s will expire in 10 minutes.', $hasLoginUrl ? 'link and code' : 'code'));
+            ->line(sprintf('You can use the following MFA code: %s', MultiFactorAuthSession::getCode()))
+            ->line(sprintf('The %s will expire in 10 minutes.', $this->url ? 'link and code' : 'code'));
     }
 }

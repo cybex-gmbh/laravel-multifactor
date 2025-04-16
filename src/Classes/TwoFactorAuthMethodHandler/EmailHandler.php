@@ -10,6 +10,7 @@ use CybexGmbh\LaravelMultiFactor\Notifications\MultiFactorCodeNotification;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 
 class EmailHandler implements TwoFactorAuthMethodInterface
 {
@@ -37,10 +38,23 @@ class EmailHandler implements TwoFactorAuthMethodInterface
     {
         $code = random_int(100000, 999999);
         $userKey = $this->user->getKey();
+        $expiresAt = now()->addMinutes(10);
 
-        MultiFactorAuthSession::CODE->put($code);
+        MultiFactorAuthSession::CODE->put(['code' => $code, 'expires_at' => $expiresAt]);
 
-        $this->user->notify(new MultiFactorCodeNotification(MultiFactorAuthMethod::EMAIL, $code, $userKey));
+        if (MultiFactorAuthMethod::isEmailOnlyLoginActive()) {
+            $url = URL::temporarySignedRoute(
+                'mfa.login',
+                $expiresAt,
+                [
+                    'method' => $this->method,
+                    'user' => $userKey,
+                    'code' => $code
+                ]
+            );
+        }
+
+        $this->user->notify(new MultiFactorCodeNotification($url ?? null));
 
         return redirect()->back();
     }
