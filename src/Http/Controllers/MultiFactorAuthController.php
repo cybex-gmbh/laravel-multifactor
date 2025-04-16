@@ -106,7 +106,7 @@ class MultiFactorAuthController extends Controller
     {
         $code ??= $request->integer('code') ?? throw new HttpException(403);
 
-        if ($code !== MultiFactorAuthSession::CODE->get()) {
+        if (MultiFactorAuthSession::isCodeExpired() && $code !== MultiFactorAuthSession::getCode()) {
             abort(403);
         }
 
