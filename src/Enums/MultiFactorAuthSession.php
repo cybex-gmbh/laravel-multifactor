@@ -17,9 +17,21 @@ enum MultiFactorAuthSession: string
         ]);
     }
 
-    public function get(): mixed
+    public static function isCodeExpired(): bool
     {
-        return session($this->value);
+        $sessionData = self::CODE->get();
+
+        return now()->greaterThan($sessionData['expires_at']);
+    }
+
+    public static function getCode(): ?int
+    {
+        return self::CODE->get('code');
+    }
+
+    public function get(string $key = null): mixed
+    {
+        return session($this->value)[$key] ?? session($this->value);
     }
 
     public function put(mixed $value = true): void
