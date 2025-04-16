@@ -1,3 +1,4 @@
+@php use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode; @endphp
 <x-multi-factor-layout>
     <x-slot name="title">Two Factor Auth Settings</x-slot>
 
@@ -17,7 +18,7 @@
 
             <div>
                 <div>
-                    @if (auth()->user()->multiFactorAuthMethods()->exists())
+                    @if ($user->multiFactorAuthMethods()->exists())
                         <div class="flex-row align-center green">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="svg size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -47,14 +48,16 @@
                     <x-svg method="{{ $method }}"></x-svg>
                     <p class="text-center"><strong>{{ ucfirst($method->value) }}</strong></p>
 
-                    @if (in_array($method, $user->getMultiFactorAuthMethods()))
+                    @if ($method->isUserMethod())
                         <p class="text-center">{{ __('Enabled') }}</p>
 
-                        <form method="POST" action="{{ route('mfa.delete.method', $method) }}">
-                            @csrf
-                            @method('DELETE')
-                            <x-form.button type="submit" class="button button-danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-form.button>
-                        </form>
+                        @if ($mfaMode === MultiFactorAuthMode::OPTIONAL || $userMethodsAmount > 1)
+                            <form method="POST" action="{{ route('mfa.delete.method', $method) }}">
+                                @csrf
+                                @method('DELETE')
+                                <x-form.button type="submit" class="button button-danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-form.button>
+                            </form>
+                        @endif
                     @else
                         <p class="text-center">{{ __('Disabled') }}</p>
 

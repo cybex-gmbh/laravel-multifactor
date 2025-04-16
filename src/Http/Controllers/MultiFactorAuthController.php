@@ -137,7 +137,7 @@ class MultiFactorAuthController extends Controller
 
     public function twoFactorSettings(User $user)
     {
-        if (Auth::user()->is($user) && MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::OPTIONAL) {
+        if (Auth::user()->is($user) && MultiFactorAuthMode::fromConfig() !== MultiFactorAuthMode::FORCE) {
             return app(MultiFactorSettingsViewResponseContract::class, [$user]);
         }
 
