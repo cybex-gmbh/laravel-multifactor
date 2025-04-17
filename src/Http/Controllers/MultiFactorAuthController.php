@@ -16,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -28,6 +29,12 @@ class MultiFactorAuthController extends Controller
         $userMethods = $user->getMultiFactorAuthMethods();
         $configuredMode = MultiFactorAuthMode::fromConfig();
 
+        if (MultiFactorAuthMode::fromConfig() !== MultiFactorAuthMode::FORCE) {
+            if ($user->hasAllowedMultiFactorAuthMethods()) {
+                $userMethods = MultiFactorAuthMethod::getMethodsByNames($user->getAllowed2FAMethods());
+            }
+        }
+
         switch ($configuredMode) {
             case MultiFactorAuthMode::FORCE:
                 $forceMethod = MultiFactorAuthMethod::getForceMethod();
@@ -38,14 +45,14 @@ class MultiFactorAuthController extends Controller
                 break;
 
             case MultiFactorAuthMode::OPTIONAL:
-                if (!count(array_intersect($user->getMultiFactorAuthMethodsNames(), MultiFactorAuthMethod::getAllowedMethodsNames()))) {
+                if (!$user->hasAllowedMultiFactorAuthMethods()) {
                     return app(MultiFactorChooseViewResponseContract::class, MultiFactorAuthMethod::getMethodsByNames($user->getRemainingAllowedMethodsNames()));
                 }
                 break;
         }
 
         if (count($userMethods) === 1) {
-            return Redirect::route('mfa.method', ['method' => $userMethods[0]]);
+            return Redirect::route('mfa.method', ['method' => Arr::first($userMethods)]);
         }
 
         return app(MultiFactorChooseViewResponseContract::class, $userMethods);
@@ -79,7 +86,6 @@ class MultiFactorAuthController extends Controller
             return Redirect::route('mfa.method', ['method' => $methods[0]]);
         }
 
-        // either make this to array with [] brackets or remove the array deconstruction ... in the service provider for the choose view
         return app(MultiFactorChooseViewResponseContract::class, $methods);
     }
 
