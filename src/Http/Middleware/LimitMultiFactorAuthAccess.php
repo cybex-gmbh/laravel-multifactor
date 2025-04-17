@@ -26,6 +26,10 @@ class LimitMultiFactorAuthAccess
             return redirect()->route('mfa.show');
         }
 
+        if (!$isVerified && !$method->isAllowed() && Auth::user()->hasAllowedMultiFactorAuthMethods()) {
+            return redirect()->route('mfa.show');
+        }
+
         if (!$isVerified && MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE && !$method->isForceMethod()) {
             return redirect()->route('mfa.method', ['method' => MultiFactorAuthmethod::getForceMethod()]);
         }
