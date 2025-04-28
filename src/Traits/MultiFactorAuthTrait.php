@@ -9,19 +9,39 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait MultiFactorAuthTrait
 {
+    /**
+     * @return BelongsToMany
+     */
     public function multiFactorAuthMethods(): BelongsToMany
     {
         return $this->belongsToMany(MultiFactorAuthMethod::class, 'multi_factor_auth_method_user');
     }
 
+    /**
+     * @return mixed
+     */
     public function getMultiFactorAuthMethodsNames() {
         return $this->multiFactorAuthMethods->map(fn($method) => $method->type->value)->toArray();
     }
 
+    /**
+     * @return mixed
+     */
     public function getMultiFactorAuthMethods() {
         return $this->multiFactorAuthMethods->pluck('type')->toArray();
     }
 
+    /**
+     * @return bool
+     */
+    public function hasAllowedMultiFactorAuthMethods(): bool
+    {
+        return count(array_intersect($this->getMultiFactorAuthMethodsNames(), MultiFactorAuthMethodEnum::getAllowedMethodsNames()));
+    }
+
+    /**
+     * @return array
+     */
     public function getAllowed2FAMethods(): array
     {
         $user2FAMethods = $this->getMultiFactorAuthMethodsNames();
@@ -35,6 +55,9 @@ trait MultiFactorAuthTrait
         return array_intersect($user2FAMethods, $configuredMethods);
     }
 
+    /**
+     * @return array
+     */
     public function getUnallowedMethodsNames(): array
     {
         $user2FAMethods = $this->getMultiFactorAuthMethodsNames();
@@ -62,6 +85,9 @@ trait MultiFactorAuthTrait
         return $methods;
     }
 
+    /**
+     * @return array
+     */
     public function getRemainingAllowedMethodsNames(): array {
         return array_diff(MultiFactorAuthMethodEnum::getAllowedMethodsNames(), $this->getMultiFactorAuthMethodsNames());
     }

@@ -20,6 +20,9 @@ class MultiFactorAuthMethod extends Model
         'type' => TwoFactorAuthMethodEnum::class,
     ];
 
+    /**
+     * @return BelongsToMany
+     */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'multi_factor_auth_method_user');

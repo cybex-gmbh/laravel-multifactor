@@ -16,16 +16,25 @@ class MultiFactorCodeNotification extends Notification
 
     protected string $url;
 
+    /**
+     * @param string|null $url
+     */
     public function __construct(?string $url)
     {
         $this->url = $url;
     }
 
+    /**
+     * @return string[]
+     */
     public function via(): array
     {
         return ['mail'];
     }
 
+    /**
+     * @return MailMessage
+     */
     public function toMail(): MailMessage
     {
         return (new MailMessage)

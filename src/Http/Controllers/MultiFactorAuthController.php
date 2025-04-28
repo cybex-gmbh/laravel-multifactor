@@ -23,6 +23,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class MultiFactorAuthController extends Controller
 {
+    /**
+     * @return mixed
+     */
     public function show(): mixed
     {
         $user = Auth::user();
@@ -58,6 +61,10 @@ class MultiFactorAuthController extends Controller
         return app(MultiFactorChooseViewResponseContract::class, $userMethods);
     }
 
+    /**
+     * @param MultiFactorAuthMethod $method
+     * @return MultiFactorChallengeViewResponseContract
+     */
     public function handleTwoFactorAuthMethod(MultiFactorAuthMethod $method): MultiFactorChallengeViewResponseContract
     {
         return match ($method) {
@@ -66,11 +73,19 @@ class MultiFactorAuthController extends Controller
         };
     }
 
+    /**
+     * @param MultiFactorAuthMethod $method
+     * @return RedirectResponse
+     */
     public function send(MultiFactorAuthMethod $method): RedirectResponse
     {
         return $method->getHandler()->send();
     }
 
+    /**
+     * @param MultiFactorAuthMethod|null $method
+     * @return RedirectResponse|MultiFactorSetupViewResponseContract|MultiFactorChooseViewResponseContract
+     */
     public function setup(MultiFactorAuthMethod $method = null): RedirectResponse|MultiFactorSetupViewResponseContract|MultiFactorChooseViewResponseContract
     {
         $mode = MultiFactorAuthMode::fromConfig();
@@ -87,6 +102,9 @@ class MultiFactorAuthController extends Controller
         return app(MultiFactorChooseViewResponseContract::class, $methods);
     }
 
+    /**
+     * @return mixed
+     */
     public function handleDeletion(): mixed
     {
         $methods = Auth::user()->getMultiFactorAuthMethods();
@@ -99,6 +117,11 @@ class MultiFactorAuthController extends Controller
         return app(MultiFactorDeleteViewResponseContract::class, compact('methods', 'back'));
     }
 
+    /**
+     * @param MultiFactorAuthMethod $method
+     * @param RedirectResponse|null $back
+     * @return RedirectResponse
+     */
     public function deleteTwoFactorAuthMethod(MultiFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
         Auth::user()->multiFactorAuthMethods()->where('type', $method)->delete();
@@ -106,6 +129,13 @@ class MultiFactorAuthController extends Controller
         return $back ?? redirect()->back();
     }
 
+    /**
+     * @param Request $request
+     * @param MultiFactorAuthMethod $method
+     * @param User|null $user
+     * @param int|null $code
+     * @return Application|Redirector|RedirectResponse
+     */
     public function verifyTwoFactorAuthCode(Request $request, MultiFactorAuthMethod $method, User $user = null, int $code = null): Application|Redirector|RedirectResponse
     {
         $code ??= $request->integer('code') ?? throw new HttpException(403);
@@ -126,6 +156,12 @@ class MultiFactorAuthController extends Controller
         return $redirect ?? Redirect::intended();
     }
 
+
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function emailLogin(Request $request): RedirectResponse
     {
         $user = User::whereEmail($request->input('email'))->first();
@@ -139,6 +175,10 @@ class MultiFactorAuthController extends Controller
         return Redirect::intended();
     }
 
+    /**
+     * @param User $user
+     * @return MultiFactorSettingsViewResponseContract|Application|mixed|void
+     */
     public function twoFactorSettings(User $user)
     {
         if (Auth::user()->is($user) && MultiFactorAuthMode::fromConfig() !== MultiFactorAuthMode::FORCE) {
