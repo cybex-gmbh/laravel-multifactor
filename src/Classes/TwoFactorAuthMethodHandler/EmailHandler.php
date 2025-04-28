@@ -22,6 +22,9 @@ class EmailHandler implements MultiFactorAuthMethodInterface
         $this->user = Auth::user();
     }
 
+    /**
+     * @return MultiFactorChallengeViewResponseContract
+     */
     public function authenticate(): MultifactorChallengeViewResponseContract
     {
         $sessionKey = MultiFactorAuthSession::EMAIL_SENT;
@@ -31,9 +34,12 @@ class EmailHandler implements MultiFactorAuthMethodInterface
             $sessionKey->put();
         }
 
-        return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $this->method]);
+        return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $method ?? $this->method]);
     }
 
+    /**
+     * @return RedirectResponse
+     */
     public function send(): RedirectResponse
     {
         $code = random_int(100000, 999999);
@@ -59,6 +65,9 @@ class EmailHandler implements MultiFactorAuthMethodInterface
         return redirect()->back();
     }
 
+    /**
+     * @return RedirectResponse
+     */
     public function setup(): RedirectResponse
     {
         $this->user->multiFactorAuthMethods()->firstOrCreate([
