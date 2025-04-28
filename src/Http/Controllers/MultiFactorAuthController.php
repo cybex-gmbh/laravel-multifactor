@@ -29,7 +29,7 @@ class MultiFactorAuthController extends Controller
         $userMethods = $user->getMultiFactorAuthMethods();
         $configuredMode = MultiFactorAuthMode::fromConfig();
 
-        if (MultiFactorAuthMode::fromConfig() !== MultiFactorAuthMode::FORCE) {
+        if ($configuredMode !== MultiFactorAuthMode::FORCE) {
             if ($user->hasAllowedMultiFactorAuthMethods()) {
                 $userMethods = MultiFactorAuthMethod::getMethodsByNames($user->getAllowed2FAMethods());
             }
@@ -74,16 +74,14 @@ class MultiFactorAuthController extends Controller
     public function setup(MultiFactorAuthMethod $method = null): RedirectResponse|MultiFactorSetupViewResponseContract|MultiFactorChooseViewResponseContract
     {
         $mode = MultiFactorAuthMode::fromConfig();
-        $forceMethod = MultiFactorAuthMethod::getForceMethod();
-        $method = $method?->isAllowed() ? [$method] : null;
-        $methods = $method ?? MultiFactorAuthMethod::getAllowedMethods();
+        $methods = $method?->isAllowed() ? [$method] : MultiFactorAuthMethod::getAllowedMethods();
 
         if ($mode === MultiFactorAuthMode::FORCE) {
-            return Redirect::route('mfa.method', ['method' => $forceMethod]);
+            return Redirect::route('mfa.method', ['method' => MultiFactorAuthMethod::getForceMethod()]);
         }
 
         if (count($methods) === 1) {
-            return Redirect::route('mfa.method', ['method' => $methods[0]]);
+            return Redirect::route('mfa.method', ['method' => Arr::first($methods)]);
         }
 
         return app(MultiFactorChooseViewResponseContract::class, $methods);
@@ -95,7 +93,7 @@ class MultiFactorAuthController extends Controller
         $back = Redirect::back();
 
         if (count($methods) === 1) {
-            return $this->deleteTwoFactorAuthMethod($methods[0], $back);
+            return $this->deleteTwoFactorAuthMethod(Arr::first($methods), $back);
         }
 
         return app(MultiFactorDeleteViewResponseContract::class, compact('methods', 'back'));
