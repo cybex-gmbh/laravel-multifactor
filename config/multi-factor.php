@@ -1,9 +1,5 @@
 <?php
 
-/*
- * You can place your custom package configuration in here.
- */
-
 use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorChallengeViewResponse;
 use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorChooseViewResponse;
 use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorDeleteViewResponse;
@@ -14,7 +10,6 @@ use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorSetupViewResponse;
 return [
     'allowedMethods' => [
         'email',
-        'totp',
     ],
     // 'optional' or 'required' or 'force'
     'mode' => env('MULTI_FACTOR_AUTHENTICATION_MODE', 'optional'),

@@ -2,7 +2,7 @@
 
 namespace CybexGmbh\LaravelMultiFactor\Classes\TwoFactorAuthMethodHandler;
 
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as TwoFactorAuthMethodInterface;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as MultiFactorAuthMethodInterface;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
@@ -12,7 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 
-class EmailHandler implements TwoFactorAuthMethodInterface
+class EmailHandler implements MultiFactorAuthMethodInterface
 {
     protected MultiFactorAuthMethod $method = MultiFactorAuthMethod::EMAIL;
     protected User $user;

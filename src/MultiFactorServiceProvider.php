@@ -65,31 +65,14 @@ class MultiFactorServiceProvider extends ServiceProvider
                 __DIR__ . '/../resources/views' => resource_path('views/vendor/laravel-multi-factor'),
             ], ['multi-factor', 'multi-factor.views']);
 
-//            $this->publishes([
-//                __DIR__ . '/../resources/css/multi-factor.css' => public_path('vendor/laravel-multi-factor/multi-factor.css'),
-//            ], ['multi-factor', 'multi-factor.public']);
-
             $this->publishes([
                 __DIR__ . '/../public' => public_path('vendor/laravel-multi-factor'),
             ], ['multi-factor', 'multi-factor.public']);
-
-            // Publishing the views.
-            /*$this->publishes([
-                __DIR__.'/../resources/views' => resource_path('views/vendor/laravel-multi-factor'),
-            ], 'views');*/
-
-            // Publishing assets.
-            /*$this->publishes([
-                __DIR__.'/../resources/assets' => public_path('vendor/laravel-multi-factor'),
-            ], 'assets');*/
 
             // Publishing the translation files.
             /*$this->publishes([
                 __DIR__.'/../resources/lang' => resource_path('lang/vendor/laravel-multi-factor'),
             ], 'lang');*/
-
-            // Registering package commands.
-            // $this->commands([]);
         }
 
         $this->app->booted(function () {

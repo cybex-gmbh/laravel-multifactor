@@ -2,7 +2,7 @@
 
 namespace CybexGmbh\LaravelMultiFactor\Traits;
 
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod as TwoFactorAuthMethodEnum;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod as MultiFactorAuthMethodEnum;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use CybexGmbh\LaravelMultiFactor\Models\MultiFactorAuthMethod;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -27,9 +27,9 @@ trait MultiFactorAuthTrait
         $user2FAMethods = $this->getMultiFactorAuthMethodsNames();
 
         if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE) {
-            $configuredMethods = [TwoFactorAuthMethodEnum::getForceMethod()->value];
+            $configuredMethods = [MultiFactorAuthMethodEnum::getForceMethod()->value];
         } else {
-            $configuredMethods = TwoFactorAuthMethodEnum::getAllowedMethodsNames();
+            $configuredMethods = MultiFactorAuthMethodEnum::getAllowedMethodsNames();
         }
 
         return array_intersect($user2FAMethods, $configuredMethods);
@@ -40,9 +40,9 @@ trait MultiFactorAuthTrait
         $user2FAMethods = $this->getMultiFactorAuthMethodsNames();
 
         if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE) {
-            $configuredMethods = [TwoFactorAuthMethodEnum::getForceMethod()->value];
+            $configuredMethods = [MultiFactorAuthMethodEnum::getForceMethod()->value];
         } else {
-            $configuredMethods = TwoFactorAuthMethodEnum::getAllowedMethodsNames();
+            $configuredMethods = MultiFactorAuthMethodEnum::getAllowedMethodsNames();
         }
 
         return array_diff($user2FAMethods, $configuredMethods);
@@ -63,6 +63,6 @@ trait MultiFactorAuthTrait
     }
 
     public function getRemainingAllowedMethodsNames(): array {
-        return array_diff(TwoFactorAuthMethodEnum::getAllowedMethodsNames(), $this->getMultiFactorAuthMethodsNames());
+        return array_diff(MultiFactorAuthMethodEnum::getAllowedMethodsNames(), $this->getMultiFactorAuthMethodsNames());
     }
 }
