@@ -22,16 +22,18 @@ class LimitMultiFactorAuthAccess
         $method = $request->route('method');
         $isVerified = MultiFactorAuthSession::VERIFIED->get();
 
-        if (!$isVerified && !$method->isUserMethod()) {
-            return redirect()->route('mfa.show');
-        }
+        if (!$isVerified) {
+            if (!$method->isUserMethod()) {
+                return redirect()->route('mfa.show');
+            }
 
-        if (!$isVerified && !$method->isAllowed() && Auth::user()->hasAllowedMultiFactorAuthMethods()) {
-            return redirect()->route('mfa.show');
-        }
+            if (!$method->isAllowed() && Auth::user()->hasAllowedMultiFactorAuthMethods()) {
+                return redirect()->route('mfa.show');
+            }
 
-        if (!$isVerified && MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE && !$method->isForceMethod()) {
-            return redirect()->route('mfa.method', ['method' => MultiFactorAuthmethod::getForceMethod()]);
+            if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE && !$method->isForceMethod()) {
+                return redirect()->route('mfa.method', ['method' => MultiFactorAuthmethod::getForceMethod()]);
+            }
         }
 
         if ($isVerified && (!$method->isAllowed() || $method->isUserMethod())) {
