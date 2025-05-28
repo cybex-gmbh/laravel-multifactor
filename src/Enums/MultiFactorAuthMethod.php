@@ -93,8 +93,8 @@ enum MultiFactorAuthMethod: string
     public function getSvg()
     {
         return match ($this) {
-            self::EMAIL => 'laravel-multi-factor::svg.email',
-            self::TOTP => 'laravel-multi-factor::svg.totp',
+            self::EMAIL => 'laravel-multi-factor::svgs.email',
+            self::TOTP => 'laravel-multi-factor::svgs.totp',
         };
     }
 }
