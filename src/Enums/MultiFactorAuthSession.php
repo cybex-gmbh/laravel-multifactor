@@ -25,7 +25,7 @@ enum MultiFactorAuthSession: string
      */
     public static function isCodeExpired(): bool
     {
-        $sessionData = self::getCode();
+        $sessionData = self::CODE->get();
 
         return now()->greaterThan($sessionData['expires_at']);
     }
