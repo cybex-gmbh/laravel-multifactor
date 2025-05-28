@@ -2,29 +2,24 @@
 
 namespace CybexGmbh\LaravelMultiFactor\View\Components;
 
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Contracts\View\Factory;
+use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Application;
 use Illuminate\View\Component;
 
 class Svg extends Component
 {
     /**
-     * @param string $method
+     * Create a new component instance.
      */
-    public function __construct(
-        public string $method,
-    ) {
-        $this->twoFactorAuthMethod = MultiFactorAuthMethod::from($method);
+    public function __construct(public string $icon)
+    {
     }
 
     /**
-     * @return Application|Factory|Htmlable|View
+     * Get the view / contents that represent the component.
      */
-    public function render()
+    public function render(): View|Closure|string
     {
-        return view($this->twoFactorAuthMethod->getSvg());
+        return view(sprintf('laravel-multi-factor::svgs.%s', $this->icon));
     }
 }
