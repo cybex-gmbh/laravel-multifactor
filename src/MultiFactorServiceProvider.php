@@ -19,6 +19,7 @@ use CybexGmbh\LaravelMultiFactor\View\Components\AuthCard;
 use CybexGmbh\LaravelMultiFactor\View\Components\Form\Input;
 use CybexGmbh\LaravelMultiFactor\View\Components\Layout;
 use CybexGmbh\LaravelMultiFactor\View\Components\LegacyAuthCard;
+use CybexGmbh\LaravelMultiFactor\View\Components\MFASvg;
 use CybexGmbh\LaravelMultiFactor\View\Components\Svg;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Blade;
@@ -50,6 +51,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('enforceEmailOnlyLogin', EnforceEmailOnlyLogin::class);
 
         Blade::component(Layout::class, 'multi-factor-layout');
+        Blade::component(MFASvg::class, 'mfa-svg');
         Blade::component(Svg::class, 'svg');
         Blade::component(AuthCard::class, 'multi-factor-auth-card');
         Blade::component(Input::class, 'input');
