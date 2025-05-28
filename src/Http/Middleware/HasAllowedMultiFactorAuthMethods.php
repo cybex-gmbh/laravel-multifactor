@@ -19,7 +19,7 @@ class HasAllowedMultiFactorAuthMethods
     {
         $user = auth()->user();
 
-        $allowed2faMethods = $user->getAllowed2FAMethods();
+        $allowed2faMethods = $user->getFilteredMFAMethods();
 
         if ($allowed2faMethods || MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::OPTIONAL) {
             return $next($request);

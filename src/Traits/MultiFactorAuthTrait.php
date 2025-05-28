@@ -42,42 +42,25 @@ trait MultiFactorAuthTrait
     public function getUserMethods(): array
     {
         if ($this->hasAllowedMultiFactorAuthMethods()) {
-            return MultiFactorAuthMethodEnum::getMethodsByNames($this->getAllowed2FAMethods());
+            return MultiFactorAuthMethodEnum::getMethodsByNames($this->getFilteredMFAMethods());
         } else {
             return $this->getMultiFactorAuthMethods();
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getAllowed2FAMethods(): array
+    public function getFilteredMFAMethods(bool $onlyAllowed = true): array
     {
-        $user2FAMethods = $this->getMultiFactorAuthMethodsNames();
+        $mfaMethods = $this->getMultiFactorAuthMethodsNames();
 
-        if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE) {
+        if (MultiFactorAuthMode::isForceMode()) {
             $configuredMethods = [MultiFactorAuthMethodEnum::getForceMethod()->value];
         } else {
             $configuredMethods = MultiFactorAuthMethodEnum::getAllowedMethodsNames();
         }
 
-        return array_intersect($user2FAMethods, $configuredMethods);
-    }
-
-    /**
-     * @return array
-     */
-    public function getUnallowedMethodsNames(): array
-    {
-        $user2FAMethods = $this->getMultiFactorAuthMethodsNames();
-
-        if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE) {
-            $configuredMethods = [MultiFactorAuthMethodEnum::getForceMethod()->value];
-        } else {
-            $configuredMethods = MultiFactorAuthMethodEnum::getAllowedMethodsNames();
-        }
-
-        return array_diff($user2FAMethods, $configuredMethods);
+        return $onlyAllowed
+            ? array_intersect($mfaMethods, $configuredMethods)
+            : array_diff($mfaMethods, $configuredMethods);
     }
 
     /**
