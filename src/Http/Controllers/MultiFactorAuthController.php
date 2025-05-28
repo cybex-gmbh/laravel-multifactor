@@ -29,29 +29,21 @@ class MultiFactorAuthController extends Controller
     public function show(): mixed
     {
         $user = Auth::user();
-        $userMethods = $user->getMultiFactorAuthMethods();
+        $userMethods = $user->getUserMethods();
         $configuredMode = MultiFactorAuthMode::fromConfig();
 
-        if ($configuredMode !== MultiFactorAuthMode::FORCE) {
-            if ($user->hasAllowedMultiFactorAuthMethods()) {
-                $userMethods = MultiFactorAuthMethod::getMethodsByNames($user->getAllowed2FAMethods());
+        if ($configuredMode === MultiFactorAuthMode::FORCE) {
+            $forceMethod = MultiFactorAuthMethod::getForceMethod();
+
+            if ($forceMethod->isUserMethod()) {
+                return Redirect::route('mfa.method', ['method' => $forceMethod]);
             }
         }
 
-        switch ($configuredMode) {
-            case MultiFactorAuthMode::FORCE:
-                $forceMethod = MultiFactorAuthMethod::getForceMethod();
-
-                if ($forceMethod->isUserMethod()) {
-                    return Redirect::route('mfa.method', ['method' => $forceMethod]);
-                }
-                break;
-
-            case MultiFactorAuthMode::OPTIONAL:
-                if (!$user->hasAllowedMultiFactorAuthMethods()) {
-                    return app(MultiFactorChooseViewResponseContract::class, MultiFactorAuthMethod::getMethodsByNames($user->getRemainingAllowedMethodsNames()));
-                }
-                break;
+        if ($configuredMode === MultiFactorAuthMode::OPTIONAL) {
+            if (!$user->hasAllowedMultiFactorAuthMethods()) {
+                return app(MultiFactorChooseViewResponseContract::class, MultiFactorAuthMethod::getMethodsByNames($user->getRemainingAllowedMethodsNames()));
+            }
         }
 
         if (count($userMethods) === 1) {
@@ -155,8 +147,6 @@ class MultiFactorAuthController extends Controller
 
         return $redirect ?? Redirect::intended();
     }
-
-
 
     /**
      * @param Request $request

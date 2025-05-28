@@ -39,6 +39,15 @@ trait MultiFactorAuthTrait
         return count(array_intersect($this->getMultiFactorAuthMethodsNames(), MultiFactorAuthMethodEnum::getAllowedMethodsNames()));
     }
 
+    public function getUserMethods(): array
+    {
+        if ($this->hasAllowedMultiFactorAuthMethods()) {
+            return MultiFactorAuthMethodEnum::getMethodsByNames($this->getAllowed2FAMethods());
+        } else {
+            return $this->getMultiFactorAuthMethods();
+        }
+    }
+
     /**
      * @return array
      */
