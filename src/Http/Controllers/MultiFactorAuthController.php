@@ -130,7 +130,7 @@ class MultiFactorAuthController extends Controller
      */
     public function verifyTwoFactorAuthCode(Request $request, MultiFactorAuthMethod $method, User $user = null, int $code = null): Application|Redirector|RedirectResponse
     {
-        $code ??= $request->integer('code') ?? throw new HttpException(403);
+        $code ??= $request->integer('code') ?? abort(403);
 
         if (MultiFactorAuthSession::isCodeExpired() && $code !== MultiFactorAuthSession::getCode()) {
             abort(403);
