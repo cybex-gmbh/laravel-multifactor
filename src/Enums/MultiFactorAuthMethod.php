@@ -5,6 +5,8 @@ namespace CybexGmbh\LaravelMultiFactor\Enums;
 use CybexGmbh\LaravelMultiFactor\Classes\TwoFactorAuthMethodHandler\EmailHandler;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as TwoFactorAuthMethodContract;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 enum MultiFactorAuthMethod: string
 {
@@ -25,7 +27,7 @@ enum MultiFactorAuthMethod: string
      */
     public static function getAllowedMethods(): array
     {
-        return array_map(fn($value) => self::from($value), config('multi-factor.allowedMethods'));
+        return Arr::map(self::getAllowedMethodsNames(), fn($value) => self::from($value));
     }
 
     /**
@@ -33,7 +35,7 @@ enum MultiFactorAuthMethod: string
      */
     public static function getAllowedMethodsNames(): array
     {
-        return array_map(fn($method) => $method->value, self::getAllowedMethods());
+        return Arr::map(config('multi-factor.allowedMethods'), fn($method) => Str::lower($method));
     }
 
     /**
