@@ -1,4 +1,4 @@
-@php use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode; @endphp
+@use(CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode)
 <x-multi-factor-layout>
     <x-slot name="title">Two Factor Auth Settings</x-slot>
 
