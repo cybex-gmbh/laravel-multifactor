@@ -17,7 +17,7 @@ class RedirectIfMultiFactorAuthenticated
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (MultiFactorAuthSession::VERIFIED->get() && MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::FORCE && $request->route('method')?->isUserMethod()) {
+        if (MultiFactorAuthSession::VERIFIED->get() && MultiFactorAuthMode::isForceMode() && $request->route('method')?->isUserMethod()) {
             return redirect()->intended();
         }
 
