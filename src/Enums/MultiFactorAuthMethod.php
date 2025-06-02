@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 enum MultiFactorAuthMethod: string
 {
     case EMAIL = 'email';
-    case TOTP = 'totp';
 
     /**
      * @return TwoFactorAuthMethodContract
@@ -18,7 +17,6 @@ enum MultiFactorAuthMethod: string
     {
         return match ($this) {
             self::EMAIL => app(EmailHandler::class),
-            self::TOTP => app(EmailHandler::class),
         };
     }
 
@@ -94,7 +92,6 @@ enum MultiFactorAuthMethod: string
     {
         return match ($this) {
             self::EMAIL => 'laravel-multi-factor::svgs.email',
-            self::TOTP => 'laravel-multi-factor::svgs.totp',
         };
     }
 }
