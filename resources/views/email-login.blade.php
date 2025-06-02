@@ -5,10 +5,8 @@
         <form method="POST" action="{{ route('mfa.email.login') }}">
             @csrf
 
-            <!-- Email Address -->
             <x-form.input id="email" field="email" label="E-Mail Address" type="email" required autofocus />
 
-            <!-- Remember Me -->
             <div>
                 <label for="remember_me">
                     <input id="remember_me" type="checkbox" name="remember">
