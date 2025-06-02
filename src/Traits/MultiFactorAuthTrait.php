@@ -50,7 +50,7 @@ trait MultiFactorAuthTrait
 
     public function getFilteredMFAMethods(bool $onlyAllowed = true): array
     {
-        $mfaMethods = $this->getMultiFactorAuthMethods();
+        $mfaMethods = $this->getMultiFactorAuthMethodsNames();
 
         if (MultiFactorAuthMode::isForceMode()) {
             $configuredMethods = [MultiFactorAuthMethodEnum::getForceMethod()->value];
