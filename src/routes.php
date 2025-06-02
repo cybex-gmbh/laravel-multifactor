@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['web'])->group(function () {
     Route::middleware(['guest'])->group(function () {
         if (MultiFactorAuthMethod::isEmailOnlyLoginActive() && $path = config('multi-factor.features.email-login.routePath')) {
-            Route::post($path, [MultiFactorAuthController::class, 'emailLogin'])->name('mfa.email.login');
+            Route::post($path, [MultiFactorAuthController::class, 'authenticateByEmailOnly'])->name('mfa.email.login');
         }
     });
 

@@ -19,7 +19,6 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class MultiFactorAuthController extends Controller
 {
@@ -40,12 +39,6 @@ class MultiFactorAuthController extends Controller
             }
         }
 
-        if ($configuredMode === MultiFactorAuthMode::OPTIONAL) {
-            if (!$user->hasAllowedMultiFactorAuthMethods()) {
-                return app(MultiFactorChooseViewResponseContract::class, MultiFactorAuthMethod::getMethodsByNames($user->getRemainingAllowedMethodsNames()));
-            }
-        }
-
         if (count($userMethods) === 1) {
             return Redirect::route('mfa.method', ['method' => Arr::first($userMethods)]);
         }
@@ -61,7 +54,6 @@ class MultiFactorAuthController extends Controller
     {
         return match ($method) {
             MultiFactorAuthMethod::EMAIL => $method->getHandler()->authenticate(),
-            MultiFactorAuthMethod::TOTP => MultiFactorAuthMethod::EMAIL->getHandler()->authenticate(),
         };
     }
 
@@ -132,27 +124,25 @@ class MultiFactorAuthController extends Controller
     {
         $code ??= $request->integer('code') ?? abort(403);
 
-        if (MultiFactorAuthSession::isCodeExpired() && $code !== MultiFactorAuthSession::getCode()) {
+        if (MultiFactorAuthSession::isCodeExpired() || $code !== MultiFactorAuthSession::getCode()) {
             abort(403);
         }
 
         if (!$method->isUserMethod()) {
-            $redirect = $method->getHandler()->setup();
-
-            array_map(fn($method) => $this->deleteTwoFactorAuthMethod(MultiFactorAuthMethod::from($method)), Auth::user()->getUnallowedMethodsNames());
+            return $method->getHandler()->setup();
         }
 
         MultiFactorAuthSession::clear();
         MultiFactorAuthSession::VERIFIED->put();
 
-        return $redirect ?? Redirect::intended();
+        return Redirect::intended();
     }
 
     /**
      * @param Request $request
      * @return RedirectResponse
      */
-    public function emailLogin(Request $request): RedirectResponse
+    public function authenticateByEmailOnly(Request $request): RedirectResponse
     {
         $user = User::whereEmail($request->input('email'))->first();
 
@@ -171,7 +161,7 @@ class MultiFactorAuthController extends Controller
      */
     public function twoFactorSettings(User $user)
     {
-        if (Auth::user()->is($user) && MultiFactorAuthMode::fromConfig() !== MultiFactorAuthMode::FORCE) {
+        if (Auth::user()->is($user) && !MultiFactorAuthMode::isForceMode()) {
             return app(MultiFactorSettingsViewResponseContract::class, [$user]);
         }
 
