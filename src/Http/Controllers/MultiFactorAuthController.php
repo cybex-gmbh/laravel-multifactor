@@ -29,9 +29,8 @@ class MultiFactorAuthController extends Controller
     {
         $user = Auth::user();
         $userMethods = $user->getUserMethods();
-        $configuredMode = MultiFactorAuthMode::fromConfig();
 
-        if ($configuredMode === MultiFactorAuthMode::FORCE) {
+        if (MultiFactorAuthMode::isForceMode()) {
             $forceMethod = MultiFactorAuthMethod::getForceMethod();
 
             if ($forceMethod->isUserMethod()) {
@@ -72,10 +71,9 @@ class MultiFactorAuthController extends Controller
      */
     public function setup(MultiFactorAuthMethod $method = null): RedirectResponse|MultiFactorSetupViewResponseContract|MultiFactorChooseViewResponseContract
     {
-        $mode = MultiFactorAuthMode::fromConfig();
         $methods = $method?->isAllowed() ? [$method] : MultiFactorAuthMethod::getAllowedMethods();
 
-        if ($mode === MultiFactorAuthMode::FORCE) {
+        if (MultiFactorAuthMode::isForceMode()) {
             return Redirect::route('mfa.method', ['method' => MultiFactorAuthMethod::getForceMethod()]);
         }
 
