@@ -5,35 +5,41 @@
 
 This package provides a flexible multi-factor authentication solution for Laravel, supporting multiple methods and configuration of multi-factor authentication modes like force, required or optional.
 
-## Installation
+## Features
+
 - Supports multiple two-factor authentication methods (e.g., email).
 - Configurable modes: `optional`, `required`, or `force`.
-- Customizable views and routes for multi-factor authentication.
-- Extendable handlers for custom two-factor methods.
+- Customizable views and routes.
+- Email-only login with one-time codes or links.
+
+### Multi-factor Modes
+
+- **Optional**: Users can enable MFA in their profile settings.
+- **Required**: MFA must be set up upon login.
+- **Force**: MFA is enforced for all users with a specified method.
+
+**Supported Methods:**
+- **Email**: Users receive a login URL or one-time code via email.
+
+### Email-Only Login
+
+Users can log in using a unique email link, enabling authentication with just their email address.
+
 ## Requirements
 
 - PHP 8.1 or higher
 - Laravel 9.x or higher
 
-## Features
-### Multi-factor Modes
-
-This package supports three modes:
-- **Optional**: Multi-factor authentication is optional for users. They can choose to enable it in their profile settings.
-- **Required**: Multi-factor authentication is required for all users. They must set it up to log in.
-- **Force**: Multi-factor authentication is enforced for all users. They must use the specified method to log in.
-
-In Force Mode, you must specify the method to use. The package supports currently the following methods:
-- **Email**: Users receive a login url and or a one-time code via email to authenticate.
-
-### Email Only Login
-
-Users can log in using a unique email link, enabling authentication with just their email address.
-
 ## Installation
 
 ```bash
 composer require cybex/laravel-multi-factor
+```
+
+### Migrating
+
+```bash
+php artisan migrate
 ```
 
 ### Publish the Configuration File
@@ -42,11 +48,11 @@ composer require cybex/laravel-multi-factor
 php artisan vendor:publish --provider="CybexGmbh\LaravelMultiFactor\LaravelMultiFactorServiceProvider" --tag="multi-factor.config"
 ```
 
-### Configure the Package
+### Configuration
 
-Open the `config/multi-factor.php` file and adjust the settings as needed. For example:
+Open the `config/multi-factor.php` file and adjust the settings as needed:
 
-- **`allowedMethods`**: Define the two-factor methods you want to support (e.g., `email`).
+- **`allowedMethods`**: Define the multi-factor methods you want to support (e.g., `email`).
 - **`mode`**: Set the mode to `optional`, `required`, or `force`.
 - **`forceMethod`**: Specify the method to use when the mode is set to `force`.
 
@@ -56,12 +62,6 @@ Open the `config/multi-factor.php` file and adjust the settings as needed. For e
 MULTI_FACTOR_AUTHENTICATION_MODE=optional
 MULTI_FACTOR_AUTHENTICATION_FORCE_METHOD=email
 MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=true
-```
-
-### Migrate the Database
-
-```bash
-php artisan migrate
 ```
 
 ### Apply Middlewares
@@ -86,6 +86,16 @@ class User extends Authenticatable
 }
 ```
 
+### Mail Server
+
+To use email authentication, configure your mail server in the `.env` file. For example:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+```
+
 ### Email Only Login
 
 Set your application's login route name in the multi-factor configuration:
@@ -98,10 +108,24 @@ Set your application's login route name in the multi-factor configuration:
 ],
 ```
 
-To this disable this feature set the `MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN` env variable to `false`:
+To disable email only login set the `MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN` env variable to `false`:
 
 ```env
 MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=false
+```
+
+### Settings Page
+
+To allow users to manage their multi-factor authentication methods, add a link to the `mfa.settings` route:
+
+```php
+<a href="{{ route('mfa.settings') }}">Manage Multi-Factor Authentication</a>
+```
+
+You can disable the settings page via the `MULTI_FACTOR_AUTHENTICATION_SETTINGS` env variable:
+
+```env
+MULTI_FACTOR_AUTHENTICATION_SETTINGS=false
 ```
 
 ### Customizing Views (Optional)
@@ -116,7 +140,15 @@ You can find the views in the `resources/views/vendor/laravel-multi-factor` dire
 
 ### Customizing Routes (Optional)
 
-The package provides default routes for multi-factor authentication. You can customize the `path` in the `config/multi-factor.php` file under the `routes` section.
+The package provides default routes for multi-factor authentication. You can customize the `path` in the `config/multi-factor.php` file under the `features.feature.routePath` key:
+
+```php
+'features' => [
+    'settings' => [
+        'routePath' => 'mfa/settings',
+    ],
+],
+```
 
 ## Usage
 
@@ -155,13 +187,9 @@ The `config/multi-factor.php` file includes the following options:
 
 To add a new multi-factor authentication method to the package, follow these steps:
 
-Create a New Handler:
+1. Create a new handler class that implements the `MultiFactorAuthMethodHandlerContract` interface in `src/Classes/MultiFactorAuthmethodHandler/`. This handler will define the logic for setting up, sending, and authenticating the new method.
 
-Create a new handler class that implements the `MultiFactorAuthMethodHandlerContract` interface in `src/Classes/MultiFactorAuthmethodHandler/`. This handler will define the logic for setting up, sending, and authenticating the new method.
-
-Register the New Method:
-
-Add the new method to the `MultiFactorAuthMethod` enum. This enum defines all available multi-factor authentication methods.
+2. Add the new method to the `MultiFactorAuthMethod` enum:
 
 ```php
 namespace CybexGmbh\LaravelMultiFactor\Enums;
@@ -185,9 +213,8 @@ case CUSTOM = 'custom';
 }
 ```
 
-Update the Configuration:
 
-To use the method, add the new method to the `allowedMethods` array in the `config/multi-factor.php` file.
+3. Add the new method to the `allowedMethods` array in the `config/multi-factor.php` file:
 
 ```php
 'allowedMethods' => [
@@ -195,7 +222,7 @@ To use the method, add the new method to the `allowedMethods` array in the `conf
 ],
 ```
 
-### Step 4: Customize Views (Optional)
+### Customizing Views (Optional)
 
 If the new method requires custom views, create a new View Response Contract that extends the Responsable Interface, make a new Response Class, and implement the `MultiFactorAuthMethodResponseContract` interface.
 
@@ -215,7 +242,7 @@ return app(MultiFactorCustomViewResponseContract::class, $params);
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+Please see [CHANGELOG](CHANGELOG.md) for recent changes.
 
 ## Credits
 
