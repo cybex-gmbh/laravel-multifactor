@@ -1,19 +1,17 @@
 @use(CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode)
 <x-multi-factor-layout>
-    <x-slot name="title">Two Factor Auth Settings</x-slot>
+    <x-slot name="title">Multi Factor Auth Settings</x-slot>
 
     <x-multi-factor-auth-card>
         <x-slot name="header">
-            <h1 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h1>
                 {{ __('Manage Multi-Factor Authentication') }}
             </h1>
         </x-slot>
 
         <div class="form">
-            <div class="">
-                <div class="mt-6 text-gray-500">
-                    {{ __('You can enable or disable multi-factor authentication for your account.') }}
-                </div>
+            <div>
+                {{ __('You can enable or disable multi-factor authentication for your account.') }}
             </div>
 
             <div>
@@ -22,7 +20,7 @@
                         <div class="flex-row align-center green">
                             <x-svg icon="mfa-enabled"/>
 
-                            <h3 class="text-lg font-medium">
+                            <h3>
                                 {{ __('Multi-Factor Authentication is enabled') }}
                             </h3>
                         </div>
@@ -30,7 +28,7 @@
                         <div class="flex-row align-center text-danger">
                             <x-svg icon="mfa-disabled"/>
 
-                            <h3 class="text-lg font-medium">
+                            <h3>
                                 {{ __('Multi-Factor Authentication is Disabled') }}
                             </h3>
                         </div>
