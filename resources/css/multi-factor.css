@@ -12,6 +12,12 @@ body {
     flex-direction: column;
 }
 
+@media (prefers-color-scheme: dark) {
+    .multi-factor-main {
+        background-color: #1f2937;
+    }
+}
+
 .auth-card {
     display: flex;
     flex-direction: column;
@@ -19,7 +25,7 @@ body {
     padding: 10px 50px 50px 50px;
     background-color: white;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
+    border-radius: 15px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -151,9 +157,21 @@ body {
 .underline-inline-primary {
     text-decoration: underline;
     display: inline;
-    color: #1C3D5A; /* Adjust this color to match your primary darker color */
+    color: #1C3D5A;
+}
+
+.margin-top-2 {
+    margin-top: 0.5rem;
 }
 
 .margin-left-3 {
     margin-left: 0.75rem;
+}
+
+.mfa-method-list {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-direction: column;
 }
