@@ -14,7 +14,7 @@
                 </label>
             </div>
 
-            <div class="flex-row-end">
+            <div class="flex flex-row flex-end">
                 <x-form.button class="button">
                     {{ __('Log in') }}
                 </x-form.button>
