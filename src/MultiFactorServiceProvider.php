@@ -52,11 +52,11 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('enforceEmailOnlyLogin', EnforceEmailOnlyLogin::class);
 
         Blade::component(Layout::class, 'multi-factor-layout');
-        Blade::component(MFASvg::class, 'mfa-svg');
+        Blade::component(MFASvg::class, 'multi-factor-svg');
         Blade::component(Svg::class, 'svg');
         Blade::component(AuthCard::class, 'multi-factor-auth-card');
         Blade::component(Form::class, 'multi-factor-form');
-        Blade::component(Input::class, 'input');
+        Blade::component(Input::class, 'multi-factor-form-input');
 
         Event::listen(Logout::class, HandleUserLogout::class);
 
