@@ -1,10 +1,10 @@
 <div {{ $attributes->merge(['class' => 'auth-card']) }}>
     <div class="header">
-        @if(isset($header))
+        @isset($header)
             {{ $header }}
         @else
             <h1>Multi-factor Authentication</h1>
-        @endif
+        @endisset
         {{ $subtext ?? '' }}
     </div>
 
