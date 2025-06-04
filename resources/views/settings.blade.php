@@ -37,25 +37,29 @@
             </div>
 
             @foreach($methods as $method)
-                <div class="grid align-center underline" href="{{ route('mfa.method', $method) }}">
-                    <x-mfa-svg method="{{ $method }}"></x-mfa-svg>
-                    <p class="text-center"><strong>{{ ucfirst($method->value) }}</strong></p>
+                <div class="flex justify-between underline">
+                    <div class="flex flex-row">
+                        <x-mfa-svg method="{{ $method }}"></x-mfa-svg>
+                        <p class="text-center"><strong>{{ ucfirst($method->value) }}</strong></p>
+                    </div>
 
-                    @if ($method->isUserMethod())
-                        <p class="text-center">{{ __('Enabled') }}</p>
+                    <div class="flex flex-row">
+                        @if ($method->isUserMethod())
+                            <p class="text-center">{{ __('Enabled') }}</p>
 
-                        @if ($mfaMode === MultiFactorAuthMode::OPTIONAL || $userMethodsAmount > 1)
-                            <x-multi-factor-form method="DELETE" :action="route('mfa.delete.method', $method)">
-                                <x-form.button type="submit" class="button button-danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-form.button>
+                            @if ($mfaMode === MultiFactorAuthMode::OPTIONAL || $userMethodsAmount > 1)
+                                <x-multi-factor-form method="DELETE" :action="route('mfa.delete.method', $method)">
+                                    <x-form.button type="submit" class="button button-danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-form.button>
+                                </x-multi-factor-form>
+                            @endif
+                        @else
+                            <p class="text-center">{{ __('Disabled') }}</p>
+
+                            <x-multi-factor-form method="GET" :action="route('mfa.setup', $method)">
+                                <x-form.button type="submit" class="button">{{ __('Enable') }}</x-form.button>
                             </x-multi-factor-form>
                         @endif
-                    @else
-                        <p class="text-center">{{ __('Disabled') }}</p>
-
-                        <x-multi-factor-form method="GET" :action="route('mfa.setup', $method)">
-                            <x-form.button type="submit" class="button">{{ __('Enable') }}</x-form.button>
-                        </x-multi-factor-form>
-                    @endif
+                    </div>
                 </div>
             @endforeach
         </div>
