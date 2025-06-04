@@ -56,7 +56,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         Blade::component(Svg::class, 'svg');
         Blade::component(AuthCard::class, 'multi-factor-auth-card');
         Blade::component(Form::class, 'multi-factor-form');
-        Blade::component(Input::class, 'multi-factor-input');
+        Blade::component(Input::class, 'multi-factor-form-input');
 
         Event::listen(Logout::class, HandleUserLogout::class);
 

@@ -3,7 +3,7 @@
 
     <x-multi-factor-auth-card>
         <x-slot name="subtext">
-            @if ($isVerified)
+            @if($isVerified)
                 <p>Choose one of these methods to setup</p>
             @else
                 <p>Choose one of these methods to log in</p>
