@@ -17,7 +17,7 @@
             <div>
                 <div>
                     @if ($user->multiFactorAuthMethods()->exists())
-                        <div class="flex-row align-center green">
+                        <div class="flex flex-row align-center text-active">
                             <x-svg icon="mfa-enabled"/>
 
                             <h3>
@@ -25,7 +25,7 @@
                             </h3>
                         </div>
                     @else
-                        <div class="flex-row align-center text-danger">
+                        <div class="flex flex-row align-center text-danger">
                             <x-svg icon="mfa-disabled"/>
 
                             <h3>
