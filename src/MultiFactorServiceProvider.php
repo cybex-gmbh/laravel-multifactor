@@ -16,6 +16,7 @@ use CybexGmbh\LaravelMultiFactor\Http\Middleware\RedirectIfInSetup;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\RedirectIfMultiFactorAuthenticated;
 use CybexGmbh\LaravelMultiFactor\Listeners\HandleUserLogout;
 use CybexGmbh\LaravelMultiFactor\View\Components\AuthCard;
+use CybexGmbh\LaravelMultiFactor\View\Components\Form;
 use CybexGmbh\LaravelMultiFactor\View\Components\Form\Input;
 use CybexGmbh\LaravelMultiFactor\View\Components\Layout;
 use CybexGmbh\LaravelMultiFactor\View\Components\LegacyAuthCard;
@@ -54,6 +55,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         Blade::component(MFASvg::class, 'mfa-svg');
         Blade::component(Svg::class, 'svg');
         Blade::component(AuthCard::class, 'multi-factor-auth-card');
+        Blade::component(Form::class, 'multi-factor-form');
         Blade::component(Input::class, 'input');
 
         Event::listen(Logout::class, HandleUserLogout::class);
