@@ -2,9 +2,7 @@
     <x-slot name="title">Login</x-slot>
 
     <x-multi-factor-auth-card>
-        <form method="POST" action="{{ route('mfa.email.login') }}">
-            @csrf
-
+        <x-multi-factor-form :action="route('mfa.email.login')">
             <x-form.input id="email" field="email" label="E-Mail Address" type="email" required autofocus />
 
             <div>
@@ -19,6 +17,6 @@
                     {{ __('Log in') }}
                 </x-form.button>
             </div>
-        </form>
+        </x-multi-factor-form>
     </x-multi-factor-auth-card>
 </x-multi-factor-layout>
