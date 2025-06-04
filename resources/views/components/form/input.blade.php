@@ -11,8 +11,8 @@
     />
 
     @error($field)
-    <span class="text-red-400 text-xs" role="alert">
-        <strong>{{ $message }}</strong>
-    </span>
+        <span class="text-red-400 text-xs" role="alert">
+            <strong>{{ $message }}</strong>
+        </span>
     @enderror
 </div>
