@@ -3,7 +3,7 @@
 
     <x-multi-factor-auth-card>
         <x-multi-factor-form :action="route('mfa.email.login')">
-            <x-form.input id="email" field="email" label="E-Mail Address" type="email" required autofocus />
+            <x-multi-factor-form-input id="email" field="email" label="E-Mail Address" type="email" required autofocus/>
 
             <div>
                 <label for="remember_me">

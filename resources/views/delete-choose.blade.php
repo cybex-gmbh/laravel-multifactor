@@ -8,7 +8,7 @@
 
         @foreach($userMethods as $method)
             <a class="btn flex flex-row" href="{{ route('mfa.method', $method) }}">
-                <x-mfa-svg method="{{ $method }}"></x-mfa-svg>
+                <x-multi-factor-svg method="{{ $method }}"/>
                 <p><strong>{{ ucfirst($method->value) }}</strong></p>
             </a>
         @endforeach
