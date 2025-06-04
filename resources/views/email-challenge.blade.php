@@ -13,7 +13,7 @@
             </div>
         </form>
 
-        <div class="flex-row-end">
+        <div class="flex flex-row flex-end">
             <p class="text-sm">Didn't receive your {{ $authenticationMethod }}?</p>
             <div>
                 <form id="resend-code-form" action="{{ route('mfa.method.send', $mfaMethod) }}" method="POST" class="underline-inline-primary">

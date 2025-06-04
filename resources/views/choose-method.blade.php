@@ -11,7 +11,7 @@
         </x-slot>
 
         @foreach($userMethods as $method)
-            <a class="link flex-row underline" href="{{ route('mfa.method', $method) }}">
+            <a class="link flex flex-row underline" href="{{ route('mfa.method', $method) }}">
                 <x-mfa-svg method="{{ $method }}"></x-mfa-svg>
                 <p><strong>{{ ucfirst($method->value) }}</strong></p>
             </a>
