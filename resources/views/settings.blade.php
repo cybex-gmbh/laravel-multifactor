@@ -45,19 +45,16 @@
                         <p class="text-center">{{ __('Enabled') }}</p>
 
                         @if ($mfaMode === MultiFactorAuthMode::OPTIONAL || $userMethodsAmount > 1)
-                            <form method="POST" action="{{ route('mfa.delete.method', $method) }}">
-                                @csrf
-                                @method('DELETE')
+                            <x-multi-factor-form method="DELETE" :action="route('mfa.delete.method', $method)">
                                 <x-form.button type="submit" class="button button-danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-form.button>
-                            </form>
+                            </x-multi-factor-form>
                         @endif
                     @else
                         <p class="text-center">{{ __('Disabled') }}</p>
 
-                        <form method="GET" action="{{ route('mfa.setup', $method) }}">
-                            @csrf
+                        <x-multi-factor-form method="GET" :action="route('mfa.setup', $method)">
                             <x-form.button type="submit" class="button">{{ __('Enable') }}</x-form.button>
-                        </form>
+                        </x-multi-factor-form>
                     @endif
                 </div>
             @endforeach
@@ -65,19 +62,15 @@
 
         {{--<div class="flex">
             @if (!auth()->user()->multiFactorAuthMethods()->exists())
-                <form method="GET" action="{{ route('mfa.setup') }}">
-                    @csrf
-
+                <x-multi-factor-form method="GET" :action="route('mfa.setup')">
                     <button type="submit" class="button btn-large">
                         {{ __('Enable Multi-Factor Authentication') }}
                     </button>
-                </form>
+                </x-multi-factor-form>
             @else
-                <form method="GET" action="{{ route('mfa.delete') }}">
-                    @csrf
-
+                <x-multi-factor-form method="GET" :action="route('mfa.delete')">
                     <x-form.button type="submit" class="button danger" confirm="Disable Two Factor Authentication?">{{ __('Disable Multi-Factor Authentication') }}</x-form.button>
-                </form>
+                </x-multi-factor-form>
             @endif
         </div>--}}
     </x-multi-factor-auth-card>
