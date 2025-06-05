@@ -1,0 +1,1 @@
+@vite('resources/css/multi-factor.css', 'vendor/laravel-multi-factor/build')
