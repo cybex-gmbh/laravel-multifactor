@@ -1,8 +1,8 @@
 @use(CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode)
-<x-multi-factor-layout>
+<x-multi-factor::layout>
     <x-slot name="title">Multi Factor Auth Settings</x-slot>
 
-    <x-multi-factor-auth-card>
+    <x-multi-factor::auth-card>
         <x-slot name="header">
             <h1>
                 {{ __('Manage Multi-Factor Authentication') }}
@@ -18,7 +18,7 @@
                 <div>
                     @if ($user->multiFactorAuthMethods()->exists())
                         <div class="flex flex-row align-center text-active">
-                            <x-svg icon="mfa-enabled"/>
+                            <x-multi-factor::svg icon="mfa-enabled"/>
 
                             <h3>
                                 {{ __('Multi-Factor Authentication is enabled') }}
@@ -26,7 +26,7 @@
                         </div>
                     @else
                         <div class="flex flex-row align-center text-danger">
-                            <x-svg icon="mfa-disabled"/>
+                            <x-multi-factor::svg icon="mfa-disabled"/>
 
                             <h3>
                                 {{ __('Multi-Factor Authentication is Disabled') }}
@@ -39,7 +39,7 @@
             @foreach($methods as $method)
                 <div class="flex justify-between underline">
                     <div class="flex flex-row">
-                        <x-multi-factor-svg method="{{ $method }}"/>
+                        <x-multi-factor::MFA-svg method="{{ $method }}"/>
                         <p class="text-center"><strong>{{ ucfirst($method->value) }}</strong></p>
                     </div>
 
@@ -48,16 +48,16 @@
                             <p class="text-center">{{ __('Enabled') }}</p>
 
                             @if ($mfaMode === MultiFactorAuthMode::OPTIONAL || $userMethodsAmount > 1)
-                                <x-multi-factor-form method="DELETE" :action="route('mfa.delete.method', $method)">
+                                <x-multi-factor::form method="DELETE" :action="route('mfa.delete.method', $method)">
                                     <x-form.button type="submit" class="button button-danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-form.button>
-                                </x-multi-factor-form>
+                                </x-multi-factor::form>
                             @endif
                         @else
                             <p class="text-center">{{ __('Disabled') }}</p>
 
-                            <x-multi-factor-form method="GET" :action="route('mfa.setup', $method)">
+                            <x-multi-factor::form method="GET" :action="route('mfa.setup', $method)">
                                 <x-form.button type="submit" class="button">{{ __('Enable') }}</x-form.button>
-                            </x-multi-factor-form>
+                            </x-multi-factor::form>
                         @endif
                     </div>
                 </div>
@@ -66,16 +66,16 @@
 
         {{--<div class="flex">
             @if (!auth()->user()->multiFactorAuthMethods()->exists())
-                <x-multi-factor-form method="GET" :action="route('mfa.setup')">
+                <x-multi-factor::form method="GET" :action="route('mfa.setup')">
                     <button type="submit" class="button btn-large">
                         {{ __('Enable Multi-Factor Authentication') }}
                     </button>
-                </x-multi-factor-form>
+                </x-multi-factor::form>
             @else
-                <x-multi-factor-form method="GET" :action="route('mfa.delete')">
+                <x-multi-factor::form method="GET" :action="route('mfa.delete')">
                     <x-form.button type="submit" class="button danger" confirm="Disable Two Factor Authentication?">{{ __('Disable Multi-Factor Authentication') }}</x-form.button>
-                </x-multi-factor-form>
+                </x-multi-factor::form>
             @endif
         </div>--}}
-    </x-multi-factor-auth-card>
-</x-multi-factor-layout>
+    </x-multi-factor::auth-card>
+</x-multi-factor::layout>

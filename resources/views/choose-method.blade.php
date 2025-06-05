@@ -1,7 +1,7 @@
-<x-multi-factor-layout>
+<x-multi-factor::layout>
     <x-slot name="title">Choose 2FA Method</x-slot>
 
-    <x-multi-factor-auth-card>
+    <x-multi-factor::auth-card>
         <x-slot name="subtext">
             @if($isVerified)
                 <p>Choose one of these methods to setup</p>
@@ -12,9 +12,9 @@
 
         @foreach($userMethods as $method)
             <a class="link flex flex-row underline" href="{{ route('mfa.method', $method) }}">
-                <x-multi-factor-svg method="{{ $method }}"/>
+                <x-multi-factor::MFA-svg method="{{ $method }}"/>
                 <p><strong>{{ ucfirst($method->value) }}</strong></p>
             </a>
         @endforeach
-    </x-multi-factor-auth-card>
-</x-multi-factor-layout>
+    </x-multi-factor::auth-card>
+</x-multi-factor::layout>
