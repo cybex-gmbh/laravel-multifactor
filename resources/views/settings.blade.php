@@ -9,7 +9,7 @@
             </h1>
         </x-slot>
 
-        <div class="form">
+        <div>
             <div>
                 {{ __('You can enable or disable multi-factor authentication for your account.') }}
             </div>
@@ -37,7 +37,7 @@
             </div>
 
             @foreach($methods as $method)
-                <div class="flex justify-between underline">
+                <div class="flex justify-between section-underline">
                     <div class="flex flex-row">
                         <x-multi-factor::MFA-svg method="{{ $method }}"/>
                         <p class="text-center"><strong>{{ ucfirst($method->value) }}</strong></p>
