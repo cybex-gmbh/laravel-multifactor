@@ -7,7 +7,7 @@
 
     <title>Multi-Factor | {{ $title }}</title>
 
-    @vite('resources/css/multi-factor.css', 'vendor/laravel-multi-factor/build')
+    @include('laravel-multi-factor::partials.mfa-assets')
 </head>
 
 <body>
