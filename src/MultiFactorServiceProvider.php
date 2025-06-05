@@ -15,13 +15,7 @@ use CybexGmbh\LaravelMultiFactor\Http\Middleware\LimitMultiFactorAuthAccess;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\RedirectIfInSetup;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\RedirectIfMultiFactorAuthenticated;
 use CybexGmbh\LaravelMultiFactor\Listeners\HandleUserLogout;
-use CybexGmbh\LaravelMultiFactor\View\Components\AuthCard;
-use CybexGmbh\LaravelMultiFactor\View\Components\Form;
-use CybexGmbh\LaravelMultiFactor\View\Components\Form\Input;
-use CybexGmbh\LaravelMultiFactor\View\Components\Layout;
 use CybexGmbh\LaravelMultiFactor\View\Components\LegacyAuthCard;
-use CybexGmbh\LaravelMultiFactor\View\Components\MFASvg;
-use CybexGmbh\LaravelMultiFactor\View\Components\Svg;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
@@ -40,8 +34,8 @@ class MultiFactorServiceProvider extends ServiceProvider
          */
         $this->mergeConfigFrom(__DIR__ . '/../config/multi-factor.php', 'multi-factor');
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-multi-factor');
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-multi-factor');
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-multi-factor');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
 
         $router = $this->app['router'];
@@ -51,12 +45,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('limitMultiFactorAuthAccess', LimitMultiFactorAuthAccess::class);
         $router->aliasMiddleware('enforceEmailOnlyLogin', EnforceEmailOnlyLogin::class);
 
-        Blade::component(Layout::class, 'multi-factor-layout');
-        Blade::component(MFASvg::class, 'multi-factor-svg');
-        Blade::component(Svg::class, 'svg');
-        Blade::component(AuthCard::class, 'multi-factor-auth-card');
-        Blade::component(Form::class, 'multi-factor-form');
-        Blade::component(Input::class, 'multi-factor-form-input');
+        Blade::componentNamespace('CybexGmbh\\LaravelMultiFactor\\View\\Components', 'multi-factor');
 
         Event::listen(Logout::class, HandleUserLogout::class);
 
@@ -97,11 +86,29 @@ class MultiFactorServiceProvider extends ServiceProvider
             return new MultiFactor;
         });
 
-        $this->app->singleton(MultiFactorChallengeViewResponseContract::class, fn($app, $params): MultiFactorChallengeViewResponseContract => new (config('multi-factor.views.challenge'))(...$params));
-        $this->app->singleton(MultiFactorLoginViewResponseContract::class, fn($app, $params): MultiFactorLoginViewResponseContract => new (config('multi-factor.views.login'))(...$params));
-        $this->app->singleton(MultiFactorSetupViewResponseContract::class, fn($app, $params): MultiFactorSetupViewResponseContract => new (config('multi-factor.views.setup'))($params));
-        $this->app->singleton(MultiFactorChooseViewResponseContract::class, fn($app, $params): MultiFactorChooseViewResponseContract => new (config('multi-factor.views.choose'))($params));
-        $this->app->singleton(MultiFactorDeleteViewResponseContract::class, fn($app, $params): MultiFactorDeleteViewResponseContract => new (config('multi-factor.views.delete'))(...$params));
-        $this->app->singleton(MultiFactorSettingsViewResponseContract::class, fn($app, $params): MultiFactorSettingsViewResponseContract => new (config('multi-factor.views.settings'))(...$params));
+        $this->app->singleton(
+            MultiFactorChallengeViewResponseContract::class,
+            fn($app, $params): MultiFactorChallengeViewResponseContract => new (config('multi-factor.views.challenge'))(...$params)
+        );
+        $this->app->singleton(
+            MultiFactorLoginViewResponseContract::class,
+            fn($app, $params): MultiFactorLoginViewResponseContract => new (config('multi-factor.views.login'))(...$params)
+        );
+        $this->app->singleton(
+            MultiFactorSetupViewResponseContract::class,
+            fn($app, $params): MultiFactorSetupViewResponseContract => new (config('multi-factor.views.setup'))($params)
+        );
+        $this->app->singleton(
+            MultiFactorChooseViewResponseContract::class,
+            fn($app, $params): MultiFactorChooseViewResponseContract => new (config('multi-factor.views.choose'))($params)
+        );
+        $this->app->singleton(
+            MultiFactorDeleteViewResponseContract::class,
+            fn($app, $params): MultiFactorDeleteViewResponseContract => new (config('multi-factor.views.delete'))(...$params)
+        );
+        $this->app->singleton(
+            MultiFactorSettingsViewResponseContract::class,
+            fn($app, $params): MultiFactorSettingsViewResponseContract => new (config('multi-factor.views.settings'))(...$params)
+        );
     }
 }
