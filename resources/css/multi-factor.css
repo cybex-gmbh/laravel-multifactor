@@ -18,6 +18,14 @@ body {
     }
 }
 
+.mfa-method-list {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-direction: column;
+}
+
 .auth-card {
     display: flex;
     flex-direction: column;
@@ -161,12 +169,4 @@ body {
 
 .margin-left-3 {
     margin-left: 0.75rem;
-}
-
-.mfa-method-list {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    flex-direction: column;
 }

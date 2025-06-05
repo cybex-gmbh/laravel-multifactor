@@ -1,7 +1,7 @@
 <form
     action="{{ $action }}"
     method="POST"
-    {{ $attributes->class(['form']) }}>
+    {{ $attributes }}>
     @csrf
     @method($method)
 
