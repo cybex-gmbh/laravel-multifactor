@@ -13,9 +13,9 @@
             </div>
 
             <div class="flex flex-row flex-end">
-                <x-form.button class="button">
+                <x-multi-factor::button type="submit">
                     {{ __('Log in') }}
-                </x-form.button>
+                </x-multi-factor::button>
             </div>
         </x-multi-factor::form>
     </x-multi-factor::auth-card>

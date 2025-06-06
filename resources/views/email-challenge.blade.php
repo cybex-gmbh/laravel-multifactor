@@ -14,12 +14,12 @@
             <p class="text-sm">Didn't receive your {{ $authenticationMethod }}?</p>
 
             <x-multi-factor::form :action="route('mfa.method.send', $mfaMethod)" id="resend-code-form" class="underline-inline-primary">
-                <button class="button text-sm">{{ __(sprintf('Resend %s', $authenticationMethod)) }}</button>
+                <x-multi-factor::button class="text-sm">{{ __(sprintf('Resend %s', $authenticationMethod)) }}</x-multi-factor::button>
             </x-multi-factor::form>
 
-            <x-form.button class="button text-sm" form="2fa-login">
+            <x-multi-factor::button type="submit" class="text-sm" form="2fa-login">
                 {{ __('Log in') }}
-            </x-form.button>
+            </x-multi-factor::button>
         </div>
     </x-multi-factor::auth-card>
 </x-multi-factor::layout>
