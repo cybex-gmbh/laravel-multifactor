@@ -6,6 +6,7 @@ use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod as MultiFactorAuthM
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use CybexGmbh\LaravelMultiFactor\Models\MultiFactorAuthMethod;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Arr;
 
 trait MultiFactorAuthTrait
 {
@@ -36,7 +37,7 @@ trait MultiFactorAuthTrait
      */
     public function hasAllowedMultiFactorAuthMethods(): bool
     {
-        return count(array_intersect($this->getMultiFactorAuthMethodsNames(), MultiFactorAuthMethodEnum::getAllowedMethodsNames()));
+        return filled($this->getFilteredMFAMethods());
     }
 
     public function getUserMethods(): array
@@ -70,11 +71,7 @@ trait MultiFactorAuthTrait
      */
     public function getUserMethodsWithRemainingAllowedMethods(array $allowedMethods, $userMethods): array
     {
-        $methods = array_filter($allowedMethods, function ($method) use ($userMethods) {
-            return in_array($method, $userMethods) || !in_array($method, $userMethods);
-        });
-
-        return $methods;
+        return array_unique(Arr::collapse([$allowedMethods, $userMethods]), SORT_REGULAR);
     }
 
     /**
