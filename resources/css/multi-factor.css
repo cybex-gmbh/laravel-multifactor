@@ -52,7 +52,7 @@ body {
     }
 }
 
-.button {
+.mfa-button {
     display: inline-block;
     cursor: pointer;
     border: none;
@@ -65,7 +65,7 @@ body {
     box-shadow: 0 4px 14px 0 rgb(0 118 255 / 39%);
 }
 
-.button:hover {
+.mfa-button:hover {
     background: rgba(0, 118, 255, 0.9);
     box-shadow: 0 6px 20px rgb(0 118 255 / 23%);
 }
