@@ -33,6 +33,10 @@ class MultiFactorAuthController extends Controller
         if (MultiFactorAuthMode::isForceMode()) {
             $forceMethod = MultiFactorAuthMethod::getForceMethod();
 
+            if (!$forceMethod->isAllowed()) {
+                abort(500);
+            }
+
             if ($forceMethod->isUserMethod()) {
                 return Redirect::route('mfa.method', ['method' => $forceMethod]);
             }
