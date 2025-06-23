@@ -1,12 +1,12 @@
 <x-multi-factor::layout>
-    <x-slot name="title">Choose 2FA Method</x-slot>
+    <x-slot name="title">@lang('multi-factor::auth.choose.title')</x-slot>
 
     <x-multi-factor::auth-card>
-        <x-slot name="subtext">
+        <x-slot name="subtitle">
             @if($isVerified)
-                <p>Choose one of these methods to setup</p>
+                <p>@lang('multi-factor::auth.choose.subtitle', ['action' => 'setup'])</p>
             @else
-                <p>Choose one of these methods to log in</p>
+                <p>@lang('multi-factor::auth.choose.subtitle', ['action' => 'login'])</p>
             @endif
         </x-slot>
 

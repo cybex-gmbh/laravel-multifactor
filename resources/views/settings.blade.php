@@ -1,17 +1,17 @@
 @use(CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode)
 <x-multi-factor::layout>
-    <x-slot name="title">Multi Factor Auth Settings</x-slot>
+    <x-slot name="title">@lang('multi-factor::auth.settings.title')</x-slot>
 
     <x-multi-factor::auth-card>
         <x-slot name="header">
             <h1>
-                {{ __('Manage Multi-Factor Authentication') }}
+                @lang('multi-factor::auth.settings.title')
             </h1>
         </x-slot>
 
         <div>
             <div>
-                {{ __('You can enable or disable multi-factor authentication for your account.') }}
+                @lang('multi-factor::auth.settings.subtitle')
             </div>
 
             <div>
@@ -21,7 +21,7 @@
                             <x-multi-factor::svg icon="mfa-enabled"/>
 
                             <h3>
-                                {{ __('Multi-Factor Authentication is enabled') }}
+                                @lang('multi-factor::auth.status.enabled.message')
                             </h3>
                         </div>
                     @else
@@ -29,7 +29,7 @@
                             <x-multi-factor::svg icon="mfa-disabled"/>
 
                             <h3>
-                                {{ __('Multi-Factor Authentication is Disabled') }}
+                                @lang('multi-factor::auth.status.disabled.message')
                             </h3>
                         </div>
                     @endif
@@ -45,18 +45,18 @@
 
                     <div class="flex flex-row">
                         @if ($method->isUserMethod())
-                            <p class="text-center">{{ __('Enabled') }}</p>
+                            <p class="text-center">@lang('multi-factor::auth.status.enabled.label')</p>
 
                             @if ($mfaMode === MultiFactorAuthMode::OPTIONAL || $userMethodsAmount > 1)
                                 <x-multi-factor::form method="DELETE" :action="route('mfa.delete.method', $method)">
-                                    <x-multi-factor::button type="submit" class="button-danger" confirm="Disable {{ $method->value }}?">{{ __('Disable') }}</x-multi-factor::button>
+                                    <x-multi-factor::button type="submit" class="button-danger" confirm="Disable {{ $method->value }}?">@lang('multi-factor::button.disable')</x-multi-factor::button>
                                 </x-multi-factor::form>
                             @endif
                         @else
-                            <p class="text-center">{{ __('Disabled') }}</p>
+                            <p class="text-center">@lang('multi-factor::auth.status.disabled.label')</p>
 
                             <x-multi-factor::form method="GET" :action="route('mfa.setup', $method)">
-                                <x-multi-factor::button type="submit">{{ __('Enable') }}</x-multi-factor::button>
+                                <x-multi-factor::button type="submit">@lang('multi-factor::button.enable')</x-multi-factor::button>
                             </x-multi-factor::form>
                         @endif
                     </div>
@@ -73,7 +73,7 @@
                 </x-multi-factor::form>
             @else
                 <x-multi-factor::form method="GET" :action="route('mfa.delete')">
-                    <x-multi-factor::button type="submit" class="button danger" confirm="Disable Two Factor Authentication?">{{ __('Disable Multi-Factor Authentication') }}</x-multi-factor::button>
+                    <x-multi-factor::button type="submit" class="button danger" confirm="Disable Multi Factor Authentication?">{{ __('Disable Multi-Factor Authentication') }}</x-multi-factor::button>
                 </x-multi-factor::form>
             @endif
         </div>--}}
