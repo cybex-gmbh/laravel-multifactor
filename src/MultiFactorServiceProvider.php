@@ -33,7 +33,7 @@ class MultiFactorServiceProvider extends ServiceProvider
          * Optional methods to load your package assets
          */
         $this->mergeConfigFrom(__DIR__ . '/../config/multi-factor.php', 'multi-factor');
-        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-multi-factor');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'multi-factor');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-multi-factor');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
@@ -62,10 +62,9 @@ class MultiFactorServiceProvider extends ServiceProvider
                 __DIR__ . '/../public' => public_path('vendor/laravel-multi-factor'),
             ], ['multi-factor', 'multi-factor.public']);
 
-            // Publishing the translation files.
-            /*$this->publishes([
+            $this->publishes([
                 __DIR__.'/../resources/lang' => resource_path('lang/vendor/laravel-multi-factor'),
-            ], 'lang');*/
+            ], ['multi-factor', 'multi-factor.lang']);
         }
 
         $this->app->booted(function () {
