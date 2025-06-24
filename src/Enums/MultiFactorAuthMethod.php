@@ -86,14 +86,4 @@ enum MultiFactorAuthMethod: string
     {
         return $this === self::getForceMethod();
     }
-
-    /**
-     * @return string
-     */
-    public function getSvg()
-    {
-        return match ($this) {
-            self::EMAIL => 'laravel-multi-factor::svgs.email',
-        };
-    }
 }

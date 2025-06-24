@@ -39,7 +39,7 @@
             @foreach($methods as $method)
                 <div class="flex justify-between section-underline">
                     <div class="flex flex-row">
-                        <x-multi-factor::MFA-svg method="{{ $method }}"/>
+                        <x-multi-factor::svg :icon="$method->value"/>
                         <p class="text-center"><strong>{{ ucfirst($method->value) }}</strong></p>
                     </div>
 
