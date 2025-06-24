@@ -12,7 +12,7 @@
 
         @foreach($userMethods as $method)
             <a class="link flex flex-row section-underline" href="{{ route('mfa.method', $method) }}">
-                <x-multi-factor::MFA-svg method="{{ $method }}"/>
+                <x-multi-factor::svg :icon="$method->value"/>
                 <p><strong>{{ ucfirst($method->value) }}</strong></p>
             </a>
         @endforeach
