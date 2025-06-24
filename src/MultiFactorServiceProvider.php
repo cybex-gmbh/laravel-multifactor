@@ -4,10 +4,8 @@ namespace CybexGmbh\LaravelMultiFactor;
 
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorDeleteViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSetupViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\EnforceEmailOnlyLogin;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\HasAllowedMultiFactorAuthMethods;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\HasMultiFactorAuthentication;
@@ -94,16 +92,8 @@ class MultiFactorServiceProvider extends ServiceProvider
             fn($app, $params): MultiFactorLoginViewResponseContract => new (config('multi-factor.views.login'))(...$params)
         );
         $this->app->singleton(
-            MultiFactorSetupViewResponseContract::class,
-            fn($app, $params): MultiFactorSetupViewResponseContract => new (config('multi-factor.views.setup'))($params)
-        );
-        $this->app->singleton(
             MultiFactorChooseViewResponseContract::class,
             fn($app, $params): MultiFactorChooseViewResponseContract => new (config('multi-factor.views.choose'))($params)
-        );
-        $this->app->singleton(
-            MultiFactorDeleteViewResponseContract::class,
-            fn($app, $params): MultiFactorDeleteViewResponseContract => new (config('multi-factor.views.delete'))(...$params)
         );
         $this->app->singleton(
             MultiFactorSettingsViewResponseContract::class,
