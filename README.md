@@ -137,6 +137,7 @@ php artisan vendor:publish --provider="CybexGmbh\LaravelMultiFactor\LaravelMulti
 ```
 
 You can find the views in the `resources/views/vendor/laravel-multi-factor` directory.
+You can find the views in the `resources/views/vendor/laravel-multi-factor/pages` directory.
 
 ### Customizing Routes (Optional)
 

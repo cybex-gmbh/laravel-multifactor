@@ -26,6 +26,6 @@ class MultiFactorChooseViewResponse implements MultiFactorChooseViewResponseCont
         $userMethods = $this->userMethods;
         $isVerified = MultiFactorAuthSession::VERIFIED->get();
 
-        return view('laravel-multi-factor::choose-method', compact(['userMethods', 'isVerified']));
+        return view('laravel-multi-factor::pages.choose-method', compact(['userMethods', 'isVerified']));
     }
 }

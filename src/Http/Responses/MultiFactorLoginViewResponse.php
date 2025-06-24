@@ -15,6 +15,6 @@ class MultiFactorLoginViewResponse implements MultiFactorLoginViewResponseContra
      */
     public function toResponse($request)
     {
-        return view('laravel-multi-factor::email-login');
+        return view('laravel-multi-factor::pages.email-login');
     }
 }

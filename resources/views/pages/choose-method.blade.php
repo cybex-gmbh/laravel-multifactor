@@ -11,9 +11,11 @@
         </x-slot>
 
         @foreach($userMethods as $method)
-            <a class="link flex flex-row section-underline" href="{{ route('mfa.method', $method) }}">
-                <x-multi-factor::svg :icon="$method->value"/>
-                <p><strong>{{ ucfirst($method->value) }}</strong></p>
+            <a class="mfa-row mfa-list-item" href="{{ route('mfa.method', $method) }}">
+                <div class="mfa-row">
+                    <x-multi-factor::svg :icon="$method->value"/>
+                    <p><strong>{{ ucfirst($method->value) }}</strong></p>
+                </div>
             </a>
         @endforeach
     </x-multi-factor::auth-card>
