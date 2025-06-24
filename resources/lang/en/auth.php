@@ -18,9 +18,6 @@ return [
             'label' => 'Disabled',
         ],
     ],
-    'setup' => [
-        'subtitle' => 'Choose one of these methods to setup:',
-    ],
     'choose' => [
         'title' => 'Choose Multi-Factor Auth Method',
         'subtitle' => 'Choose one of these methods to :action:',
