@@ -5,9 +5,7 @@ namespace CybexGmbh\LaravelMultiFactor\Http\Controllers;
 use App\Models\User;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorDeleteViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSetupViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
@@ -71,9 +69,9 @@ class MultiFactorAuthController extends Controller
 
     /**
      * @param MultiFactorAuthMethod|null $method
-     * @return RedirectResponse|MultiFactorSetupViewResponseContract|MultiFactorChooseViewResponseContract
+     * @return RedirectResponse|MultiFactorChooseViewResponseContract
      */
-    public function setup(MultiFactorAuthMethod $method = null): RedirectResponse|MultiFactorSetupViewResponseContract|MultiFactorChooseViewResponseContract
+    public function setup(MultiFactorAuthMethod $method = null): RedirectResponse|MultiFactorChooseViewResponseContract
     {
         $methods = $method?->isAllowed() ? [$method] : MultiFactorAuthMethod::getAllowedMethods();
 
@@ -86,21 +84,6 @@ class MultiFactorAuthController extends Controller
         }
 
         return app(MultiFactorChooseViewResponseContract::class, $methods);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function handleDeletion(): mixed
-    {
-        $methods = Auth::user()->getMultiFactorAuthMethods();
-        $back = Redirect::back();
-
-        if (count($methods) === 1) {
-            return $this->deleteTwoFactorAuthMethod(Arr::first($methods), $back);
-        }
-
-        return app(MultiFactorDeleteViewResponseContract::class, compact('methods', 'back'));
     }
 
     /**

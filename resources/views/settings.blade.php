@@ -63,19 +63,5 @@
                 </div>
             @endforeach
         </div>
-
-        {{--<div class="flex">
-            @if (!auth()->user()->multiFactorAuthMethods()->exists())
-                <x-multi-factor::form method="GET" :action="route('mfa.setup')">
-                    <button type="submit" class="button btn-large">
-                        {{ __('Enable Multi-Factor Authentication') }}
-                    </button>
-                </x-multi-factor::form>
-            @else
-                <x-multi-factor::form method="GET" :action="route('mfa.delete')">
-                    <x-multi-factor::button type="submit" class="button danger" confirm="Disable Multi Factor Authentication?">{{ __('Disable Multi-Factor Authentication') }}</x-multi-factor::button>
-                </x-multi-factor::form>
-            @endif
-        </div>--}}
     </x-multi-factor::auth-card>
 </x-multi-factor::layout>

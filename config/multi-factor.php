@@ -2,10 +2,8 @@
 
 use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorChallengeViewResponse;
 use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorChooseViewResponse;
-use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorDeleteViewResponse;
 use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorLoginViewResponse;
 use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorSettingsViewResponse;
-use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorSetupViewResponse;
 
 return [
     'allowedMethods' => [
@@ -18,9 +16,7 @@ return [
     'views' => [
         'challenge' => MultiFactorChallengeViewResponse::class,
         'login' => MultiFactorLoginViewResponse::class,
-        'setup' => MultiFactorSetupViewResponse::class,
         'choose' => MultiFactorChooseViewResponse::class,
-        'delete' => MultiFactorDeleteViewResponse::class,
         'settings' => MultiFactorSettingsViewResponse::class,
     ],
 
