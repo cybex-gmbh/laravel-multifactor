@@ -8,11 +8,11 @@
             <div>
                 <label for="remember_me">
                     <input id="remember_me" type="checkbox" name="remember">
-                    <span class="">@lang('multi-factor::auth.remember_me')</span>
+                    <span>@lang('multi-factor::auth.remember_me')</span>
                 </label>
             </div>
 
-            <div class="flex flex-row flex-end">
+            <div class="mfa-row mfa-flex-end">
                 <x-multi-factor::button type="submit">
                     @lang('multi-factor::button.login')
                 </x-multi-factor::button>

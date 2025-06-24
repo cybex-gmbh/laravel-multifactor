@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<div class="multi-factor-main">
+<div class="multi-factor-auth">
     {{ $slot }}
 </div>
 </body>
