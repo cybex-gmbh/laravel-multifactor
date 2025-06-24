@@ -34,6 +34,6 @@ class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewRespon
         $mfaMethod = $this->mfaMethod;
         $authenticationMethod = MultiFactorAuthMethod::isEmailOnlyLoginActive() ? 'link' : 'code';
 
-        return view('laravel-multi-factor::email-challenge', compact(['user', 'mfaMethod', 'authenticationMethod']));
+        return view('laravel-multi-factor::pages.email-challenge', compact(['user', 'mfaMethod', 'authenticationMethod']));
     }
 }

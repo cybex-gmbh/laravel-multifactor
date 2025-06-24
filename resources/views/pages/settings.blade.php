@@ -17,7 +17,7 @@
             <div>
                 <div>
                     @if ($user->multiFactorAuthMethods()->exists())
-                        <div class="flex flex-row align-center text-active">
+                        <div class="mfa-row mfa-text-active">
                             <x-multi-factor::svg icon="mfa-enabled"/>
 
                             <h3>
@@ -25,7 +25,7 @@
                             </h3>
                         </div>
                     @else
-                        <div class="flex flex-row align-center text-danger">
+                        <div class="mfa-row mfa-text-danger">
                             <x-multi-factor::svg icon="mfa-disabled"/>
 
                             <h3>
@@ -37,23 +37,23 @@
             </div>
 
             @foreach($methods as $method)
-                <div class="flex justify-between section-underline">
-                    <div class="flex flex-row">
+                <div class="mfa-row mfa-list-item">
+                    <div class="mfa-row">
                         <x-multi-factor::svg :icon="$method->value"/>
-                        <p class="text-center"><strong>{{ ucfirst($method->value) }}</strong></p>
+                        <p><strong>{{ ucfirst($method->value) }}</strong></p>
                     </div>
 
-                    <div class="flex flex-row">
+                    <div class="mfa-row">
                         @if ($method->isUserMethod())
-                            <p class="text-center">@lang('multi-factor::auth.status.enabled.label')</p>
+                            <p>@lang('multi-factor::auth.status.enabled.label')</p>
 
                             @if ($mfaMode === MultiFactorAuthMode::OPTIONAL || $userMethodsAmount > 1)
                                 <x-multi-factor::form method="DELETE" :action="route('mfa.delete.method', $method)">
-                                    <x-multi-factor::button type="submit" class="button-danger" confirm="Disable {{ $method->value }}?">@lang('multi-factor::button.disable')</x-multi-factor::button>
+                                    <x-multi-factor::button type="submit" class="mfa-button-danger" confirm="Disable {{ $method->value }}?">@lang('multi-factor::button.disable')</x-multi-factor::button>
                                 </x-multi-factor::form>
                             @endif
                         @else
-                            <p class="text-center">@lang('multi-factor::auth.status.disabled.label')</p>
+                            <p>@lang('multi-factor::auth.status.disabled.label')</p>
 
                             <x-multi-factor::form method="GET" :action="route('mfa.setup', $method)">
                                 <x-multi-factor::button type="submit">@lang('multi-factor::button.enable')</x-multi-factor::button>

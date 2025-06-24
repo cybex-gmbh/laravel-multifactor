@@ -1,12 +1,12 @@
 <div>
-    <label for="{{ $field }}" class="text-sm">{{ $label }}</label>
+    <label for="{{ $field }}" class="mfa-text-sm">{{ $label }}</label>
 
     <input id="{{ $id }}"
            name="{{ $field }}"
            type="{{ $type ?? 'text' }}"
            value="{{ old($field, $value ?? '') }}"
            autocomplete="{{ $autocomplete }}"
-           {{ $attributes->class(['input', 'has-errors' => $errors->has($field)]) }}
+           {{ $attributes->class(['mfa-input', 'has-errors' => $errors->has($field)]) }}
            {{ $attributes }}
     />
 

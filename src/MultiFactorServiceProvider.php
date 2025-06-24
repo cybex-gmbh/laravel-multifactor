@@ -53,7 +53,7 @@ class MultiFactorServiceProvider extends ServiceProvider
             ], ['multi-factor', 'multi-factor.config']);
 
             $this->publishes([
-                __DIR__ . '/../resources/views' => resource_path('views/vendor/laravel-multi-factor'),
+                __DIR__ . '/../resources/views/pages' => resource_path('views/vendor/laravel-multi-factor/pages'),
             ], ['multi-factor', 'multi-factor.views']);
 
             $this->publishes([
