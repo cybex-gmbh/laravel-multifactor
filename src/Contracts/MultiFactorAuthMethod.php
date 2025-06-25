@@ -8,17 +8,14 @@ use Illuminate\Http\RedirectResponse;
 interface MultiFactorAuthMethod
 {
     /**
-     * @return MultiFactorChallengeViewResponseContract
-     */
-    public function authenticate(): MultiFactorChallengeViewResponseContract;
-
-    /**
-     * @return RedirectResponse
-     */
-    public function send(): RedirectResponse;
-
-    /**
+     * Sets up the multi-factor authentication method and redirects the user to the intended or settings page.
+     *
      * @return RedirectResponse
      */
     public function setup(): RedirectResponse;
+
+    /**
+     * @return MultiFactorChallengeViewResponseContract
+     */
+    public function challenge(): MultiFactorChallengeViewResponseContract;
 }
