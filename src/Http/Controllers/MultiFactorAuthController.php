@@ -54,7 +54,7 @@ class MultiFactorAuthController extends Controller
     public function handleTwoFactorAuthMethod(MultiFactorAuthMethod $method): MultiFactorChallengeViewResponseContract
     {
         return match ($method) {
-            MultiFactorAuthMethod::EMAIL => $method->getHandler()->authenticate(),
+            MultiFactorAuthMethod::EMAIL => $method->getHandler()->challenge(),
         };
     }
 
@@ -64,7 +64,9 @@ class MultiFactorAuthController extends Controller
      */
     public function send(MultiFactorAuthMethod $method): RedirectResponse
     {
-        return $method->getHandler()->send();
+        return match ($method) {
+            MultiFactorAuthMethod::EMAIL => $method->getHandler()->sendEmail(),
+        };
     }
 
     /**
