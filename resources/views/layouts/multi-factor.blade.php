@@ -10,9 +10,9 @@
     @include('laravel-multi-factor::partials.mfa-assets')
 </head>
 
-<body>
-<div class="multi-factor-auth">
-    {{ $slot }}
-</div>
+<body id="mfa-body">
+    <div class="multi-factor-auth">
+        {{ $slot }}
+    </div>
 </body>
 </html>
