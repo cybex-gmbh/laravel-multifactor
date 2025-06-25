@@ -40,6 +40,11 @@ trait MultiFactorAuthTrait
         return filled($this->getFilteredMFAMethods());
     }
 
+    /**
+     * Returns the user's allowed MFA methods if available, otherwise all user methods.
+     *
+     * @return array
+     */
     public function getUserMethods(): array
     {
         if ($this->hasAllowedMultiFactorAuthMethods()) {
@@ -49,6 +54,12 @@ trait MultiFactorAuthTrait
         }
     }
 
+    /**
+     * Returns the user's allowed or unallowed MFA methods.
+     *
+     * @param bool $onlyAllowed
+     * @return array
+     */
     public function getFilteredMFAMethods(bool $onlyAllowed = true): array
     {
         $mfaMethods = $this->getMultiFactorAuthMethodsNames();
@@ -65,6 +76,8 @@ trait MultiFactorAuthTrait
     }
 
     /**
+     * Returns a combined list of user-configured methods and the remaining allowed methods.
+     *
      * @param array $allowedMethods
      * @param $userMethods
      * @return array
@@ -72,12 +85,5 @@ trait MultiFactorAuthTrait
     public function getUserMethodsWithRemainingAllowedMethods(array $allowedMethods, $userMethods): array
     {
         return array_unique(Arr::collapse([$allowedMethods, $userMethods]), SORT_REGULAR);
-    }
-
-    /**
-     * @return array
-     */
-    public function getRemainingAllowedMethodsNames(): array {
-        return array_diff(MultiFactorAuthMethodEnum::getAllowedMethodsNames(), $this->getMultiFactorAuthMethodsNames());
     }
 }
