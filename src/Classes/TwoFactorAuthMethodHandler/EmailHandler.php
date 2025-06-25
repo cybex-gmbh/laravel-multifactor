@@ -23,24 +23,42 @@ class EmailHandler implements MultiFactorAuthMethodInterface
     }
 
     /**
-     * @return MultiFactorChallengeViewResponseContract
+     * @return RedirectResponse
      */
-    public function authenticate(): MultifactorChallengeViewResponseContract
+    public function setup(): RedirectResponse
     {
-        $sessionKey = MultiFactorAuthSession::EMAIL_SENT;
+        $this->user->multiFactorAuthMethods()->firstOrCreate([
+            'type' => MultiFactorAuthMethod::EMAIL,
+        ]);
 
-        if (!session()->has($sessionKey->value)) {
-            $this->send();
-            $sessionKey->put();
+        if (MultiFactorAuthSession::SETUP_AFTER_LOGIN->get()) {
+            MultiFactorAuthSession::SETUP_AFTER_LOGIN->remove();
+
+            return redirect()->intended();
         }
 
-        return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $method ?? $this->method]);
+        return redirect()->route('mfa.settings', $this->user);
+    }
+
+    /**
+     * @return MultiFactorChallengeViewResponseContract
+     */
+    public function challenge(): MultifactorChallengeViewResponseContract
+    {
+        $emailSentSessionKey = MultiFactorAuthSession::EMAIL_SENT;
+
+        if (!session()->has($emailSentSessionKey->value)) {
+            $this->sendEmail();
+            $emailSentSessionKey->put();
+        }
+
+        return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $this->method]);
     }
 
     /**
      * @return RedirectResponse
      */
-    public function send(): RedirectResponse
+    public function sendEmail(): RedirectResponse
     {
         $code = random_int(100000, 999999);
         $userKey = $this->user->getKey();
@@ -63,23 +81,5 @@ class EmailHandler implements MultiFactorAuthMethodInterface
         $this->user->notify(new MultiFactorCodeNotification($url ?? null));
 
         return redirect()->back();
-    }
-
-    /**
-     * @return RedirectResponse
-     */
-    public function setup(): RedirectResponse
-    {
-        $this->user->multiFactorAuthMethods()->firstOrCreate([
-            'type' => MultiFactorAuthMethod::EMAIL,
-        ]);
-
-        if (MultiFactorAuthSession::SETUP_AFTER_LOGIN->get()) {
-            MultiFactorAuthSession::SETUP_AFTER_LOGIN->remove();
-
-            return redirect()->intended();
-        }
-
-        return redirect()->route('mfa.settings', $this->user);
     }
 }
