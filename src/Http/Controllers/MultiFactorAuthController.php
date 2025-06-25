@@ -51,7 +51,7 @@ class MultiFactorAuthController extends Controller
      * @param MultiFactorAuthMethod $method
      * @return MultiFactorChallengeViewResponseContract
      */
-    public function handleTwoFactorAuthMethod(MultiFactorAuthMethod $method): MultiFactorChallengeViewResponseContract
+    public function handleMultiFactorAuthMethod(MultiFactorAuthMethod $method): MultiFactorChallengeViewResponseContract
     {
         return match ($method) {
             MultiFactorAuthMethod::EMAIL => $method->getHandler()->challenge(),
@@ -93,7 +93,7 @@ class MultiFactorAuthController extends Controller
      * @param RedirectResponse|null $back
      * @return RedirectResponse
      */
-    public function deleteTwoFactorAuthMethod(MultiFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
+    public function deleteMultiFactorAuthMethod(MultiFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
         Auth::user()->multiFactorAuthMethods()->where('type', $method)->delete();
 
@@ -146,7 +146,7 @@ class MultiFactorAuthController extends Controller
      * @param User $user
      * @return MultiFactorSettingsViewResponseContract|Application|mixed|void
      */
-    public function twoFactorSettings(User $user)
+    public function multiFactorSettings(User $user)
     {
         if (Auth::user()->is($user) && !MultiFactorAuthMode::isForceMode()) {
             return app(MultiFactorSettingsViewResponseContract::class, [$user]);
