@@ -28,7 +28,7 @@ Users can log in using a unique email link, enabling authentication with just th
 ## Requirements
 
 - PHP 8.1 or higher
-- Laravel 9.x or higher
+- Laravel 11.x or higher
 
 ## Installation
 
@@ -62,6 +62,7 @@ Open the `config/multi-factor.php` file and adjust the settings as needed:
 MULTI_FACTOR_AUTHENTICATION_MODE=optional
 MULTI_FACTOR_AUTHENTICATION_FORCE_METHOD=email
 MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=true
+MULTI_FACTOR_AUTHENTICATION_SETTINGS=true
 ```
 
 ### Apply Middlewares
@@ -119,7 +120,9 @@ MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=false
 To allow users to manage their multi-factor authentication methods, add a link to the `mfa.settings` route:
 
 ```php
-<a href="{{ route('mfa.settings') }}">Manage Multi-Factor Authentication</a>
+@if(config('multi-factor.features.settings.enabled') && Auth::user()->is($user) && !MultiFactorAuthMode::isForceMode())
+    <a href="{{ route('mfa.settings') }}">Manage Multi-Factor Authentication</a>
+@endif
 ```
 
 You can disable the settings page via the `MULTI_FACTOR_AUTHENTICATION_SETTINGS` env variable:
@@ -136,8 +139,13 @@ The package provides default views for multi-factor authentication. You can cust
 php artisan vendor:publish --provider="CybexGmbh\LaravelMultiFactor\LaravelMultiFactorServiceProvider" --tag="multi-factor.views"
 ```
 
-You can find the views in the `resources/views/vendor/laravel-multi-factor` directory.
 You can find the views in the `resources/views/vendor/laravel-multi-factor/pages` directory.
+
+If you want to use a custom layout but keep package styles, include the assets template in your app layout:
+
+```php
+@include('laravel-multi-factor::partials.mfa-assets')
+```
 
 ### Customizing Routes (Optional)
 
@@ -152,25 +160,6 @@ The package provides default routes for multi-factor authentication. You can cus
 ```
 
 ## Usage
-
-### Enabling Multi-Factor Authentication for a User
-
-To enable multi-factor authentication for a user, call the `setup` method of the handler:
-
-```php
-MultiFactorAuthMethod::method->getHandler()->setup();
-```
-
-You can pass an optional user instance to the `setup` method. If no user is provided, the currently authenticated user will be used:
-
-```php
-MultiFactorAuthMethod::method->getHandler()->setup($user);
-```
-
-### Customizing Multi-Factor Methods
-
-You can create custom handlers by implementing the `MultiFactorAuthMethod` interface and registering them in the `getHandler` method of the `MultiFactorAuthMethod` enum.
-
 ## Configuration Options
 
 The `config/multi-factor.php` file includes the following options:
@@ -188,7 +177,7 @@ The `config/multi-factor.php` file includes the following options:
 
 To add a new multi-factor authentication method to the package, follow these steps:
 
-1. Create a new handler class that implements the `MultiFactorAuthMethodHandlerContract` interface in `src/Classes/MultiFactorAuthmethodHandler/`. This handler will define the logic for setting up, sending, and authenticating the new method.
+1. Create a new handler class that implements the `MultiFactorAuthMethod` interface in `src/Classes/MultiFactorAuthMethodHandler/`. This handler will define the logic for setting up, and challenging the new method for a user.
 
 2. Add the new method to the `MultiFactorAuthMethod` enum:
 
@@ -214,7 +203,6 @@ case CUSTOM = 'custom';
 }
 ```
 
-
 3. Add the new method to the `allowedMethods` array in the `config/multi-factor.php` file:
 
 ```php
@@ -239,6 +227,22 @@ To use the new view:
 
 ```php
 return app(MultiFactorCustomViewResponseContract::class, $params);
+```
+
+## Development
+
+### Compiling Assets
+
+To compile the package's assets, run:
+
+```bash
+yarn run build
+```
+
+To compile during development, run:
+
+```bash
+yarn run build --watch
 ```
 
 ## Changelog
