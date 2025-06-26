@@ -33,8 +33,10 @@ class LimitMultiFactorAuthAccess
             }
 
             if ($isForceMode) {
-                if (!$method->isForceMethod() && MultiFactorAuthMethod::getForceMethod()->isAllowed() && MultiFactorAuthMethod::getForceMethod()->isUserMethod()) {
-                    return redirect()->route('mfa.method', ['method' => MultiFactorAuthmethod::getForceMethod()]);
+                $forceMethod = MultiFactorAuthMethod::getForceMethod();
+
+                if (!$method->isForceMethod() && $forceMethod->isAllowed() && $forceMethod->isUserMethod()) {
+                    return redirect()->route('mfa.method', ['method' => $forceMethod]);
                 }
             }
         }
