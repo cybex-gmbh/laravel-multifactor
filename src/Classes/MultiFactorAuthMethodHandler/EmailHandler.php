@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Classes\TwoFactorAuthMethodHandler;
+namespace CybexGmbh\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler;
 
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as MultiFactorAuthMethodInterface;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
@@ -43,7 +43,7 @@ class EmailHandler implements MultiFactorAuthMethodInterface
     /**
      * @return MultiFactorChallengeViewResponseContract
      */
-    public function challenge(): MultifactorChallengeViewResponseContract
+    public function challenge(MultiFactorAuthMethod $method = null): MultifactorChallengeViewResponseContract
     {
         $emailSentSessionKey = MultiFactorAuthSession::EMAIL_SENT;
 
@@ -52,7 +52,7 @@ class EmailHandler implements MultiFactorAuthMethodInterface
             $emailSentSessionKey->put();
         }
 
-        return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $this->method]);
+        return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $method ?? $this->method]);
     }
 
     /**
