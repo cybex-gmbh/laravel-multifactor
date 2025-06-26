@@ -2,7 +2,7 @@
 
 namespace CybexGmbh\LaravelMultiFactor\Enums;
 
-use CybexGmbh\LaravelMultiFactor\Classes\TwoFactorAuthMethodHandler\EmailHandler;
+use CybexGmbh\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler\EmailHandler;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as TwoFactorAuthMethodContract;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
