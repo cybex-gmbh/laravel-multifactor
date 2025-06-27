@@ -1,5 +1,5 @@
 <div>
-    <label for="{{ $field }}" class="mfa-text-sm">{{ $label }}</label>
+    <label for="{{ $id }}" class="mfa-text-sm">{{ $label }}</label>
 
     <input id="{{ $id }}"
            name="{{ $field }}"
@@ -7,7 +7,6 @@
            value="{{ old($field, $value ?? '') }}"
            autocomplete="{{ $autocomplete }}"
            {{ $attributes->class(['mfa-input', 'has-errors' => $errors->has($field)]) }}
-           {{ $attributes }}
     />
 
     @error($field)

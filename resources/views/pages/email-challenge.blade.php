@@ -7,7 +7,7 @@
         </x-slot>
 
         <x-multi-factor::form :action="route('mfa.verify', $mfaMethod, $user)" id="mfa-login">
-            <x-multi-factor::form.input id="code" field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
+            <x-multi-factor::form.input field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
         </x-multi-factor::form>
 
         <div class="mfa-row mfa-flex-end">
