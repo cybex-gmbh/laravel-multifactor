@@ -171,7 +171,7 @@ The `config/multi-factor.php` file includes the following options:
 - **`routes.emailOnlyLogin`**: Users can log in using only their email address. 
 
 ## Development
-### Adding a New Multi-Factor Authentication Method
+### Adding a new Multi-Factor Authentication Method
 
 To add a new multi-factor authentication method to the package, follow these steps:
 
