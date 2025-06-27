@@ -18,13 +18,14 @@ class Input extends Component
      * @param string|null $type
      */
     public function __construct(
-        public string $id,
         public string $field,
+        public ?string $id = null,
         public string $label = '',
         public ?string $autocomplete = '',
         public ?string $value = null,
         public ?string $type = null
     ) {
+        $this->id ??= $field;
         $this->autocomplete = $this->autocomplete ?: $this->field;
     }
 
