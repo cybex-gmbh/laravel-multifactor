@@ -6,6 +6,7 @@ use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorLoginViewResponse;
 use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorSettingsViewResponse;
 
 return [
+    // supported methods: 'email'
     'allowedMethods' => [
         'email',
     ],
