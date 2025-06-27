@@ -213,7 +213,7 @@ case CUSTOM = 'custom';
 
 To add a custom view for your new method:
 1. Create a View Response Contract extending the Responsable Interface.
-2. Make a Response Class implementing the `MultiFactorAuthMethodResponseContract`.
+2. Make a Response Class implementing the newly added View Response Contract.
 3. Add your view to `resources/views/pages` and reference it in the views array in `config/multi-factor.php`.
 4. Register your Response Class in **MultiFactorServiceProvider**:
 
