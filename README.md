@@ -45,18 +45,18 @@ php artisan migrate
 ### Publish the Configuration File
 
 ```bash
-php artisan vendor:publish --provider="CybexGmbh\LaravelMultiFactor\LaravelMultiFactorServiceProvider" --tag="multi-factor.config"
+php artisan vendor:publish --tag="multi-factor.config"
 ```
 
 ### Configuration
 
 Open the `config/multi-factor.php` file and adjust the settings as needed:
 
-- **`allowedMethods`**: Define the multi-factor methods you want to support (e.g., `email`).
-- **`mode`**: Set the mode to `optional`, `required`, or `force`.
-- **`forceMethod`**: Specify the method to use when the mode is set to `force`.
+- **`allowedMethods`**: Define the multi-factor methods you want to support. (default: `email`)
+- **`mode`**: Set the mode to `optional`, `required`, or `force`. (default: `force`)
+- **`forceMethod`**: Specify the method to use when the mode is set to `force`. (default: `email`)
 
-### Add Environment Variables
+#### Add Environment Variables (Optional)
 
 ```env
 MULTI_FACTOR_AUTHENTICATION_MODE=optional
@@ -117,11 +117,11 @@ MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=false
 
 ### Settings Page
 
-To allow users to manage their multi-factor authentication methods, add a link to the `mfa.settings` route:
+To allow users to manage their multi-factor authentication methods, add a link to the `mfa.settings` route on your users show page:
 
 ```php
 @if(config('multi-factor.features.settings.enabled') && Auth::user()->is($user) && !MultiFactorAuthMode::isForceMode())
-    <a href="{{ route('mfa.settings') }}">Manage Multi-Factor Authentication</a>
+    <a href="{{ route('mfa.settings', $user) }}">Manage Multi-Factor Authentication</a>
 @endif
 ```
 
@@ -149,7 +149,7 @@ If you want to use a custom layout but keep package styles, include the assets t
 
 ### Customizing Routes (Optional)
 
-The package provides default routes for multi-factor authentication. You can customize the `path` in the `config/multi-factor.php` file under the `features.feature.routePath` key:
+The package provides default routes for multi-factor authentication. You can customize the `path` in the `config/multi-factor.php` file under the `features.{feature}.routePath` key:
 
 ```php
 'features' => [
@@ -159,21 +159,19 @@ The package provides default routes for multi-factor authentication. You can cus
 ],
 ```
 
-## Usage
 ## Configuration Options
 
 The `config/multi-factor.php` file includes the following options:
 
-- **`allowedMethods`**: List of allowed two-factor methods.
+- **`allowedMethods`**: List of allowed multi-factor methods.
 - **`mode`**: Mode of multi-factor authentication (`optional`, `required`, or `force`).
 - **`forceMethod`**: The method to use when `mode` is set to `force`.
 - **`views`**: Customizable views for different multi-factor flows.
 - **`routes`**: Configurable routes for multi-factor authentication.
-
-
 - **`routes.emailOnlyLogin`**: Users can log in using only their email address. 
 
-## Adding a New Multi-Factor Authentication Method
+## Development
+### Adding a New Multi-Factor Authentication Method
 
 To add a new multi-factor authentication method to the package, follow these steps:
 
@@ -211,13 +209,13 @@ case CUSTOM = 'custom';
 ],
 ```
 
-### Customizing Views (Optional)
+#### Customizing Views (Optional)
 
-If the new method requires custom views, create a new View Response Contract that extends the Responsable Interface, make a new Response Class, and implement the `MultiFactorAuthMethodResponseContract` interface.
-
-Put the new view in the `resources/views/` directory. In the `config/multi-factor.php` file, add the new view to the `views` array.
-
-Add the new Response Class to the `MultiFactorServiceProvider's` `register` method:
+To add a custom view for your new method:
+1. Create a View Response Contract extending the Responsable Interface.
+2. Make a Response Class implementing the `MultiFactorAuthMethodResponseContract`.
+3. Add your view to `resources/views/pages` and reference it in the views array in `config/multi-factor.php`.
+4. Register your Response Class in **MultiFactorServiceProvider**:
 
 ```php
 $this->app->singleton(MultiFactorCustomViewResponseContract::class, fn($app, $params): MultiFactorCustomViewResponseContract => new (config('multi-factor.views.customView'))(...$params));
@@ -228,8 +226,6 @@ To use the new view:
 ```php
 return app(MultiFactorCustomViewResponseContract::class, $params);
 ```
-
-## Development
 
 ### Compiling Assets
 
