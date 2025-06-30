@@ -95,7 +95,7 @@ class MultiFactorAuthController extends Controller
      */
     public function deleteMultiFactorAuthMethod(MultiFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
-        Auth::user()->multiFactorAuthMethods()->where('type', $method)->delete();
+        Auth::user()->multiFactorAuthMethods()->where('type', $method)->detach();
 
         return $back ?? redirect()->back();
     }

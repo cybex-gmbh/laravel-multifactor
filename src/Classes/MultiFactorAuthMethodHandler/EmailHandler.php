@@ -27,9 +27,9 @@ class EmailHandler implements MultiFactorAuthMethodInterface
      */
     public function setup(): RedirectResponse
     {
-        $this->user->multiFactorAuthMethods()->firstOrCreate([
-            'type' => MultiFactorAuthMethod::EMAIL,
-        ]);
+        $this->user->multiFactorAuthMethods()->syncWithoutDetaching(MultiFactorAuthMethodModel::firstOrCreate([
+            'type' => $this->method,
+        ]));
 
         if (MultiFactorAuthSession::SETUP_AFTER_LOGIN->get()) {
             MultiFactorAuthSession::SETUP_AFTER_LOGIN->remove();
