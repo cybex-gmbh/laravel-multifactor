@@ -8,6 +8,8 @@ use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use CybexGmbh\LaravelMultiFactor\Facades\MFA;
+use CybexGmbh\LaravelMultiFactor\Helpers\MFAHelper;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\EnforceEmailOnlyLogin;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\HasAllowedMultiFactorAuthMethods;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\HasMultiFactorAuthentication;
@@ -17,6 +19,7 @@ use CybexGmbh\LaravelMultiFactor\Http\Middleware\RedirectIfMultiFactorAuthentica
 use CybexGmbh\LaravelMultiFactor\Listeners\HandleUserLogout;
 use CybexGmbh\LaravelMultiFactor\View\Components\LegacyAuthCard;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -89,8 +92,10 @@ class MultiFactorServiceProvider extends ServiceProvider
     public function register()
     {
         // Register the main class to use with the facade
-        $this->app->singleton('laravel-multi-factor', function () {
-            return new MultiFactor;
+        $this->app->singleton('mfa', MFAHelper::class);
+
+        $this->app->booting(function () {
+            AliasLoader::getInstance()->alias('MFA', MFA::class);
         });
 
         $this->app->singleton(

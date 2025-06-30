@@ -5,7 +5,7 @@ namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
 use Closure;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
+use MFA;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +20,7 @@ class LimitMultiFactorAuthAccess
     public function handle(Request $request, Closure $next): Response
     {
         $method = $request->route('method');
-        $isVerified = MultiFactorAuthSession::VERIFIED->get();
+        $isVerified = MFA::getVerified();
         $isForceMode = MultiFactorAuthMode::isForceMode();
 
         if (!$isVerified) {
@@ -49,7 +49,7 @@ class LimitMultiFactorAuthAccess
             return redirect()->route('mfa.settings', Auth::user());
         }
 
-        if ($isVerified && $isForceMode && !$method->isForceMethod() && MultiFactorAuthSession::SETUP_AFTER_LOGIN->get()) {
+        if ($isVerified && $isForceMode && !$method->isForceMethod() && MFA::getSetupAfterLogin()) {
             return redirect()->route('mfa.setup');
         }
 

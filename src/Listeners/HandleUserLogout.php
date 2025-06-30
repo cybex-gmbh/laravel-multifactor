@@ -2,8 +2,8 @@
 
 namespace CybexGmbh\LaravelMultiFactor\Listeners;
 
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Auth\Events\Logout;
+use MFA;
 
 class HandleUserLogout
 {
@@ -15,7 +15,7 @@ class HandleUserLogout
         $user = $event->user;
 
         if ($user) {
-            MultiFactorAuthSession::clear();
+            MFA::clear();
         }
     }
 }
