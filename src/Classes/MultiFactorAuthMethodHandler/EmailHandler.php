@@ -5,12 +5,14 @@ namespace CybexGmbh\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as MultiFactorAuthMethodInterface;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
+use CybexGmbh\LaravelMultiFactor\Helpers\MFAHelper;
 use CybexGmbh\LaravelMultiFactor\Notifications\MultiFactorCodeNotification;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
+use CybexGmbh\LaravelMultiFactor\Models\MultiFactorAuthMethod as MultiFactorAuthMethodModel;
+use MFA;
 
 class EmailHandler implements MultiFactorAuthMethodInterface
 {
@@ -22,17 +24,14 @@ class EmailHandler implements MultiFactorAuthMethodInterface
         $this->user = Auth::user();
     }
 
-    /**
-     * @return RedirectResponse
-     */
     public function setup(): RedirectResponse
     {
         $this->user->multiFactorAuthMethods()->syncWithoutDetaching(MultiFactorAuthMethodModel::firstOrCreate([
             'type' => $this->method,
         ]));
 
-        if (MultiFactorAuthSession::SETUP_AFTER_LOGIN->get()) {
-            MultiFactorAuthSession::SETUP_AFTER_LOGIN->remove();
+        if (MFA::getSetupAfterLogin()) {
+            MFA::remove(MFAHelper::SETUP_AFTER_LOGIN);
 
             return redirect()->intended();
         }
@@ -40,31 +39,23 @@ class EmailHandler implements MultiFactorAuthMethodInterface
         return redirect()->route('mfa.settings', $this->user);
     }
 
-    /**
-     * @return MultiFactorChallengeViewResponseContract
-     */
     public function challenge(MultiFactorAuthMethod $method = null): MultifactorChallengeViewResponseContract
     {
-        $emailSentSessionKey = MultiFactorAuthSession::EMAIL_SENT;
-
-        if (!session()->has($emailSentSessionKey->value)) {
+        if (!MFA::isEmailSent()) {
             $this->sendEmail();
-            $emailSentSessionKey->put();
+            MFA::setEmailSent();
         }
 
         return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $method ?? $this->method]);
     }
 
-    /**
-     * @return RedirectResponse
-     */
     public function sendEmail(): RedirectResponse
     {
         $code = random_int(100000, 999999);
         $userKey = $this->user->getKey();
         $expiresAt = now()->addMinutes(10);
 
-        MultiFactorAuthSession::CODE->put(['code' => $code, 'expires_at' => $expiresAt]);
+        MFA::setAuthCode($code, $expiresAt->timestamp);
 
         if (MultiFactorAuthMethod::isEmailOnlyLoginActive()) {
             $url = URL::temporarySignedRoute(

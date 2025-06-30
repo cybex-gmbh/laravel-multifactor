@@ -4,10 +4,10 @@ namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use MFA;
 
 class HasMultiFactorAuthentication
 {
@@ -20,17 +20,17 @@ class HasMultiFactorAuthentication
     {
         $user = Auth::user();
 
-        if ($user->multiFactorAuthMethods()->exists() && !MultiFactorAuthSession::VERIFIED->get()) {
+        if ($user->multiFactorAuthMethods()->exists() && !MFA::getVerified()) {
 
             if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::OPTIONAL && !$user->getAllowedMultiFactorAuthMethods() && $user->getUnallowedMultiFactorAuthMethods()) {
-                MultiFactorAuthSession::VERIFIED->put();
+                MFA::setVerified();
                 return $next($request);
             }
 
             return redirect()->route('mfa.show');
         }
 
-        MultiFactorAuthSession::VERIFIED->put();
+        MFA::setVerified();
         return $next($request);
     }
 }

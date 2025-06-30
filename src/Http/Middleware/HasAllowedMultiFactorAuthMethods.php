@@ -4,9 +4,9 @@ namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use MFA;
 
 class HasAllowedMultiFactorAuthMethods
 {
@@ -25,7 +25,7 @@ class HasAllowedMultiFactorAuthMethods
             return $next($request);
         }
 
-        MultiFactorAuthSession::SETUP_AFTER_LOGIN->put();
+        MFA::setVerified();
         return redirect()->route('mfa.setup');
     }
 }
