@@ -2,13 +2,10 @@
 
 namespace CybexGmbh\LaravelMultiFactor\Notifications;
 
-use Carbon\Carbon;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\URL;
+use MFA;
 
 class MultiFactorCodeNotification extends Notification
 {
@@ -43,7 +40,7 @@ class MultiFactorCodeNotification extends Notification
                 ->line('Click the link below to login:')
                 ->action('Login', $this->url)
                 ->line('OR'))
-            ->line(sprintf('You can use the following MFA code: %s', MultiFactorAuthSession::getCode()))
+            ->line(sprintf('You can use the following MFA code: %s', MFA::getCode()))
             ->line(sprintf('The %s will expire in 10 minutes.', $this->url ? 'link and code' : 'code'));
     }
 }

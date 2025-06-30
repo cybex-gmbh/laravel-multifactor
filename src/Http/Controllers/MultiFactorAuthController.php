@@ -8,7 +8,6 @@ use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthSession;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,6 +16,7 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use MFA;
 
 class MultiFactorAuthController extends Controller
 {
@@ -107,7 +107,7 @@ class MultiFactorAuthController extends Controller
     {
         $code ??= $request->integer('code') ?? abort(403);
 
-        if (MultiFactorAuthSession::isCodeExpired() || $code !== MultiFactorAuthSession::getCode()) {
+        if (MFA::isCodeExpired() || MFA::getCode() !== $code) {
             abort(403);
         }
 
@@ -115,8 +115,8 @@ class MultiFactorAuthController extends Controller
             return $method->getHandler()->setup();
         }
 
-        MultiFactorAuthSession::clear();
-        MultiFactorAuthSession::VERIFIED->put();
+        MFA::clear();
+        MFA::setVerified();
 
         return Redirect::intended();
     }
