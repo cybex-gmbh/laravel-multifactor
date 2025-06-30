@@ -40,7 +40,7 @@ class MultiFactorAuthController extends Controller
             return Redirect::route('mfa.method', ['method' => Arr::first($userMethods)]);
         }
 
-        return app(MultiFactorChooseViewResponseContract::class, $userMethods);
+        return app(MultiFactorChooseViewResponseContract::class, $userMethods ?: MultiFactorAuthMethod::getAllowedMethods());
     }
 
     /**
