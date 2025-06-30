@@ -3,19 +3,16 @@
 namespace CybexGmbh\LaravelMultiFactor\Enums;
 
 use CybexGmbh\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler\EmailHandler;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as TwoFactorAuthMethodContract;
-use Illuminate\Support\Facades\Auth;
+use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as MultiFactorAuthMethodContract;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 enum MultiFactorAuthMethod: string
 {
     case EMAIL = 'email';
 
-    /**
-     * @return TwoFactorAuthMethodContract
-     */
-    public function getHandler(): TwoFactorAuthMethodContract
+    public function getHandler(): MultiFactorAuthMethodContract
     {
         return match ($this) {
             self::EMAIL => app(EmailHandler::class),
@@ -27,15 +24,12 @@ enum MultiFactorAuthMethod: string
      */
     public static function getAllowedMethods(): array
     {
-        return Arr::map(self::getAllowedMethodsNames(), fn($value) => self::from($value));
+        return Arr::map(self::getAllowedMethodNames(), fn($value): self => self::from($value));
     }
 
-    /**
-     * @return array
-     */
-    public static function getAllowedMethodsNames(): array
+    public static function getAllowedMethodNames(): array
     {
-        return Arr::map(config('multi-factor.allowedMethods'), fn($method) => Str::lower($method));
+        return Arr::map(config('multi-factor.allowedMethods'), fn($method): string => Str::lower($method));
     }
 
     /**
@@ -68,7 +62,7 @@ enum MultiFactorAuthMethod: string
      */
     public function isAllowed(): bool
     {
-        return in_array($this->value, self::getAllowedMethodsNames());
+        return in_array($this->value, self::getAllowedMethodNames());
     }
 
     /**
@@ -76,7 +70,7 @@ enum MultiFactorAuthMethod: string
      */
     public function isUserMethod(): bool
     {
-        return in_array($this->value, Auth::user()->getMultiFactorAuthMethodsNames());
+        return in_array($this->value, Auth::user()->getMultiFactorAuthMethodNames());
     }
 
     /**
