@@ -6,6 +6,8 @@ use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContr
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
 use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\EnforceEmailOnlyLogin;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\HasAllowedMultiFactorAuthMethods;
 use CybexGmbh\LaravelMultiFactor\Http\Middleware\HasMultiFactorAuthentication;
@@ -63,6 +65,14 @@ class MultiFactorServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../resources/lang' => resource_path('lang/vendor/laravel-multi-factor'),
             ], ['multi-factor', 'multi-factor.lang']);
+        }
+
+        if (MultiFactorAuthMode::isForceMode()) {
+            $forceMethod = MultiFactorAuthMethod::getForceMethod();
+
+            if (!$forceMethod->isAllowed()) {
+                abort(500);
+            }
         }
 
         $this->app->booted(function () {
