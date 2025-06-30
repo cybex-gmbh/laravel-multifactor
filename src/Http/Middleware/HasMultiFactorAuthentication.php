@@ -22,7 +22,7 @@ class HasMultiFactorAuthentication
 
         if ($user->multiFactorAuthMethods()->exists() && !MultiFactorAuthSession::VERIFIED->get()) {
 
-            if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::OPTIONAL && !$user->getFilteredMFAMethods() && $user->getFilteredMFAMethods(false)) {
+            if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::OPTIONAL && !$user->getAllowedMultiFactorAuthMethods() && $user->getUnallowedMultiFactorAuthMethods()) {
                 MultiFactorAuthSession::VERIFIED->put();
                 return $next($request);
             }
