@@ -21,7 +21,7 @@ trait MultiFactorAuthTrait
     /**
      * @return mixed
      */
-    public function getMultiFactorAuthMethodsNames() {
+    public function getMultiFactorAuthMethodNames() {
         return $this->multiFactorAuthMethods->map(fn($method) => $method->type->value)->toArray();
     }
 
@@ -37,7 +37,7 @@ trait MultiFactorAuthTrait
      */
     public function hasAllowedMultiFactorAuthMethods(): bool
     {
-        return filled($this->getFilteredMFAMethods());
+        return filled($this->getAllowedMultiFactorAuthMethods());
     }
 
     /**
@@ -48,31 +48,29 @@ trait MultiFactorAuthTrait
     public function getUserMethods(): array
     {
         if ($this->hasAllowedMultiFactorAuthMethods()) {
-            return MultiFactorAuthMethodEnum::getMethodsByNames($this->getFilteredMFAMethods());
+            return MultiFactorAuthMethodEnum::getMethodsByNames($this->getAllowedMultiFactorAuthMethods());
         } else {
             return $this->getMultiFactorAuthMethods();
         }
     }
 
-    /**
-     * Returns the user's allowed or unallowed MFA methods.
-     *
-     * @param bool $onlyAllowed
-     * @return array
-     */
-    public function getFilteredMFAMethods(bool $onlyAllowed = true): array
+    public function getAllowedMultiFactorAuthMethods(): array
     {
-        $mfaMethods = $this->getMultiFactorAuthMethodsNames();
+        return array_intersect($this->getMultiFactorAuthMethodNames(), $this->getConfiguredMultiFactorAuthMethodNames());
+    }
 
+    public function getUnallowedMultiFactorAuthMethods(): array
+    {
+        return array_diff($this->getMultiFactorAuthMethodNames(), $this->getConfiguredMultiFactorAuthMethodNames());
+    }
+
+    public function getConfiguredMultiFactorAuthMethodNames(): array
+    {
         if (MultiFactorAuthMode::isForceMode()) {
-            $configuredMethods = [MultiFactorAuthMethodEnum::getForceMethod()->value];
+            return [MultiFactorAuthMethodEnum::getForceMethod()->value];
         } else {
-            $configuredMethods = MultiFactorAuthMethodEnum::getAllowedMethodsNames();
+            return MultiFactorAuthMethodEnum::getAllowedMethodNames();
         }
-
-        return $onlyAllowed
-            ? array_intersect($mfaMethods, $configuredMethods)
-            : array_diff($mfaMethods, $configuredMethods);
     }
 
     /**
