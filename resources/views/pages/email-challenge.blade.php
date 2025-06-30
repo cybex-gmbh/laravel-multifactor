@@ -17,7 +17,7 @@
                 <x-multi-factor::button class="text-sm">@lang('multi-factor::button.resend_mfa', ['authenticationMethod' => $authenticationMethod])</x-multi-factor::button>
             </x-multi-factor::form>
 
-            <x-multi-factor::button type="submit" class="text-sm" form="2fa-login">
+            <x-multi-factor::button type="submit" class="text-sm" form="mfa-login">
                 {{ __('Log in') }}
             </x-multi-factor::button>
         </div>
