@@ -3,7 +3,7 @@
 namespace Cybex\LaravelMultiFactor\Models;
 
 use Illuminate\Foundation\Auth\User;
-use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod as TwoFactorAuthMethodEnum;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod as MultiFactorAuthMethodEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -17,7 +17,7 @@ class MultiFactorAuthMethod extends Model
     ];
 
     protected $casts = [
-        'type' => TwoFactorAuthMethodEnum::class,
+        'type' => MultiFactorAuthMethodEnum::class,
     ];
 
     /**

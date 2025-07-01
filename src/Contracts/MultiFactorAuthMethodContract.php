@@ -2,7 +2,6 @@
 
 namespace Cybex\LaravelMultiFactor\Contracts;
 
-use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod as MultiFactorAuthMethodEnum;
 use Illuminate\Http\RedirectResponse;
 
 interface MultiFactorAuthMethodContract
