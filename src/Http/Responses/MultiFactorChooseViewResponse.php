@@ -1,8 +1,8 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Http\Responses;
+namespace Cybex\LaravelMultiFactor\Http\Responses;
 
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
 use MFA;
 
 class MultiFactorChooseViewResponse implements MultiFactorChooseViewResponseContract

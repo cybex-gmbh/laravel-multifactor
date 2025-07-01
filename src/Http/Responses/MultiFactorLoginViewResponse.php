@@ -1,8 +1,8 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Http\Responses;
+namespace Cybex\LaravelMultiFactor\Http\Responses;
 
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;

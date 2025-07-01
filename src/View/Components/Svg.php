@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\View\Components;
+namespace Cybex\LaravelMultiFactor\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;

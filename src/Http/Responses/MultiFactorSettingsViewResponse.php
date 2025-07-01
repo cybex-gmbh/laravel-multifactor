@@ -1,10 +1,10 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Http\Responses;
+namespace Cybex\LaravelMultiFactor\Http\Responses;
 
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;

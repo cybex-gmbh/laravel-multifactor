@@ -1,8 +1,8 @@
 {
-    "name": "cybex-gmbh/laravel-multi-factor",
+    "name": "cybex/laravel-multi-factor",
     "description": "This package provides a flexible multi-factor authentication solution for Laravel, supports multiple multi-factor authentication methods and easy configuration of multi-factor authentication modes like optional, required or force.",
     "keywords": [
-        "cybex-gmbh",
+        "cybex",
         "laravel-multi-factor"
     ],
     "homepage": "https://github.com/cybex-gmbh/laravel-multi-factor",
@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "CybexGmbh\\LaravelMultiFactor\\": "src"
+            "Cybex\\LaravelMultiFactor\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "CybexGmbh\\LaravelMultiFactor\\Tests\\": "tests"
+            "Cybex\\LaravelMultiFactor\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -44,7 +44,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "CybexGmbh\\LaravelMultiFactor\\MultiFactorServiceProvider"
+                "Cybex\\LaravelMultiFactor\\MultiFactorServiceProvider"
             ],
             "aliases": {
                 "LaravelMultiFactor": "MultiFactorFacade"

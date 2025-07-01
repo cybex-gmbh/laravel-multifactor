@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Facades;
+namespace Cybex\LaravelMultiFactor\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

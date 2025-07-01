@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Contracts;
+namespace Cybex\LaravelMultiFactor\Contracts;
 
 use Illuminate\Contracts\Support\Responsable;
 

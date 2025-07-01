@@ -1,10 +1,10 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Traits;
+namespace Cybex\LaravelMultiFactor\Traits;
 
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod as MultiFactorAuthMethodEnum;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use CybexGmbh\LaravelMultiFactor\Models\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod as MultiFactorAuthMethodEnum;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Cybex\LaravelMultiFactor\Models\MultiFactorAuthMethod;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 

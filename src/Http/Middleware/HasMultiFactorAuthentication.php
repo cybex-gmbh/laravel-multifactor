@@ -1,9 +1,9 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
+namespace Cybex\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,7 +1,7 @@
 <?php
 
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use CybexGmbh\LaravelMultiFactor\Http\Controllers\MultiFactorAuthController;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Http\Controllers\MultiFactorAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function () {
