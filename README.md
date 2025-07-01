@@ -175,7 +175,7 @@ The `config/multi-factor.php` file includes the following options:
 
 To add a new multi-factor authentication method to the package, follow these steps:
 
-1. Create a new handler class that implements the `MultiFactorAuthMethod` interface in `src/Classes/MultiFactorAuthMethodHandler/`. This handler will define the logic for setting up, and challenging the new method for a user.
+1. Create a new handler class that implements the `MultiFactorAuthMethodContract` interface in `src/Classes/MultiFactorAuthMethodHandler/`. This handler will define the logic for setting up, and challenging the new method for a user.
 
 2. Add the new method to the `MultiFactorAuthMethod` enum:
 
@@ -190,7 +190,7 @@ case EMAIL = 'email';
 case TOTP = 'totp';
 case CUSTOM = 'custom';
 
-    public function getHandler(): MultiFactorAuthMethodHandlerContract
+    public function getHandler(): MultiFactorAuthMethodContract
     {
         return match ($this) {
             self::EMAIL => new EmailHandler(),
