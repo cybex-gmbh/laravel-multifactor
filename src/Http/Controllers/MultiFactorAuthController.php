@@ -20,9 +20,6 @@ use MFA;
 
 class MultiFactorAuthController extends Controller
 {
-    /**
-     * @return mixed
-     */
     public function show(): mixed
     {
         $user = Auth::user();
@@ -43,10 +40,6 @@ class MultiFactorAuthController extends Controller
         return app(MultiFactorChooseViewResponseContract::class, $userMethods ?: MultiFactorAuthMethod::getAllowedMethods());
     }
 
-    /**
-     * @param MultiFactorAuthMethod $method
-     * @return MultiFactorChallengeViewResponseContract
-     */
     public function handleMultiFactorAuthMethod(MultiFactorAuthMethod $method): MultiFactorChallengeViewResponseContract
     {
         return match ($method) {
@@ -54,10 +47,6 @@ class MultiFactorAuthController extends Controller
         };
     }
 
-    /**
-     * @param MultiFactorAuthMethod $method
-     * @return RedirectResponse
-     */
     public function send(MultiFactorAuthMethod $method): RedirectResponse
     {
         return match ($method) {
@@ -65,10 +54,6 @@ class MultiFactorAuthController extends Controller
         };
     }
 
-    /**
-     * @param MultiFactorAuthMethod|null $method
-     * @return RedirectResponse|MultiFactorChooseViewResponseContract
-     */
     public function setup(MultiFactorAuthMethod $method = null): RedirectResponse|MultiFactorChooseViewResponseContract
     {
         $methods = $method?->isAllowed() ? [$method] : MultiFactorAuthMethod::getAllowedMethods();
@@ -84,11 +69,6 @@ class MultiFactorAuthController extends Controller
         return app(MultiFactorChooseViewResponseContract::class, $methods);
     }
 
-    /**
-     * @param MultiFactorAuthMethod $method
-     * @param RedirectResponse|null $back
-     * @return RedirectResponse
-     */
     public function deleteMultiFactorAuthMethod(MultiFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
         Auth::user()->multiFactorAuthMethods()->where('type', $method)->detach();
@@ -96,13 +76,6 @@ class MultiFactorAuthController extends Controller
         return $back ?? redirect()->back();
     }
 
-    /**
-     * @param Request $request
-     * @param MultiFactorAuthMethod $method
-     * @param User|null $user
-     * @param int|null $code
-     * @return Application|Redirector|RedirectResponse
-     */
     public function verifyTwoFactorAuthCode(Request $request, MultiFactorAuthMethod $method, User $user = null, int $code = null): Application|Redirector|RedirectResponse
     {
         $code ??= $request->integer('code') ?? abort(403);
@@ -121,10 +94,6 @@ class MultiFactorAuthController extends Controller
         return Redirect::intended();
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function authenticateByEmailOnly(Request $request): RedirectResponse
     {
         $user = User::whereEmail($request->input('email'))->first();
@@ -138,10 +107,6 @@ class MultiFactorAuthController extends Controller
         return Redirect::intended();
     }
 
-    /**
-     * @param User $user
-     * @return MultiFactorSettingsViewResponseContract|Application|mixed|void
-     */
     public function multiFactorSettings(User $user)
     {
         if (Auth::user()->is($user) && !MultiFactorAuthMode::isForceMode()) {

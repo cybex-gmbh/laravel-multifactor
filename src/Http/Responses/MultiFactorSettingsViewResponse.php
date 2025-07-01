@@ -12,16 +12,9 @@ use Illuminate\Foundation\Auth\User;
 
 class MultiFactorSettingsViewResponse implements MultiFactorSettingsViewResponseContract
 {
-    /**
-     * @param User $user
-     */
     public function __construct(protected User $user)
     {}
 
-    /**
-     * @param $request
-     * @return Application|Factory|object|View
-     */
     public function toResponse($request)
     {
         $user = $this->user;
