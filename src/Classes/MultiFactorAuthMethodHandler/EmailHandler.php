@@ -2,7 +2,7 @@
 
 namespace Cybex\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler;
 
-use Cybex\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as MultiFactorAuthMethodInterface;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorAuthMethodContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Helpers\MFAHelper;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\URL;
 use Cybex\LaravelMultiFactor\Models\MultiFactorAuthMethod as MultiFactorAuthMethodModel;
 use MFA;
 
-class EmailHandler implements MultiFactorAuthMethodInterface
+class EmailHandler implements MultiFactorAuthMethodContract
 {
     protected MultiFactorAuthMethod $method = MultiFactorAuthMethod::EMAIL;
     protected User $user;

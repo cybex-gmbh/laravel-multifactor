@@ -3,7 +3,7 @@
 namespace Cybex\LaravelMultiFactor\Enums;
 
 use Cybex\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler\EmailHandler;
-use Cybex\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as MultiFactorAuthMethodContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorAuthMethodContract;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
