@@ -4,9 +4,7 @@
 
     <x-multi-factor::auth-card>
         <x-slot name="header">
-            <h1>
-                @lang('multi-factor::auth.settings.title')
-            </h1>
+            @lang('multi-factor::auth.settings.title')
         </x-slot>
 
         <div>
