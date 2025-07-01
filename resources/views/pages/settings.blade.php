@@ -47,7 +47,7 @@
 
                             @if ($mfaMode === MultiFactorAuthMode::OPTIONAL || $userMethodsAmount > 1)
                                 <x-multi-factor::form method="DELETE" :action="route('mfa.delete.method', $method)">
-                                    <x-multi-factor::button type="submit" class="mfa-button-danger" confirm="Disable {{ $method->value }}?">@lang('multi-factor::button.disable')</x-multi-factor::button>
+                                    <x-multi-factor::button type="submit" class="mfa-button-danger" onclick="return confirm ('Disable {{ Str::headline($method->value) }}?')">@lang('multi-factor::button.disable')</x-multi-factor::button>
                                 </x-multi-factor::form>
                             @else
                                 <x-multi-factor::button class="mfa-button-disabled">@lang('multi-factor::button.disable')</x-multi-factor::button>
