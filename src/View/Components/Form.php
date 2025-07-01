@@ -8,18 +8,12 @@ use Illuminate\View\Component;
 
 class Form extends Component
 {
-    /**
-     * Create a new component instance.
-     */
     public function __construct(
         public string $action,
         public string $method = 'POST',
     ) {
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
     public function render(): View|Closure|string
     {
         return view('laravel-multi-factor::components.form');

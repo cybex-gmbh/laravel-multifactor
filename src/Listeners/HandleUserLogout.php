@@ -7,9 +7,6 @@ use MFA;
 
 class HandleUserLogout
 {
-    /**
-     * Handle the event.
-     */
     public function handle(Logout $event): void
     {
         $user = $event->user;
