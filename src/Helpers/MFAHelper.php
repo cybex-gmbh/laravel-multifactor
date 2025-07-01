@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Helpers;
+namespace Cybex\LaravelMultiFactor\Helpers;
 
 use Illuminate\Support\Carbon;
 

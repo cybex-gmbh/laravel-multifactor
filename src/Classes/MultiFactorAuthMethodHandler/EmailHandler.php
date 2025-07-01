@@ -1,17 +1,17 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler;
+namespace Cybex\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler;
 
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as MultiFactorAuthMethodInterface;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use CybexGmbh\LaravelMultiFactor\Helpers\MFAHelper;
-use CybexGmbh\LaravelMultiFactor\Notifications\MultiFactorCodeNotification;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorAuthMethod as MultiFactorAuthMethodInterface;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Helpers\MFAHelper;
+use Cybex\LaravelMultiFactor\Notifications\MultiFactorCodeNotification;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
-use CybexGmbh\LaravelMultiFactor\Models\MultiFactorAuthMethod as MultiFactorAuthMethodModel;
+use Cybex\LaravelMultiFactor\Models\MultiFactorAuthMethod as MultiFactorAuthMethodModel;
 use MFA;
 
 class EmailHandler implements MultiFactorAuthMethodInterface

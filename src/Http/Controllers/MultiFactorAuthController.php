@@ -1,13 +1,13 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Http\Controllers;
+namespace Cybex\LaravelMultiFactor\Http\Controllers;
 
 use App\Models\User;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

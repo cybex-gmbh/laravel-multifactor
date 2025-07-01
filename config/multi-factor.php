@@ -1,9 +1,9 @@
 <?php
 
-use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorChallengeViewResponse;
-use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorChooseViewResponse;
-use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorLoginViewResponse;
-use CybexGmbh\LaravelMultiFactor\Http\Responses\MultiFactorSettingsViewResponse;
+use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorChallengeViewResponse;
+use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorChooseViewResponse;
+use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorLoginViewResponse;
+use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorSettingsViewResponse;
 
 return [
     // supported methods: 'email'

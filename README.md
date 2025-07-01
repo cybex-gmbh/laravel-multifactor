@@ -1,7 +1,7 @@
 # Laravel Multi-Factor
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/cybex-gmbh/laravel-multi-factor.svg?style=flat-square)](https://packagist.org/packages/cybex-gmbh/laravel-multi-factor)
-[![Total Downloads](https://img.shields.io/packagist/dt/cybex-gmbh/laravel-multi-factor.svg?style=flat-square)](https://packagist.org/packages/cybex-gmbh/laravel-multi-factor)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/cybex/laravel-multi-factor.svg?style=flat-square)](https://packagist.org/packages/cybex/laravel-multi-factor)
+[![Total Downloads](https://img.shields.io/packagist/dt/cybex/laravel-multi-factor.svg?style=flat-square)](https://packagist.org/packages/cybex/laravel-multi-factor)
 
 This package provides a flexible multi-factor authentication solution for Laravel, supporting multiple methods and configuration of multi-factor authentication modes like force, required or optional.
 
@@ -33,7 +33,7 @@ Users can log in using a unique email link, enabling authentication with just th
 ## Installation
 
 ```bash
-composer require cybex-gmbh/laravel-multi-factor
+composer require cybex/laravel-multi-factor
 ```
 
 ### Migrating
@@ -79,7 +79,7 @@ Route::middleware(['hasMultiFactorAuthentication', 'hasAllowedMultiFactorAuthMet
 Implement the `MultiFactorAuthTrait` in your `User` model:
 
 ```php
-use CybexGmbh\LaravelMultiFactor\Traits\MultiFactorAuthTrait;
+use Cybex\LaravelMultiFactor\Traits\MultiFactorAuthTrait;
 
 class User extends Authenticatable
 {
@@ -136,7 +136,7 @@ MULTI_FACTOR_AUTHENTICATION_SETTINGS=false
 The package provides default views for multi-factor authentication. You can customize them by publishing the views:
 
 ```bash
-php artisan vendor:publish --provider="CybexGmbh\LaravelMultiFactor\LaravelMultiFactorServiceProvider" --tag="multi-factor.views"
+php artisan vendor:publish --provider="Cybex\LaravelMultiFactor\LaravelMultiFactorServiceProvider" --tag="multi-factor.views"
 ```
 
 You can find the views in the `resources/views/vendor/laravel-multi-factor/pages` directory.
@@ -180,7 +180,7 @@ To add a new multi-factor authentication method to the package, follow these ste
 2. Add the new method to the `MultiFactorAuthMethod` enum:
 
 ```php
-namespace CybexGmbh\LaravelMultiFactor\Enums;
+namespace Cybex\LaravelMultiFactor\Enums;
 
 use App\MultiFactor\CustomMultiFactorHandler;
 

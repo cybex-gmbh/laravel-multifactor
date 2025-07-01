@@ -1,11 +1,11 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
+namespace Cybex\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Illuminate\Http\Request;
 
 class EnforceEmailOnlyLogin

@@ -1,11 +1,11 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor;
+namespace Cybex\LaravelMultiFactor;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \CybexGmbh\LaravelMultiFactor\Skeleton\SkeletonClass
+ * @see \Cybex\LaravelMultiFactor\Skeleton\SkeletonClass
  */
 class MultiFactorFacade extends Facade
 {

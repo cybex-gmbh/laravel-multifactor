@@ -1,9 +1,9 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Models;
+namespace Cybex\LaravelMultiFactor\Models;
 
-use App\Models\User;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod as TwoFactorAuthMethodEnum;
+use Illuminate\Foundation\Auth\User;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod as TwoFactorAuthMethodEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

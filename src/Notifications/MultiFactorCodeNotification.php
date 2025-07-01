@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Notifications;
+namespace Cybex\LaravelMultiFactor\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;

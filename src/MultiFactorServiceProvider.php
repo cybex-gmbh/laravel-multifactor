@@ -1,23 +1,23 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor;
+namespace Cybex\LaravelMultiFactor;
 
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use CybexGmbh\LaravelMultiFactor\Facades\MFA;
-use CybexGmbh\LaravelMultiFactor\Helpers\MFAHelper;
-use CybexGmbh\LaravelMultiFactor\Http\Middleware\EnforceEmailOnlyLogin;
-use CybexGmbh\LaravelMultiFactor\Http\Middleware\HasAllowedMultiFactorAuthMethods;
-use CybexGmbh\LaravelMultiFactor\Http\Middleware\HasMultiFactorAuthentication;
-use CybexGmbh\LaravelMultiFactor\Http\Middleware\LimitMultiFactorAuthAccess;
-use CybexGmbh\LaravelMultiFactor\Http\Middleware\RedirectIfInSetup;
-use CybexGmbh\LaravelMultiFactor\Http\Middleware\RedirectIfMultiFactorAuthenticated;
-use CybexGmbh\LaravelMultiFactor\Listeners\HandleUserLogout;
-use CybexGmbh\LaravelMultiFactor\View\Components\LegacyAuthCard;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Cybex\LaravelMultiFactor\Facades\MFA;
+use Cybex\LaravelMultiFactor\Helpers\MFAHelper;
+use Cybex\LaravelMultiFactor\Http\Middleware\EnforceEmailOnlyLogin;
+use Cybex\LaravelMultiFactor\Http\Middleware\HasAllowedMultiFactorAuthMethods;
+use Cybex\LaravelMultiFactor\Http\Middleware\HasMultiFactorAuthentication;
+use Cybex\LaravelMultiFactor\Http\Middleware\LimitMultiFactorAuthAccess;
+use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfInSetup;
+use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfMultiFactorAuthenticated;
+use Cybex\LaravelMultiFactor\Listeners\HandleUserLogout;
+use Cybex\LaravelMultiFactor\View\Components\LegacyAuthCard;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
@@ -48,7 +48,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('limitMultiFactorAuthAccess', LimitMultiFactorAuthAccess::class);
         $router->aliasMiddleware('enforceEmailOnlyLogin', EnforceEmailOnlyLogin::class);
 
-        Blade::componentNamespace('CybexGmbh\\LaravelMultiFactor\\View\\Components', 'multi-factor');
+        Blade::componentNamespace('Cybex\\LaravelMultiFactor\\View\\Components', 'multi-factor');
 
         Event::listen(Logout::class, HandleUserLogout::class);
 
