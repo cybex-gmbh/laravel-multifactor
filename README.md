@@ -79,7 +79,7 @@ Route::middleware(['hasMultiFactorAuthentication', 'hasAllowedMultiFactorAuthMet
 Implement the `MultiFactorAuthTrait` in your `User` model:
 
 ```php
-use CybexGmbh\LaravelMultiFactor\Traits\MultiFactorAuthTrait;
+use Cybex\LaravelMultiFactor\Traits\MultiFactorAuthTrait;
 
 class User extends Authenticatable
 {
@@ -136,7 +136,7 @@ MULTI_FACTOR_AUTHENTICATION_SETTINGS=false
 The package provides default views for multi-factor authentication. You can customize them by publishing the views:
 
 ```bash
-php artisan vendor:publish --provider="CybexGmbh\LaravelMultiFactor\LaravelMultiFactorServiceProvider" --tag="multi-factor.views"
+php artisan vendor:publish --provider="Cybex\LaravelMultiFactor\LaravelMultiFactorServiceProvider" --tag="multi-factor.views"
 ```
 
 You can find the views in the `resources/views/vendor/laravel-multi-factor/pages` directory.
@@ -180,7 +180,7 @@ To add a new multi-factor authentication method to the package, follow these ste
 2. Add the new method to the `MultiFactorAuthMethod` enum:
 
 ```php
-namespace CybexGmbh\LaravelMultiFactor\Enums;
+namespace Cybex\LaravelMultiFactor\Enums;
 
 use App\MultiFactor\CustomMultiFactorHandler;
 

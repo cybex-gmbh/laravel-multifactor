@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\View\Components\Form;
+namespace Cybex\LaravelMultiFactor\View\Components\Form;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;

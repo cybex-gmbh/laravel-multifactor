@@ -1,9 +1,9 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Http\Responses;
+namespace Cybex\LaravelMultiFactor\Http\Responses;
 
-use CybexGmbh\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;

@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Listeners;
+namespace Cybex\LaravelMultiFactor\Listeners;
 
 use Illuminate\Auth\Events\Logout;
 use MFA;

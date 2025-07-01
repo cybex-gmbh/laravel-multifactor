@@ -1,6 +1,6 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Enums;
+namespace Cybex\LaravelMultiFactor\Enums;
 
 enum MultiFactorAuthMode: string
 {

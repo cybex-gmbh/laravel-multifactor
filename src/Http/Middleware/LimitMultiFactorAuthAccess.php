@@ -1,10 +1,10 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor\Http\Middleware;
+namespace Cybex\LaravelMultiFactor\Http\Middleware;
 
 use Closure;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use MFA;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

@@ -1,4 +1,4 @@
-@use(CybexGmbh\LaravelMultiFactor\Enums\MultiFactorAuthMode)
+@use(Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode)
 <x-multi-factor::layout>
     <x-slot name="title">@lang('multi-factor::auth.settings.title')</x-slot>
 
