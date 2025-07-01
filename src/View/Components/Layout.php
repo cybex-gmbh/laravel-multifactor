@@ -10,9 +10,6 @@ use Illuminate\View\Component;
 
 class Layout extends Component
 {
-    /**
-     * @return Application|Factory|Htmlable|View
-     */
     public function render()
     {
         return view('laravel-multi-factor::layouts.multi-factor');

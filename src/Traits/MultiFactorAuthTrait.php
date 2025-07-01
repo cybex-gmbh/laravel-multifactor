@@ -10,31 +10,19 @@ use Illuminate\Support\Arr;
 
 trait MultiFactorAuthTrait
 {
-    /**
-     * @return BelongsToMany
-     */
     public function multiFactorAuthMethods(): BelongsToMany
     {
         return $this->belongsToMany(MultiFactorAuthMethod::class, 'multi_factor_auth_method_user');
     }
 
-    /**
-     * @return mixed
-     */
     public function getMultiFactorAuthMethodNames() {
         return $this->multiFactorAuthMethods->map(fn($method) => $method->type->value)->toArray();
     }
 
-    /**
-     * @return mixed
-     */
     public function getMultiFactorAuthMethods() {
         return $this->multiFactorAuthMethods->pluck('type')->toArray();
     }
 
-    /**
-     * @return bool
-     */
     public function hasAllowedMultiFactorAuthMethods(): bool
     {
         return filled($this->getAllowedMultiFactorAuthMethods());

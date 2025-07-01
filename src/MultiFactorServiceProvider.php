@@ -27,9 +27,6 @@ use Illuminate\Support\ServiceProvider;
 
 class MultiFactorServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     */
     public function boot()
     {
         /*
@@ -86,9 +83,6 @@ class MultiFactorServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Register the application services.
-     */
     public function register()
     {
         // Register the main class to use with the facade

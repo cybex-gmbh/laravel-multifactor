@@ -10,11 +10,6 @@ use Illuminate\Http\Request;
 
 class EnforceEmailOnlyLogin
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next)
     {
         if (MultiFactorAuthMethod::isEmailOnlyLoginActive() && MultiFactorAuthMode::isForceMode() && MultiFactorAuthMethod::getForceMethod(
