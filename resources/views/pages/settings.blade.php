@@ -1,4 +1,3 @@
-@use(Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode)
 <x-multi-factor::layout>
     <x-slot name="title">@lang('multi-factor::auth.settings.title')</x-slot>
 
@@ -45,7 +44,7 @@
                         @if ($method->isUserMethod())
                             <p>@lang('multi-factor::auth.status.enabled.label')</p>
 
-                            @if ($mfaMode === MultiFactorAuthMode::OPTIONAL || $userMethodsAmount > 1)
+                            @if ($isOptionalMode || $userMethodsAmount > 1)
                                 <x-multi-factor::form method="DELETE" :action="route('mfa.delete.method', $method)">
                                     <x-multi-factor::button type="submit" class="mfa-button-danger" onclick="return confirm ('Disable {{ Str::headline($method->value) }}?')">@lang('multi-factor::button.disable')</x-multi-factor::button>
                                 </x-multi-factor::form>

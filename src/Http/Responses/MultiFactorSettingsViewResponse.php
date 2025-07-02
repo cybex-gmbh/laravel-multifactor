@@ -22,8 +22,9 @@ class MultiFactorSettingsViewResponse implements MultiFactorSettingsViewResponse
         $userMethodsAmount = count($userMethods);
         $allowedMethods = MultiFactorAuthMethod::getAllowedMethods();
         $mfaMode = MultiFactorAuthMode::fromConfig();
+        $isOptionalMode = MultiFactorAuthMode::isOptionalMode();
         $methods = $user->getUserMethodsWithRemainingAllowedMethods($allowedMethods, $userMethods);
 
-        return view('laravel-multi-factor::pages.settings', compact(['user', 'userMethodsAmount', 'methods', 'mfaMode']));
+        return view('laravel-multi-factor::pages.settings', compact(['user', 'userMethodsAmount', 'methods', 'mfaMode', 'isOptionalMode']));
     }
 }

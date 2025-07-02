@@ -17,4 +17,9 @@ enum MultiFactorAuthMode: string
     {
         return self::fromConfig() === self::FORCE;
     }
+
+    public static function isOptionalMode(): bool
+    {
+        return self::fromConfig() === self::OPTIONAL;
+    }
 }
