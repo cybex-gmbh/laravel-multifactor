@@ -15,7 +15,7 @@ class LimitMultiFactorAuthAccess
     public function handle(Request $request, Closure $next): Response
     {
         $method = $request->route('method');
-        $isVerified = MFA::getVerified();
+        $isVerified = MFA::isVerified();
         $isForceMode = MultiFactorAuthMode::isForceMode();
 
         if (!$isVerified) {
@@ -34,17 +34,13 @@ class LimitMultiFactorAuthAccess
                     return redirect()->route('mfa.method', ['method' => $forceMethod]);
                 }
             }
-        }
-
-        if ($isVerified && (!$method->isAllowed() || $method->isUserMethod())) {
+        } else if (!$method->isAllowed() || $method->isUserMethod()) {
             if ($isForceMode) {
                 return redirect()->back();
             }
 
             return redirect()->route('mfa.settings', Auth::user());
-        }
-
-        if ($isVerified && $isForceMode && !$method->isForceMethod() && MFA::getSetupAfterLogin()) {
+        } else if ($isForceMode && !$method->isForceMethod() && MFA::isInSetupAfterLogin()) {
             return redirect()->route('mfa.setup');
         }
 

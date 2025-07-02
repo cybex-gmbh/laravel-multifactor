@@ -26,12 +26,12 @@ class EmailHandler implements MultiFactorAuthMethodContract
 
     public function setup(): RedirectResponse
     {
-        $this->user->multiFactorAuthMethods()->syncWithoutDetaching(MultiFactorAuthMethodModel::firstOrCreate([
+        $this->user->multiFactorAuthMethods()->attach(MultiFactorAuthMethodModel::firstOrCreate([
             'type' => $this->method,
         ]));
 
-        if (MFA::getSetupAfterLogin()) {
-            MFA::remove(MFAHelper::SETUP_AFTER_LOGIN);
+        if (MFA::isInSetupAfterLogin()) {
+            MFA::endSetupAfterLogin();
 
             return redirect()->intended();
         }
