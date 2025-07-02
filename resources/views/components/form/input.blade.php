@@ -6,11 +6,11 @@
            type="{{ $type ?? 'text' }}"
            value="{{ old($field, $value ?? '') }}"
            autocomplete="{{ $autocomplete }}"
-           {{ $attributes->class(['mfa-input', 'has-errors' => $errors->has($field)]) }}
+           {{ $attributes->class(['mfa-input', 'mfa-has-errors' => $errors->has($field)]) }}
     />
 
     @error($field)
-        <span class="text-red-400 text-xs" role="alert">
+        <span class="mfa-text-danger mfa-text-sm" role="alert">
             <strong>{{ $message }}</strong>
         </span>
     @enderror

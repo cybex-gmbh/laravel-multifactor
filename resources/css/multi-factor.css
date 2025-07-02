@@ -111,10 +111,10 @@
 .mfa-input {
     width: 100%;
     padding: 12px 20px;
-    margin: 8px 0;
+    margin: 8px 0 0;
     box-sizing: border-box;
 
-    &:focus:not(.has-errors) {
+    &:focus:not(.mfa-has-errors) {
         border-color: #3b82f6;
     }
 }
@@ -130,6 +130,15 @@
 .mfa-text-sm {
     font-size: 0.875rem;
     line-height: 1.25rem;
+}
+
+.mfa-has-errors {
+    border-color: #fc8181;
+    &:focus {
+        outline: none;
+        border-color: #fc8181;
+        box-shadow: 0 0 0 2px rgb(213, 37, 37, 0.7);
+    }
 }
 
 @media (prefers-color-scheme: dark) {
