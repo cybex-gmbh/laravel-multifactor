@@ -11,7 +11,7 @@ class MFAHelper
     public const VERIFIED = 'two_factor_auth_verified';
     public const SETUP_AFTER_LOGIN = 'two_factor_auth_setup_after_login';
 
-    public static function clear(): void
+    public function clear(): void
     {
         session()->forget([
             self::CODE,
@@ -19,73 +19,78 @@ class MFAHelper
         ]);
     }
 
-    public static function setVerified(bool $value = true): void
+    public function setVerified(bool $value = true): void
     {
-        self::put(self::VERIFIED, $value);
+        $this->put(self::VERIFIED, $value);
     }
 
-    public static function setAuthCode(int $code, int $expiresAt): void
+    public function setAuthCode(int $code, int $expiresAt): void
     {
-        self::put(self::CODE, [
+        $this->put(self::CODE, [
             'code' => $code,
             'expires_at' => $expiresAt,
         ]);
     }
 
-    public static function setEmailSent(bool $value = true): void
+    public function setEmailSent(bool $value = true): void
     {
-        self::put(self::EMAIL_SENT, $value);
+        $this->put(self::EMAIL_SENT, $value);
     }
 
-    public static function setSetupAfterLogin(bool $value = true): void
+    public function setSetupAfterLogin(bool $value = true): void
     {
-        self::put(self::SETUP_AFTER_LOGIN, $value);
+        $this->put(self::SETUP_AFTER_LOGIN, $value);
     }
 
-    public static function getVerified()
+    public function isVerified(): bool
     {
-        return self::get(self::VERIFIED);
+        return $this->get(self::VERIFIED);
     }
 
-    public static function getAuthCode()
+    public function getAuthCode()
     {
-        return self::get(self::CODE);
+        return $this->get(self::CODE);
     }
 
-    public static function getSetupAfterLogin()
+    public function isInSetupAfterLogin()
     {
-        return self::get(self::SETUP_AFTER_LOGIN);
+        return $this->get(self::SETUP_AFTER_LOGIN);
     }
 
-    public static function isEmailSent(): bool
+    public function endSetupAfterLogin()
+    {
+        $this->remove(self::SETUP_AFTER_LOGIN);
+    }
+
+    public function isEmailSent(): bool
     {
         return session()->has(self::EMAIL_SENT);
     }
 
-    public static function isCodeExpired(): bool
+    public function isCodeExpired(): bool
     {
-        $sessionData = self::get(self::CODE);
+        $sessionData = $this->get(self::CODE);
 
         return $sessionData && now()->greaterThan(Carbon::createFromTimestamp($sessionData['expires_at']));
     }
 
-    public static function getCode(): ?int
+    public function getCode(): ?int
     {
-        return self::get(self::CODE, 'code');
+        return $this->get(self::CODE, 'code');
     }
 
-    public static function get(string $key, string $subKey = null): mixed
+    protected function get(string $key, string $subKey = null): mixed
     {
         $data = session($key);
         return $subKey ? ($data[$subKey] ?? null) : $data;
     }
 
-    public static function put(string $key, mixed $value = true): void
+    protected function put(string $key, mixed $value = true): void
     {
         session()->put($key, $value);
     }
 
-    public static function remove(string $key): void
+    public function remove(string $key): void
     {
         session()->remove($key);
     }
