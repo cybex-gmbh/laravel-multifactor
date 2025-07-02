@@ -17,7 +17,7 @@ class HasMultiFactorAuthentication
 
         if ($user->multiFactorAuthMethods()->exists() && !MFA::isVerified()) {
 
-            if (MultiFactorAuthMode::fromConfig() === MultiFactorAuthMode::OPTIONAL && !$user->getAllowedMultiFactorAuthMethods() && $user->getUnallowedMultiFactorAuthMethods()) {
+            if (MultiFactorAuthMode::isOptionalMode() && !$user->getAllowedMultiFactorAuthMethods() && $user->getUnallowedMultiFactorAuthMethods()) {
                 MFA::setVerified();
                 return $next($request);
             }
