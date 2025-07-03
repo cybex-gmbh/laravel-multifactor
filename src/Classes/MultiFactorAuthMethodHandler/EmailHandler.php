@@ -5,7 +5,6 @@ namespace Cybex\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorAuthMethodContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use Cybex\LaravelMultiFactor\Helpers\MFAHelper;
 use Cybex\LaravelMultiFactor\Notifications\MultiFactorCodeNotification;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\RedirectResponse;
@@ -39,14 +38,14 @@ class EmailHandler implements MultiFactorAuthMethodContract
         return redirect()->route('mfa.settings', $this->user);
     }
 
-    public function challenge(MultiFactorAuthMethod $method = null): MultifactorChallengeViewResponseContract
+    public function challenge(): MultifactorChallengeViewResponseContract
     {
         if (!MFA::isEmailSent()) {
             $this->sendEmail();
             MFA::setEmailSent();
         }
 
-        return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $method ?? $this->method]);
+        return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $this->method]);
     }
 
     public function sendEmail(): RedirectResponse
