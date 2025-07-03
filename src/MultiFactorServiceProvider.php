@@ -45,6 +45,11 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('limitMultiFactorAuthAccess', LimitMultiFactorAuthAccess::class);
         $router->aliasMiddleware('enforceEmailOnlyLogin', EnforceEmailOnlyLogin::class);
 
+        $router->middlewareGroup('mfa', [
+            'hasMultiFactorAuthentication',
+            'hasAllowedMultiFactorAuthMethods',
+        ]);
+
         Blade::componentNamespace('Cybex\\LaravelMultiFactor\\View\\Components', 'multi-factor');
 
         Event::listen(Logout::class, HandleUserLogout::class);
