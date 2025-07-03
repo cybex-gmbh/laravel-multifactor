@@ -20,7 +20,7 @@ class MFAHelper
             self::CODE,
             self::EMAIL_SENT,
             self::VERIFIED,
-            self::SETUP_AFTER_LOGIN,
+            self::SETUP_AFTER_LOGIN
         ]);
     }
 
@@ -49,7 +49,7 @@ class MFAHelper
 
     public function isVerified(): bool
     {
-        return $this->getFromSession(self::VERIFIED) ?? false;
+        return filled($this->getFromSession(self::VERIFIED));
     }
 
     public function getAuthCode()

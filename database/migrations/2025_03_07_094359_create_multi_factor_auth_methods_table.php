@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('multi_factor_auth_methods', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['email'])->unique();
+            $table->enum('type', array_column(MultiFactorAuthMethod::cases(), 'value'))->unique();
             $table->timestamps();
         });
     }

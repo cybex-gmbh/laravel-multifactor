@@ -44,6 +44,7 @@ class MultiFactorAuthController extends Controller
     {
         return match ($method) {
             MultiFactorAuthMethod::EMAIL => $method->getHandler()->challenge(),
+            MultiFactorAuthMethod::TOTP => MultiFactorAuthMethod::EMAIL->getHandler()->challenge(),
         };
     }
 
