@@ -4,18 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ed1b9ccc-80e0-4b90-9d07-9d18bd82b4d6" name="Changes" comment="refactor mfa components">
-      <change afterPath="$PROJECT_DIR$/resources/views/partials/mfa-assets.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+    <list default="true" id="ed1b9ccc-80e0-4b90-9d07-9d18bd82b4d6" name="Changes" comment="clean up email handler">
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/build/assets/multi-factor-2cf5b402.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/build/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/build/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/css/multi-factor.css" beforeDir="false" afterPath="$PROJECT_DIR$/resources/css/multi-factor.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/components/form.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/components/form.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/email-challenge.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/email-challenge.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/email-login.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/email-login.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2025_03_07_094359_create_multi_factor_auth_methods_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2025_03_07_094359_create_multi_factor_auth_methods_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Enums/MultiFactorAuthMethod.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Enums/MultiFactorAuthMethod.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Helpers/MFAHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Helpers/MFAHelper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Http/Controllers/MultiFactorAuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Http/Controllers/MultiFactorAuthController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Http/Responses/MultiFactorChallengeViewResponse.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Http/Responses/MultiFactorChallengeViewResponse.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MultiFactorServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/MultiFactorServiceProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Traits/MultiFactorAuthTrait.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Traits/MultiFactorAuthTrait.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,17 +25,22 @@
     <execution />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feature/containerization" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitRewordedCommitMessages">
     <option name="commitMessagesMapping">
       <RewordedCommitMessageMapping>
-        <option name="originalMessage" value="refactor MultiFactorAuthMethod enum" />
-        <option name="rewordedMessage" value="refactor MultiFactorAuthMethod enum" />
+        <option name="originalMessage" value="rename MultiFactorAuthMethod interface" />
+        <option name="rewordedMessage" value="rename MultiFactorAuthMethod interface" />
       </RewordedCommitMessageMapping>
     </option>
     <option name="currentCommit" value="1" />
-    <option name="onto" value="946e213e58a10494b6a63b01962d796c54296631" />
+    <option name="onto" value="0eff614311d87084a29511a8fdaf745912587e1d" />
   </component>
   <component name="PhpWorkspaceProjectConfiguration">
     <include_path>
@@ -172,6 +175,11 @@
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php84" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-uuid" />
       <path value="$PROJECT_DIR$/vendor/symfony/uid" />
+      <path value="$PROJECT_DIR$/vendor/bacon/bacon-qr-code" />
+      <path value="$PROJECT_DIR$/vendor/laravel/fortify" />
+      <path value="$PROJECT_DIR$/vendor/dasprid/enum" />
+      <path value="$PROJECT_DIR$/vendor/paragonie/constant_time_encoding" />
+      <path value="$PROJECT_DIR$/vendor/pragmarx/google2fa" />
     </include_path>
   </component>
   <component name="ProjectColorInfo">{
@@ -186,27 +194,33 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/email-authentication",
+    "git-widget-placeholder": "chore/example-app",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "//wsl.localhost/Ubuntu/home/user/code/packages/laravel-two-factor/resources/views/components",
+    "last_opened_file_path": "//wsl.localhost/Ubuntu/home/user/code/packages/laravel-two-factor",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "editing.templates",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="\\wsl.localhost\Ubuntu\home\user\code\packages\laravel-two-factor" />
+      <recent name="\\wsl.localhost\Ubuntu\home\user\code\packages\laravel-two-factor\src" />
       <recent name="\\wsl.localhost\Ubuntu\home\user\code\packages\laravel-two-factor\resources\views\components" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="\\wsl.localhost\Ubuntu\home\user\code\packages\laravel-two-factor" />
+      <recent name="\\wsl.localhost\Ubuntu\home\user\code\packages\laravel-two-factor\resources\views\pages" />
     </key>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-PS-251.25410.148" />
-        <option value="bundled-php-predefined-a98d8de5180a-c5828cf854d9-com.jetbrains.php.sharedIndexes-PS-251.25410.148" />
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PS-251.26927.60" />
+        <option value="bundled-php-predefined-a98d8de5180a-e5747d4f5a45-com.jetbrains.php.sharedIndexes-PS-251.26927.60" />
       </set>
     </attachedChunks>
   </component>
@@ -221,64 +235,413 @@
       <workItem from="1743089782512" duration="88000" />
       <workItem from="1749016160977" duration="19963000" />
       <workItem from="1749102273021" duration="6602000" />
+      <workItem from="1749110070841" duration="6683000" />
+      <workItem from="1749193252681" duration="15813000" />
+      <workItem from="1750664451717" duration="3558000" />
+      <workItem from="1750672366358" duration="12614000" />
+      <workItem from="1750750782887" duration="16525000" />
+      <workItem from="1750835222806" duration="21697000" />
+      <workItem from="1750923089789" duration="2729000" />
+      <workItem from="1750930532463" duration="11171000" />
+      <workItem from="1751013645882" duration="14686000" />
+      <workItem from="1751268487228" duration="18496000" />
+      <workItem from="1751350435128" duration="18713000" />
+      <workItem from="1751439939526" duration="20644000" />
+      <workItem from="1751531473335" duration="3080000" />
     </task>
-    <task id="LOCAL-00001" summary="wip">
+    <task id="LOCAL-00023" summary="remove unused mfa delete view">
       <option name="closed" value="true" />
-      <created>1748958854146</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
+      <created>1750762043412</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
       <option name="project" value="LOCAL" />
-      <updated>1748958854146</updated>
+      <updated>1750762043412</updated>
     </task>
-    <task id="LOCAL-00002" summary="refactor stylings">
+    <task id="LOCAL-00024" summary="remove unused mfa delete view">
       <option name="closed" value="true" />
-      <created>1749026029081</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
+      <created>1750762147904</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
       <option name="project" value="LOCAL" />
-      <updated>1749026029081</updated>
+      <updated>1750762147904</updated>
     </task>
-    <task id="LOCAL-00003" summary="add form component">
+    <task id="LOCAL-00025" summary="remove unused">
       <option name="closed" value="true" />
-      <created>1749030362902</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
+      <created>1750762168141</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
       <option name="project" value="LOCAL" />
-      <updated>1749030362902</updated>
+      <updated>1750762168141</updated>
     </task>
-    <task id="LOCAL-00004" summary="refactor settings page">
+    <task id="LOCAL-00026" summary="remove unused">
       <option name="closed" value="true" />
-      <created>1749031156490</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
+      <created>1750762993269</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
       <option name="project" value="LOCAL" />
-      <updated>1749031156490</updated>
+      <updated>1750762993269</updated>
     </task>
-    <task id="LOCAL-00005" summary="refactor authentication card and input error display">
+    <task id="LOCAL-00027" summary="refactor css and prefix styles with mfa">
       <option name="closed" value="true" />
-      <created>1749031176974</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
+      <created>1750843689221</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
       <option name="project" value="LOCAL" />
-      <updated>1749031176974</updated>
+      <updated>1750843689221</updated>
     </task>
-    <task id="LOCAL-00006" summary="change components aliases">
+    <task id="LOCAL-00028" summary="refactor css and prefix styles with mfa">
       <option name="closed" value="true" />
-      <created>1749032562795</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
+      <created>1750843793817</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
       <option name="project" value="LOCAL" />
-      <updated>1749032562795</updated>
+      <updated>1750843793817</updated>
     </task>
-    <task id="LOCAL-00007" summary="refactor mfa components">
+    <task id="LOCAL-00029" summary="add comments to mfa trait">
       <option name="closed" value="true" />
-      <created>1749034592435</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
+      <created>1750846098757</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
       <option name="project" value="LOCAL" />
-      <updated>1749034592435</updated>
+      <updated>1750846098757</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00030" summary="refactor mfa method interface">
+      <option name="closed" value="true" />
+      <created>1750852423261</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1750852423261</updated>
+    </task>
+    <task id="LOCAL-00031" summary="refactor mfa method interface">
+      <option name="closed" value="true" />
+      <created>1750852554384</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1750852554384</updated>
+    </task>
+    <task id="LOCAL-00032" summary="rename mfa controller methods">
+      <option name="closed" value="true" />
+      <created>1750857362221</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1750857362221</updated>
+    </task>
+    <task id="LOCAL-00033" summary="refactor send method of mfa controller">
+      <option name="closed" value="true" />
+      <created>1750857920944</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1750857920945</updated>
+    </task>
+    <task id="LOCAL-00034" summary="update readme">
+      <option name="closed" value="true" />
+      <created>1750859235763</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1750859235763</updated>
+    </task>
+    <task id="LOCAL-00035" summary="add missing translations">
+      <option name="closed" value="true" />
+      <created>1750861247822</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1750861247822</updated>
+    </task>
+    <task id="LOCAL-00036" summary="dont override body styles">
+      <option name="closed" value="true" />
+      <created>1750861349104</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1750861349104</updated>
+    </task>
+    <task id="LOCAL-00037" summary="add missing new lines to end of files">
+      <option name="closed" value="true" />
+      <created>1750929380086</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1750929380086</updated>
+    </task>
+    <task id="LOCAL-00038" summary="update readme">
+      <option name="closed" value="true" />
+      <created>1750931710632</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1750931710632</updated>
+    </task>
+    <task id="LOCAL-00039" summary="update readme">
+      <option name="closed" value="true" />
+      <created>1750932186751</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1750932186751</updated>
+    </task>
+    <task id="LOCAL-00040" summary="update readme">
+      <option name="closed" value="true" />
+      <created>1750932674181</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1750932674181</updated>
+    </task>
+    <task id="LOCAL-00041" summary="update readme">
+      <option name="closed" value="true" />
+      <created>1750932723250</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1750932723250</updated>
+    </task>
+    <task id="LOCAL-00042" summary="rename directory">
+      <option name="closed" value="true" />
+      <created>1750932838666</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1750932838666</updated>
+    </task>
+    <task id="LOCAL-00043" summary="update readme">
+      <option name="closed" value="true" />
+      <created>1751018044477</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1751018044477</updated>
+    </task>
+    <task id="LOCAL-00044" summary="add supported methods to config">
+      <option name="closed" value="true" />
+      <created>1751019590323</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1751019590323</updated>
+    </task>
+    <task id="LOCAL-00045" summary="update input component">
+      <option name="closed" value="true" />
+      <created>1751020223933</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1751020223933</updated>
+    </task>
+    <task id="LOCAL-00046" summary="remove csrf token from layout.">
+      <option name="closed" value="true" />
+      <created>1751020356456</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1751020356456</updated>
+    </task>
+    <task id="LOCAL-00047" summary="fix a bug where an MFA method is removed for all users">
+      <option name="closed" value="true" />
+      <created>1751272283047</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1751272283047</updated>
+    </task>
+    <task id="LOCAL-00048" summary="refactor mfa trait">
+      <option name="closed" value="true" />
+      <created>1751272863579</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1751272863579</updated>
+    </task>
+    <task id="LOCAL-00049" summary="refactor mfa method enum">
+      <option name="closed" value="true" />
+      <created>1751273021192</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1751273021192</updated>
+    </task>
+    <task id="LOCAL-00050" summary="always throw an error if the configured force method is not allowed">
+      <option name="closed" value="true" />
+      <created>1751275198660</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1751275198661</updated>
+    </task>
+    <task id="LOCAL-00051" summary="(wip) add a mfa helper class">
+      <option name="closed" value="true" />
+      <created>1751290558722</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1751290558722</updated>
+    </task>
+    <task id="LOCAL-00052" summary="fix a bug where the login button would not work">
+      <option name="closed" value="true" />
+      <created>1751290835798</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1751290835798</updated>
+    </task>
+    <task id="LOCAL-00053" summary="add disabled button state on settings page">
+      <option name="closed" value="true" />
+      <created>1751291923138</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1751291923138</updated>
+    </task>
+    <task id="LOCAL-00054" summary="wip">
+      <option name="closed" value="true" />
+      <created>1751292721443</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1751292721443</updated>
+    </task>
+    <task id="LOCAL-00055" summary="wip">
+      <option name="closed" value="true" />
+      <created>1751292841421</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1751292841421</updated>
+    </task>
+    <task id="LOCAL-00056" summary="fix a bug where mfa route was empty in optional mode">
+      <option name="closed" value="true" />
+      <created>1751292979529</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1751292979529</updated>
+    </task>
+    <task id="LOCAL-00057" summary="change namespace from cybex-gmbh to cybex">
+      <option name="closed" value="true" />
+      <created>1751357901697</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1751357901697</updated>
+    </task>
+    <task id="LOCAL-00058" summary="always make the header slot &lt;h1&gt;">
+      <option name="closed" value="true" />
+      <created>1751359916919</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1751359916919</updated>
+    </task>
+    <task id="LOCAL-00059" summary="rename MultiFactorAuthMethod interface">
+      <option name="closed" value="true" />
+      <created>1751360795968</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1751360795968</updated>
+    </task>
+    <task id="LOCAL-00060" summary="show an alert before disabling a mfa method">
+      <option name="closed" value="true" />
+      <created>1751361184651</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1751361184651</updated>
+    </task>
+    <task id="LOCAL-00061" summary="show an alert before disabling a mfa method">
+      <option name="closed" value="true" />
+      <created>1751363546263</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1751363546263</updated>
+    </task>
+    <task id="LOCAL-00062" summary="wip">
+      <option name="closed" value="true" />
+      <created>1751364984037</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1751364984038</updated>
+    </task>
+    <task id="LOCAL-00063" summary="wip">
+      <option name="closed" value="true" />
+      <created>1751365053503</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1751365053503</updated>
+    </task>
+    <task id="LOCAL-00064" summary="remove docblocks">
+      <option name="closed" value="true" />
+      <created>1751366198131</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1751366198131</updated>
+    </task>
+    <task id="LOCAL-00065" summary="remove docblocks">
+      <option name="closed" value="true" />
+      <created>1751366236880</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1751366236880</updated>
+    </task>
+    <task id="LOCAL-00066" summary="update enum alias for MultiFactorAuthMethod">
+      <option name="closed" value="true" />
+      <created>1751366952537</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1751366952537</updated>
+    </task>
+    <task id="LOCAL-00067" summary="refactor mfa helper">
+      <option name="closed" value="true" />
+      <created>1751446024644</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1751446024645</updated>
+    </task>
+    <task id="LOCAL-00068" summary="add input error styling">
+      <option name="closed" value="true" />
+      <created>1751452792809</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1751452792810</updated>
+    </task>
+    <task id="LOCAL-00069" summary="add a method to check if the current mode is optional">
+      <option name="closed" value="true" />
+      <created>1751457305031</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1751457305031</updated>
+    </task>
+    <task id="LOCAL-00070" summary="add mfa middleware group for the packages middlewares">
+      <option name="closed" value="true" />
+      <created>1751532713433</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1751532713434</updated>
+    </task>
+    <task id="LOCAL-00071" summary="clean up email handler">
+      <option name="closed" value="true" />
+      <created>1751534364585</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1751534364585</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -296,14 +659,35 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="rename directory" />
+    <MESSAGE value="update readme" />
+    <MESSAGE value="add supported methods to config" />
+    <MESSAGE value="update input component" />
+    <MESSAGE value="remove csrf token from layout." />
+    <MESSAGE value="fix a bug where an MFA method is removed for all users" />
+    <MESSAGE value="refactor mfa trait" />
+    <MESSAGE value="refactor mfa method enum" />
+    <MESSAGE value="fix a bug where the login button would not work" />
+    <MESSAGE value="add disabled button state on settings page" />
+    <MESSAGE value="always throw an error if the configured force method is not allowed" />
+    <MESSAGE value="(wip) add a mfa helper class" />
+    <MESSAGE value="fix a bug where mfa route was empty in optional mode" />
+    <MESSAGE value="change namespace from cybex-gmbh to cybex" />
+    <MESSAGE value="always make the header slot &lt;h1&gt;" />
+    <MESSAGE value="show an alert before disabling a mfa method" />
     <MESSAGE value="wip" />
-    <MESSAGE value="refactor MultiFactorAuthMethod enum" />
-    <MESSAGE value="refactor stylings" />
-    <MESSAGE value="add form component" />
-    <MESSAGE value="refactor settings page" />
-    <MESSAGE value="refactor authentication card and input error display" />
-    <MESSAGE value="change components aliases" />
-    <MESSAGE value="refactor mfa components" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor mfa components" />
+    <MESSAGE value="rename MultiFactorAuthMethod interface" />
+    <MESSAGE value="remove docblocks" />
+    <MESSAGE value="update enum alias for MultiFactorAuthMethod" />
+    <MESSAGE value="refactor mfa helper" />
+    <MESSAGE value="add input error styling" />
+    <MESSAGE value="add a method to check if the current mode is optional" />
+    <MESSAGE value="add mfa middleware group for the packages middlewares" />
+    <MESSAGE value="clean up email handler" />
+    <option name="LAST_COMMIT_MESSAGE" value="clean up email handler" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
