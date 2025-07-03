@@ -7,6 +7,7 @@ use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorSetupViewResponseContract;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Exceptions\InvalidEmailOnlyLoginConfigurationException;
 use Cybex\LaravelMultiFactor\Exceptions\LoginRouteNotFoundException;
@@ -19,6 +20,7 @@ use Cybex\LaravelMultiFactor\Http\Middleware\LimitMultiFactorAuthAccess;
 use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfInSetup;
 use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfMultiFactorAuthenticated;
 use Cybex\LaravelMultiFactor\Listeners\HandleUserLogout;
+use Cybex\LaravelMultiFactor\Providers\FortifyServiceProvider;
 use Cybex\LaravelMultiFactor\View\Components\LegacyAuthCard;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\AliasLoader;
@@ -35,6 +37,7 @@ class MultiFactorServiceProvider extends ServiceProvider
          * Optional methods to load your package assets
          */
         $this->mergeConfigFrom(__DIR__ . '/../config/multi-factor.php', 'multi-factor');
+        $this->mergeConfigFrom(__DIR__ . '/../config/fortify.php', 'fortify');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'multi-factor');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-multi-factor');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
@@ -111,6 +114,8 @@ class MultiFactorServiceProvider extends ServiceProvider
             AliasLoader::getInstance()->alias('MFA', MFA::class);
         });
 
+        $this->app->register(FortifyServiceProvider::class);
+
         $this->app->singleton(
             MultiFactorChallengeViewResponseContract::class,
             fn($app, $params): MultiFactorChallengeViewResponseContract => new (config('multi-factor.views.challenge'))(...$params)
@@ -126,6 +131,10 @@ class MultiFactorServiceProvider extends ServiceProvider
         $this->app->singleton(
             MultiFactorSettingsViewResponseContract::class,
             fn($app, $params): MultiFactorSettingsViewResponseContract => new (config('multi-factor.views.settings'))(...$params)
+        );
+        $this->app->singleton(
+            MultiFactorSetupViewResponseContract::class,
+            fn($app, $params): MultiFactorSetupViewResponseContract => new (config('multi-factor.views.setup'))(...$params)
         );
     }
 }
