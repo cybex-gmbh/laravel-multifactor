@@ -2,14 +2,14 @@
 
 namespace Cybex\LaravelMultiFactor\Http\Responses;
 
-use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorSetupViewResponseContract;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Auth\User;
 
-class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewResponseContract
+class MultiFactorSetupViewResponse implements MultiFactorSetupViewResponseContract
 {
     protected User $user;
     protected MultiFactorAuthMethod $mfaMethod;
@@ -32,11 +32,9 @@ class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewRespon
     {
         $user = $this->user;
         $mfaMethod = $this->mfaMethod;
-        $authenticationMethod = MultiFactorAuthMethod::isEmailOnlyLoginActive() ? 'link' : 'code';
 
         return match ($mfaMethod) {
-            MultiFactorAuthMethod::EMAIL => view('laravel-multi-factor::pages.email-challenge', compact(['user', 'mfaMethod', 'authenticationMethod'])),
-            MultiFactorAuthMethod::TOTP => view('laravel-multi-factor::pages.totp-challenge', compact(['user', 'mfaMethod', 'authenticationMethod'])),
+            MultiFactorAuthMethod::TOTP => view('laravel-multi-factor::pages.totp-setup', compact(['user', 'mfaMethod'])),
         };
     }
 }

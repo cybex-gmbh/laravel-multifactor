@@ -4,6 +4,7 @@ use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorChallengeViewResponse;
 use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorChooseViewResponse;
 use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorLoginViewResponse;
 use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorSettingsViewResponse;
+use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorSetupViewResponse;
 
 return [
     // supported methods: 'email'
@@ -20,6 +21,7 @@ return [
         'login' => MultiFactorLoginViewResponse::class,
         'choose' => MultiFactorChooseViewResponse::class,
         'settings' => MultiFactorSettingsViewResponse::class,
+        'setup' => MultiFactorSetupViewResponse::class,
     ],
 
     'features' => [
