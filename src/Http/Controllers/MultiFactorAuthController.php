@@ -6,6 +6,7 @@ use App\Models\User;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorSetupViewResponseContract;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Illuminate\Foundation\Application;
@@ -15,6 +16,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
 use MFA;
 
@@ -44,7 +46,7 @@ class MultiFactorAuthController extends Controller
     {
         return match ($method) {
             MultiFactorAuthMethod::EMAIL => $method->getHandler()->challenge(),
-            MultiFactorAuthMethod::TOTP => MultiFactorAuthMethod::EMAIL->getHandler()->challenge(),
+            MultiFactorAuthMethod::TOTP => app(MultiFactorChallengeViewResponseContract::class, [auth()->user(), $method]),
         };
     }
 
@@ -55,12 +57,20 @@ class MultiFactorAuthController extends Controller
         };
     }
 
-    public function setup(MultiFactorAuthMethod $method = null): RedirectResponse|MultiFactorChooseViewResponseContract
+    public function setup(MultiFactorAuthMethod $method = null): RedirectResponse|MultiFactorChooseViewResponseContract|MultiFactorSetupViewResponseContract
     {
         $methods = $method?->isAllowed() ? [$method] : MFA::getAllowedMethods();
 
         if (MultiFactorAuthMode::isForceMode()) {
             return Redirect::route('mfa.method', ['method' => MFA::getForceMethod()]);
+        }
+
+
+
+        if ($method === MultiFactorAuthMethod::TOTP) {
+//            Http::post(route('two-factor.enable'));
+
+            return app(MultiFactorSetupViewResponseContract::class, [auth()->user(), $method]);
         }
 
         if (count($methods) === 1) {

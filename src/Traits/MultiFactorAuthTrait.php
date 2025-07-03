@@ -7,9 +7,12 @@ use Cybex\LaravelMultiFactor\Models\MultiFactorAuthMethod;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 use MFA;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
 trait MultiFactorAuthTrait
 {
+    use TwoFactorAuthenticatable;
+
     public function multiFactorAuthMethods(): BelongsToMany
     {
         return $this->belongsToMany(MultiFactorAuthMethod::class, 'multi_factor_auth_method_user');
