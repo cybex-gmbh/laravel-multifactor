@@ -8,6 +8,7 @@ use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorSettingsViewResponse;
 return [
     // supported methods: 'email'
     'allowedMethods' => [
+        'totp',
         'email',
     ],
     // 'optional' or 'required' or 'force'
