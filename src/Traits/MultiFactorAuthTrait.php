@@ -70,6 +70,6 @@ trait MultiFactorAuthTrait
      */
     public function getUserMethodsWithRemainingAllowedMethods(array $allowedMethods, $userMethods): array
     {
-        return array_unique(Arr::collapse([$allowedMethods, $userMethods]), SORT_REGULAR);
+        return collect($allowedMethods)->merge($userMethods)->unique()->all();
     }
 }

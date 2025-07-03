@@ -84,7 +84,7 @@ class MultiFactorServiceProvider extends ServiceProvider
             $routes = Route::getRoutes();
 
             $routes->refreshNameLookups();
-            $routes->getByName(config('multi-factor.features.email-login.applicationLoginRouteName'))->middleware('enforceEmailOnlyLogin');
+//            $routes->getByName(config('multi-factor.features.email-login.applicationLoginRouteName'))->middleware('enforceEmailOnlyLogin');
         });
     }
 
