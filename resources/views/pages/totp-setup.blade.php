@@ -19,25 +19,24 @@
         @endif
 
         @if (isset($user->two_factor_secret))
-            {!! request()->user()->twoFactorQrCodeSvg() !!}
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <p>Scan the QR code below using an authenticator app</p>
+                {!! request()->user()->twoFactorQrCodeSvg() !!}
+            </div>
         @endif
 
-        <a href="{{ route('mfa.method', $mfaMethod) }}">
-            <x-multi-factor::button>
-                {{ __('Next') }}
-            </x-multi-factor::button>
-        </a>
+        @if (session('status') == 'two-factor-authentication-confirmed')
+            <div class="mb-4 font-medium text-sm">
+                Two factor authentication confirmed and enabled successfully.
+            </div>
+        @endif
 
-{{--        <div class="mfa-row mfa-flex-end">--}}
-{{--            <p class="mfa-text-sm">@lang('multi-factor::auth.email_challenge.subtitle_resend', ['authenticationMethod' => $authenticationMethod])</p>--}}
-
-{{--            <x-multi-factor::form :action="route('mfa.method.send', $mfaMethod)" id="resend-code-form">--}}
-{{--                <x-multi-factor::button class="text-sm">@lang('multi-factor::button.resend_mfa', ['authenticationMethod' => $authenticationMethod])</x-multi-factor::button>--}}
-{{--            </x-multi-factor::form>--}}
-
-{{--            <x-multi-factor::button type="submit" class="text-sm" form="mfa-login">--}}
-{{--                {{ __('Log in') }}--}}
-{{--            </x-multi-factor::button>--}}
-{{--        </div>--}}
+        <div class="mfa-row mfa-flex-end">
+            <a href="{{ route('mfa.method', $mfaMethod) }}">
+                <x-multi-factor::button>
+                    {{ __('Next') }}
+                </x-multi-factor::button>
+            </a>
+        </div>
     </x-multi-factor::auth-card>
 </x-multi-factor::layout>
