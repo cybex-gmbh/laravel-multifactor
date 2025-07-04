@@ -2,7 +2,7 @@
     <x-slot name="title">@lang('multi-factor::auth.email_login.title')</x-slot>
 
     <x-multi-factor::auth-card>
-        <x-multi-factor::form :action="route('mfa.email.login')">
+        <x-multi-factor::form :action="route('login.store')">
             <x-multi-factor::form.input field="email" label="E-Mail Address" type="email" required autofocus/>
             <x-multi-factor::form.input field="password" label="Password" type="password" required autofocus/>
 
