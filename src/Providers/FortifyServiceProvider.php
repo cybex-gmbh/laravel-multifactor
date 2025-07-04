@@ -52,7 +52,7 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Fortify::twoFactorChallengeView(function () {
-            return view('pages.totp-challenge');
+            return view('laravel-multi-factor::pages.totp-challenge');
         });
     }
 }

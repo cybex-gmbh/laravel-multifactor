@@ -13,6 +13,19 @@ trait MultiFactorAuthTrait
 {
     use TwoFactorAuthenticatable;
 
+    protected static function booted()
+    {
+        static::updated(function ($user) {
+            if ($user->isDirty('two_factor_confirmed_at') && $user->two_factor_confirmed_at !== null) {
+                $user->multiFactorAuthMethods()->attach(
+                    MultiFactorAuthMethod::firstOrCreate([
+                        'type' => MultiFactorAuthMethodEnum::TOTP,
+                    ])
+                );
+            }
+        });
+    }
+
     public function multiFactorAuthMethods(): BelongsToMany
     {
         return $this->belongsToMany(MultiFactorAuthMethod::class, 'multi_factor_auth_method_user');

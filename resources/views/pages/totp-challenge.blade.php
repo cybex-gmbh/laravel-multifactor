@@ -3,15 +3,15 @@
 
     <x-multi-factor::auth-card>
         <x-slot name="subtitle">
-            <p>@lang('multi-factor::auth.email_challenge.subtitle', ['authenticationMethod' => $authenticationMethod, 'email' => $user->email])</p>
+{{--            <p>@lang('multi-factor::auth.email_challenge.subtitle', ['authenticationMethod' => $authenticationMethod, 'email' => $user->email])</p>--}}
         </x-slot>
 
-        @if (isset($user->two_factor_confirmed_at))
-            <x-multi-factor::form :action="route('two-factor.confirm')" id="mfa-confirm">
+        @if (isset(request()->user()->two_factor_confirmed_at))
+            <x-multi-factor::form :action="route('two-factor.login.store')" id="mfa-confirm">
                 <x-multi-factor::form.input field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
             </x-multi-factor::form>
         @else
-            <x-multi-factor::form :action="route('two-factor.login.store')" id="mfa-confirm">
+            <x-multi-factor::form :action="route('two-factor.confirm')" id="mfa-confirm">
                 <x-multi-factor::form.input field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
             </x-multi-factor::form>
         @endif
@@ -21,5 +21,11 @@
                 {{ __('Log in') }}
             </x-multi-factor::button>
         </div>
+
+        @if (session('status') == 'two-factor-authentication-confirmed')
+            <div class="mb-4 font-medium text-sm">
+                Two factor authentication confirmed and enabled successfully.
+            </div>
+        @endif
     </x-multi-factor::auth-card>
 </x-multi-factor::layout>
