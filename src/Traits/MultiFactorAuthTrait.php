@@ -5,13 +5,26 @@ namespace Cybex\LaravelMultiFactor\Traits;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Models\MultiFactorAuthMethod;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Arr;
 use MFA;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod as MultiFactorAuthMethodEnum;
 
 trait MultiFactorAuthTrait
 {
     use TwoFactorAuthenticatable;
+
+    protected static function booted()
+    {
+        static::updated(function ($user) {
+            if ($user->isDirty('two_factor_confirmed_at') && $user->two_factor_confirmed_at !== null) {
+                $user->multiFactorAuthMethods()->attach(
+                    MultiFactorAuthMethod::firstOrCreate([
+                        'type' => MultiFactorAuthMethodEnum::TOTP,
+                    ])
+                );
+            }
+        });
+    }
 
     public function multiFactorAuthMethods(): BelongsToMany
     {

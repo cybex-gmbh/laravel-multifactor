@@ -16,8 +16,8 @@ use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
+use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use MFA;
 
 class MultiFactorAuthController extends Controller
@@ -83,6 +83,10 @@ class MultiFactorAuthController extends Controller
     public function deleteMultiFactorAuthMethod(MultiFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
         Auth::user()->multiFactorAuthMethods()->where('type', $method)->detach();
+
+        if ($method === MultiFactorAuthMethod::TOTP) {
+            app(DisableTwoFactorAuthentication::class)(Auth::user());
+        }
 
         return $back ?? redirect()->back();
     }
