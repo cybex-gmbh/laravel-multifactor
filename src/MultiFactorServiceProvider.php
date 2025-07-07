@@ -1,60 +1,117 @@
 <?php
 
-namespace CybexGmbh\LaravelMultiFactor;
+namespace Cybex\LaravelMultiFactor;
 
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
+use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Cybex\LaravelMultiFactor\Facades\MFA;
+use Cybex\LaravelMultiFactor\Helpers\MFAHelper;
+use Cybex\LaravelMultiFactor\Http\Middleware\EnforceEmailOnlyLogin;
+use Cybex\LaravelMultiFactor\Http\Middleware\HasAllowedMultiFactorAuthMethods;
+use Cybex\LaravelMultiFactor\Http\Middleware\HasMultiFactorAuthentication;
+use Cybex\LaravelMultiFactor\Http\Middleware\LimitMultiFactorAuthAccess;
+use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfInSetup;
+use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfMultiFactorAuthenticated;
+use Cybex\LaravelMultiFactor\Listeners\HandleUserLogout;
+use Cybex\LaravelMultiFactor\View\Components\LegacyAuthCard;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class MultiFactorServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     */
     public function boot()
     {
         /*
          * Optional methods to load your package assets
          */
-        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-multi-factor');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-multi-factor');
-        // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        // $this->loadRoutesFrom(__DIR__.'/routes.php');
+        $this->mergeConfigFrom(__DIR__ . '/../config/multi-factor.php', 'multi-factor');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'multi-factor');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-multi-factor');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+
+        $router = $this->app['router'];
+        $router->aliasMiddleware('hasMultiFactorAuthentication', HasMultiFactorAuthentication::class);
+        $router->aliasMiddleware('hasAllowedMultiFactorAuthMethods', HasAllowedMultiFactorAuthMethods::class);
+        $router->aliasMiddleware('redirectIfMultiFactorAuthenticated', RedirectIfMultiFactorAuthenticated::class);
+        $router->aliasMiddleware('limitMultiFactorAuthAccess', LimitMultiFactorAuthAccess::class);
+        $router->aliasMiddleware('enforceEmailOnlyLogin', EnforceEmailOnlyLogin::class);
+
+        $router->middlewareGroup('mfa', [
+            'hasMultiFactorAuthentication',
+            'hasAllowedMultiFactorAuthMethods',
+        ]);
+
+        Blade::componentNamespace('Cybex\\LaravelMultiFactor\\View\\Components', 'multi-factor');
+
+        Event::listen(Logout::class, HandleUserLogout::class);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/multi-factor.php' => config_path('laravel-multi-factor.php'),
-            ], 'config');
+                __DIR__ . '/../config/multi-factor.php' => config_path('multi-factor.php'),
+            ], ['multi-factor', 'multi-factor.config']);
 
-            // Publishing the views.
-            /*$this->publishes([
-                __DIR__.'/../resources/views' => resource_path('views/vendor/laravel-multi-factor'),
-            ], 'views');*/
+            $this->publishes([
+                __DIR__ . '/../resources/views/pages' => resource_path('views/vendor/laravel-multi-factor/pages'),
+            ], ['multi-factor', 'multi-factor.views']);
 
-            // Publishing assets.
-            /*$this->publishes([
-                __DIR__.'/../resources/assets' => public_path('vendor/laravel-multi-factor'),
-            ], 'assets');*/
+            $this->publishes([
+                __DIR__ . '/../public' => public_path('vendor/laravel-multi-factor'),
+            ], ['multi-factor', 'multi-factor.public']);
 
-            // Publishing the translation files.
-            /*$this->publishes([
+            $this->publishes([
                 __DIR__.'/../resources/lang' => resource_path('lang/vendor/laravel-multi-factor'),
-            ], 'lang');*/
-
-            // Registering package commands.
-            // $this->commands([]);
+            ], ['multi-factor', 'multi-factor.lang']);
         }
+
+        if (MultiFactorAuthMode::isForceMode()) {
+            $forceMethod = MultiFactorAuthMethod::getForceMethod();
+
+            if (!$forceMethod->isAllowed()) {
+                abort(500);
+            }
+        }
+
+        $this->app->booted(function () {
+            $routes = Route::getRoutes();
+
+            $routes->refreshNameLookups();
+            $routes->getByName(config('multi-factor.features.email-login.applicationLoginRouteName'))->middleware('enforceEmailOnlyLogin');
+        });
     }
 
-    /**
-     * Register the application services.
-     */
     public function register()
     {
-        // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__ . '/../config/multi-factor.php', 'laravel-multi-factor');
-
         // Register the main class to use with the facade
-        $this->app->singleton('laravel-multi-factor', function () {
-            return new MultiFactor;
+        $this->app->singleton('mfa', MFAHelper::class);
+
+        $this->app->booting(function () {
+            AliasLoader::getInstance()->alias('MFA', MFA::class);
         });
+
+        $this->app->singleton(
+            MultiFactorChallengeViewResponseContract::class,
+            fn($app, $params): MultiFactorChallengeViewResponseContract => new (config('multi-factor.views.challenge'))(...$params)
+        );
+        $this->app->singleton(
+            MultiFactorLoginViewResponseContract::class,
+            fn($app, $params): MultiFactorLoginViewResponseContract => new (config('multi-factor.views.login'))(...$params)
+        );
+        $this->app->singleton(
+            MultiFactorChooseViewResponseContract::class,
+            fn($app, $params): MultiFactorChooseViewResponseContract => new (config('multi-factor.views.choose'))($params)
+        );
+        $this->app->singleton(
+            MultiFactorSettingsViewResponseContract::class,
+            fn($app, $params): MultiFactorSettingsViewResponseContract => new (config('multi-factor.views.settings'))(...$params)
+        );
     }
 }
