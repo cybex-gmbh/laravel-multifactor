@@ -9,9 +9,9 @@ Route::middleware(['web'])->group(function () {
         }
     });
 
-    Route::middleware(['auth'])->as('mfa.')->group(function () {
+    Route::as('mfa.')->group(function () {
         if ($path = config('multi-factor.features.settings.routePath')) {
-            Route::middleware(['hasMultiFactorAuthentication', 'hasAllowedMultiFactorAuthMethods'])->group(function () use ($path) {
+            Route::middleware(['auth'])->group(function () use ($path) {
                 Route::get($path, [MultiFactorAuthController::class, 'multiFactorSettings'])->name('settings');
             });
         }
