@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Fortify\Events\ValidTwoFactorAuthenticationCodeProvided;
+use Cybex\LaravelMultiFactor\Listeners\HandleFortifyTOTPLogin;
 
 class MultiFactorServiceProvider extends ServiceProvider
 {
@@ -56,6 +58,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         Blade::componentNamespace('Cybex\\LaravelMultiFactor\\View\\Components', 'multi-factor');
 
         Event::listen(Logout::class, HandleUserLogout::class);
+        Event::listen(ValidTwoFactorAuthenticationCodeProvided::class, HandleFortifyTOTPLogin::class);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([

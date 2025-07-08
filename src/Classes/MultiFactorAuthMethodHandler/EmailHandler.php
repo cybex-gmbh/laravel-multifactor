@@ -20,7 +20,7 @@ class EmailHandler implements MultiFactorAuthMethodContract
 
     public function __construct()
     {
-        $this->user = Auth::user();
+        $this->user = MFA::getUser();
     }
 
     public function setup(): RedirectResponse

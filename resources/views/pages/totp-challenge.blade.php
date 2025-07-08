@@ -3,18 +3,12 @@
 
     <x-multi-factor::auth-card>
         <x-slot name="subtitle">
-{{--            <p>@lang('multi-factor::auth.email_challenge.subtitle', ['authenticationMethod' => $authenticationMethod, 'email' => $user->email])</p>--}}
+            {{--            <p>@lang('multi-factor::auth.email_challenge.subtitle', ['authenticationMethod' => $authenticationMethod, 'email' => $user->email])</p>--}}
         </x-slot>
 
-        @if (isset(request()->user()->two_factor_confirmed_at))
-            <x-multi-factor::form :action="route('two-factor.login.store')" id="mfa-confirm">
-                <x-multi-factor::form.input field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
-            </x-multi-factor::form>
-        @else
-            <x-multi-factor::form :action="route('two-factor.confirm')" id="mfa-confirm">
-                <x-multi-factor::form.input field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
-            </x-multi-factor::form>
-        @endif
+        <x-multi-factor::form :action="route('two-factor.login.store')" id="mfa-login">
+            <x-multi-factor::form.input field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
+        </x-multi-factor::form>
 
         <div class="mfa-row mfa-flex-end">
             <x-multi-factor::button type="submit" class="text-sm" form="mfa-login">

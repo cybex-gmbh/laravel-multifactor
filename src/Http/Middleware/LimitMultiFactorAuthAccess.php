@@ -23,7 +23,7 @@ class LimitMultiFactorAuthAccess
                 return redirect()->route('mfa.show');
             }
 
-            if (!$method->isAllowed() && Auth::user()->hasAllowedMultiFactorAuthMethods()) {
+            if (!$method->isAllowed() && MFA::getUser()->hasAllowedMultiFactorAuthMethods()) {
                 return redirect()->route('mfa.show');
             }
 
@@ -39,7 +39,7 @@ class LimitMultiFactorAuthAccess
                 return redirect()->back();
             }
 
-            return redirect()->route('mfa.settings', Auth::user());
+            return redirect()->route('mfa.settings', MFA::getUser());
         } else if ($isForceMode && !$method->isForceMethod() && MFA::isInSetupAfterLogin()) {
             return redirect()->route('mfa.setup');
         }
