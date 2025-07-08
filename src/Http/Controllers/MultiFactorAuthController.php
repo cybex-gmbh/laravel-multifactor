@@ -24,7 +24,7 @@ class MultiFactorAuthController extends Controller
 {
     public function show(): mixed
     {
-        $user = Auth::user();
+        $user = MFA::getUser();
         $userMethods = $user->getUserMethods();
 
         if (MultiFactorAuthMode::isForceMode()) {
@@ -46,7 +46,7 @@ class MultiFactorAuthController extends Controller
     {
         return match ($method) {
             MultiFactorAuthMethod::EMAIL => $method->getHandler()->challenge(),
-            MultiFactorAuthMethod::TOTP => app(MultiFactorChallengeViewResponseContract::class, [auth()->user(), $method]),
+            MultiFactorAuthMethod::TOTP => app(MultiFactorChallengeViewResponseContract::class, [MFA::getUser(), $method]),
         };
     }
 
@@ -65,12 +65,8 @@ class MultiFactorAuthController extends Controller
             return Redirect::route('mfa.method', ['method' => MFA::getForceMethod()]);
         }
 
-
-
-        if ($method === MultiFactorAuthMethod::TOTP) {
-//            Http::post(route('two-factor.enable'));
-
-            return app(MultiFactorSetupViewResponseContract::class, [auth()->user(), $method]);
+        if (count($methods) === 1 && Arr::first($methods) === MultiFactorAuthMethod::TOTP) {
+            return app(MultiFactorSetupViewResponseContract::class, [MFA::getUser(), Arr::first($methods)]);
         }
 
         if (count($methods) === 1) {
@@ -82,10 +78,10 @@ class MultiFactorAuthController extends Controller
 
     public function deleteMultiFactorAuthMethod(MultiFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
-        Auth::user()->multiFactorAuthMethods()->where('type', $method)->detach();
+        MFA::getUser()->multiFactorAuthMethods()->where('type', $method)->detach();
 
         if ($method === MultiFactorAuthMethod::TOTP) {
-            app(DisableTwoFactorAuthentication::class)(Auth::user());
+            app(DisableTwoFactorAuthentication::class)(MFA::getUser());
         }
 
         return $back ?? redirect()->back();
@@ -105,6 +101,7 @@ class MultiFactorAuthController extends Controller
 
         MFA::clear();
         MFA::setVerified();
+        Auth::login(MFA::getUser());
 
         return Redirect::intended();
     }

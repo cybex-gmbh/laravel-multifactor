@@ -12,7 +12,7 @@ class HasAllowedMultiFactorAuthMethods
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $user = auth()->user();
+        $user = MFA::getUser();
 
         $allowed2faMethods = $user->getAllowedMultiFactorAuthMethods();
 
