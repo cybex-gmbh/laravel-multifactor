@@ -5,8 +5,8 @@ namespace Cybex\LaravelMultiFactor\Enums;
 use Cybex\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler\EmailHandler;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorAuthMethodContract;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use MFA;
 
 enum MultiFactorAuthMethod: string
 {
@@ -53,7 +53,7 @@ enum MultiFactorAuthMethod: string
 
     public function isUserMethod(): bool
     {
-        return in_array($this->value, Auth::user()->getMultiFactorAuthMethodNames());
+        return in_array($this->value, MFA::getUser()->getMultiFactorAuthMethodNames());
     }
 
     public function isForceMethod(): bool

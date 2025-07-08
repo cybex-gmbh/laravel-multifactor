@@ -2,6 +2,8 @@
 
 namespace Cybex\LaravelMultiFactor\Helpers;
 
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Carbon;
 
 class MFAHelper
@@ -10,6 +12,7 @@ class MFAHelper
     public const EMAIL_SENT = 'two_factor_auth_email_sent';
     public const VERIFIED = 'two_factor_auth_verified';
     public const SETUP_AFTER_LOGIN = 'two_factor_auth_setup_after_login';
+    public const SESSION_USER_ID = 'session_user_id';
 
     public function clear(): void
     {
@@ -19,6 +22,11 @@ class MFAHelper
             self::VERIFIED,
             self::SETUP_AFTER_LOGIN
         ]);
+    }
+
+    public function setUserId(User $user): void
+    {
+        $this->put(self::SESSION_USER_ID, $user->getKey());
     }
 
     public function setVerified(bool $value = true): void
@@ -47,6 +55,11 @@ class MFAHelper
     public function isVerified(): bool
     {
         return filled($this->get(self::VERIFIED));
+    }
+
+    public function getUser(): Authenticatable|User
+    {
+        return auth()->user() ?? User::find($this->get(self::SESSION_USER_ID));
     }
 
     public function getAuthCode()

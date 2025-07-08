@@ -13,7 +13,7 @@ class HasMultiFactorAuthentication
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
+        $user = MFA::getUser();
 
         if ($user->multiFactorAuthMethods()->exists() && !MFA::isVerified()) {
 
