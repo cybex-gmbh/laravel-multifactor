@@ -18,6 +18,7 @@ services:
       APP_URL: https://${PULLPREVIEW_PUBLIC_DNS}
       WORKERS_AMOUNT: ${WORKERS_AMOUNT:-0}
     volumes:
+      - 'app-storage:/var/www/html/storage'
       - './exampleApp:/var/www/html'
       - '.:/var/www/package'
     labels:
@@ -88,5 +89,7 @@ networks:
     name: traefik
 
 volumes:
+  app-storage:
+    driver: local
   mysql:
     driver: local
