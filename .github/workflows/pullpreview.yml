@@ -1,0 +1,29 @@
+name: PullPreview
+
+on:
+  pull_request:
+    types: [ labeled, unlabeled, synchronize, closed, reopened ]
+
+jobs:
+  deploy-staging-environment:
+    permissions:
+      contents: read # to fetch code (actions/checkout)
+      deployments: write # to delete deployments
+      pull-requests: write # to remove labels
+      statuses: write # to create commit status
+
+    name: Deploy PullPreview staging environment
+    # https://github.com/cybex-gmbh/github-workflows/blob/main/.github/workflows/pullpreview.yml
+    uses: cybex-gmbh/github-workflows/.github/workflows/pullpreview.yml@main
+    with:
+      PULLPREVIEW_ADMINS: jheusinger, gael-connan-cybex, holyfabi, lupinitylabs, mszulik
+      INSTANCE_TYPE: nano
+    secrets:
+      ENV_VARS: |
+        APP_KEY="${{ secrets.PULLPREVIEW_APP_KEY }}"
+        SEED_USER_NAME="${{ secrets.PULLPREVIEW_USER_NAME }}"
+        SEED_USER_EMAIL="${{ secrets.PULLPREVIEW_USER_EMAIL }}"
+        SEED_USER_PASSWORD="${{ secrets.PULLPREVIEW_USER_PASSWORD }}"
+      PULLPREVIEW_BASIC_AUTH: ${{ secrets.PULLPREVIEW_BASIC_AUTH }}
+      PULLPREVIEW_AWS_ACCESS_KEY_ID: ${{ secrets.PULLPREVIEW_AWS_ACCESS_KEY_ID }}
+      PULLPREVIEW_AWS_SECRET_ACCESS_KEY: ${{ secrets.PULLPREVIEW_AWS_SECRET_ACCESS_KEY }}
