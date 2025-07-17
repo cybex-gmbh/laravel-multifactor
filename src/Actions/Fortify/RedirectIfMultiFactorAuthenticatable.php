@@ -2,28 +2,51 @@
 
 namespace Cybex\LaravelMultiFactor\Actions\Fortify;
 
-use App\Models\User;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Illuminate\Contracts\Auth\StatefulGuard;
+use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
+use Laravel\Fortify\Events\TwoFactorAuthenticationChallenged;
 use Laravel\Fortify\Fortify;
-use Laravel\Fortify\Http\Requests\LoginRequest;
+use Laravel\Fortify\LoginRateLimiter;
 use MFA;
 
-class RedirectIfMultiFactorAuthenticatable
+class RedirectIfMultiFactorAuthenticatable extends RedirectIfTwoFactorAuthenticatable
 {
-    public function __invoke(LoginRequest $request, $next)
+    public function __construct(StatefulGuard $guard, LoginRateLimiter $limiter)
     {
-        $user = User::where(Fortify::username(), $request->input(Fortify::username()))->first();
+        parent::__construct($guard, $limiter);
+    }
 
-        if ($user->multiFactorAuthMethods()->exists()) {
-            MFA::setUserId($user);
+    public function handle($request, $next)
+    {
+        $user = $this->validateCredentials($request);
 
-            $request->session()->put([
-                'login.id' => $user->getKey(),
-                'login.remember' => $request->boolean('remember'),
-            ]);
+        if (Fortify::confirmsTwoFactorAuthentication() || !$user->multiFactorAuthMethods()->exists()) {
+            if ($user->multiFactorAuthMethods()->exists()) {
+                return $this->twoFactorChallengeResponse($request, $user);
+            }
 
-            return redirect()->route('mfa.show');
+            if (!MultiFactorAuthMode::isOptionalMode()) {
+                MFA::setLoginIdAndRemember($user, $request->boolean('remember'));
+                MFA::setVerified();
+                return redirect()->route('mfa.setup');
+            }
         }
 
         return $next($request);
+    }
+
+    protected function twoFactorChallengeResponse($request, $user)
+    {
+        $request->session()->put([
+            'login.id' => $user->getKey(),
+            'login.remember' => $request->boolean('remember'),
+        ]);
+
+        TwoFactorAuthenticationChallenged::dispatch($user);
+
+        return $request->wantsJson()
+            ? response()->json(['two_factor' => true])
+            : redirect()->route('mfa.show');
     }
 }

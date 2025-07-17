@@ -2,6 +2,7 @@
 
 namespace Cybex\LaravelMultiFactor;
 
+use Cybex\LaravelMultiFactor\Actions\Fortify\RedirectIfMultiFactorAuthenticatable;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
@@ -13,21 +14,31 @@ use Cybex\LaravelMultiFactor\Facades\MFA;
 use Cybex\LaravelMultiFactor\Helpers\MFAHelper;
 use Cybex\LaravelMultiFactor\Http\Middleware\EnforceEmailOnlyLogin;
 use Cybex\LaravelMultiFactor\Http\Middleware\HasAllowedMultiFactorAuthMethods;
+use Cybex\LaravelMultiFactor\Http\Middleware\HasLoginId;
 use Cybex\LaravelMultiFactor\Http\Middleware\HasMultiFactorAuthentication;
 use Cybex\LaravelMultiFactor\Http\Middleware\LimitMultiFactorAuthAccess;
 use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfInSetup;
 use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfMultiFactorAuthenticated;
+use Cybex\LaravelMultiFactor\Http\Middleware\TempLoginForMfa;
+use Cybex\LaravelMultiFactor\Listeners\HandleFortifyTOTPLogin;
 use Cybex\LaravelMultiFactor\Listeners\HandleUserLogout;
+use Cybex\LaravelMultiFactor\Listeners\LogUserInAfterTotpSetup;
 use Cybex\LaravelMultiFactor\Providers\FortifyServiceProvider;
 use Cybex\LaravelMultiFactor\View\Components\LegacyAuthCard;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Fortify\Events\ValidTwoFactorAuthenticationCodeProvided;
-use Cybex\LaravelMultiFactor\Listeners\HandleFortifyTOTPLogin;
+use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
+use Laravel\Fortify\Events\TwoFactorAuthenticationConfirmed;
+use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
+use Laravel\Fortify\Http\Controllers\ConfirmedPasswordStatusController;
+use Laravel\Fortify\Http\Controllers\ConfirmedTwoFactorAuthenticationController;
+use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
+use Laravel\Fortify\RoutePath;
 
 class MultiFactorServiceProvider extends ServiceProvider
 {
@@ -49,6 +60,8 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('redirectIfMultiFactorAuthenticated', RedirectIfMultiFactorAuthenticated::class);
         $router->aliasMiddleware('limitMultiFactorAuthAccess', LimitMultiFactorAuthAccess::class);
         $router->aliasMiddleware('enforceEmailOnlyLogin', EnforceEmailOnlyLogin::class);
+        $router->aliasMiddleware('hasLoginId', HasLoginId::class);
+        $router->aliasMiddleware('tempLoginForMFA', TempLoginForMfa::class);
 
         $router->middlewareGroup('mfa', [
             'hasMultiFactorAuthentication',
@@ -58,7 +71,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         Blade::componentNamespace('Cybex\\LaravelMultiFactor\\View\\Components', 'multi-factor');
 
         Event::listen(Logout::class, HandleUserLogout::class);
-        Event::listen(ValidTwoFactorAuthenticationCodeProvided::class, HandleFortifyTOTPLogin::class);
+        Event::listen(TwoFactorAuthenticationConfirmed::class, LogUserInAfterTotpSetup::class);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -74,7 +87,7 @@ class MultiFactorServiceProvider extends ServiceProvider
             ], ['multi-factor', 'multi-factor.public']);
 
             $this->publishes([
-                __DIR__.'/../resources/lang' => resource_path('lang/vendor/laravel-multi-factor'),
+                __DIR__ . '/../resources/lang' => resource_path('lang/vendor/laravel-multi-factor'),
             ], ['multi-factor', 'multi-factor.lang']);
         }
 
@@ -88,9 +101,24 @@ class MultiFactorServiceProvider extends ServiceProvider
 
         $this->app->booted(function () {
             $routes = Route::getRoutes();
-
             $routes->refreshNameLookups();
-//            $routes->getByName(config('multi-factor.features.email-login.applicationLoginRouteName'))->middleware('enforceEmailOnlyLogin');
+
+            $routes->getByName(config('multi-factor.features.email-login.applicationLoginRouteName'))->middleware('enforceEmailOnlyLogin');
+
+            Route::middleware([StartSession::class, 'tempLoginForMFA', 'web', config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')])->group(function () {
+                Route::post(RoutePath::for('two-factor.enable', '/user/two-factor-authentication'), [TwoFactorAuthenticationController::class, 'store'])
+                    ->middleware('password.confirm')
+                    ->name('two-factor.enable');
+                Route::post(RoutePath::for('two-factor.confirm', '/user/confirmed-two-factor-authentication'), [ConfirmedTwoFactorAuthenticationController::class, 'store'])
+                    ->middleware('password.confirm')
+                    ->name('two-factor.confirm');
+                Route::get(RoutePath::for('password.confirm', '/user/confirm-password'), [ConfirmablePasswordController::class, 'show'])
+                    ->name('password.confirm');
+                Route::get(RoutePath::for('password.confirmation', '/user/confirmed-password-status'), [ConfirmedPasswordStatusController::class, 'show'])
+                    ->name('password.confirmation');
+                Route::post(RoutePath::for('password.confirm', '/user/confirm-password'), [ConfirmablePasswordController::class, 'store'])
+                    ->name('password.confirm.store');
+            });
         });
     }
 
@@ -104,6 +132,11 @@ class MultiFactorServiceProvider extends ServiceProvider
         });
 
         $this->app->register(FortifyServiceProvider::class);
+
+        $this->app->bind(
+            RedirectIfTwoFactorAuthenticatable::class,
+            RedirectIfMultiFactorAuthenticatable::class
+        );
 
         $this->app->singleton(
             MultiFactorChallengeViewResponseContract::class,

@@ -29,6 +29,10 @@ class EmailHandler implements MultiFactorAuthMethodContract
             'type' => $this->method,
         ]));
 
+        if (!Auth::check()) {
+            Auth::login($this->user);
+        }
+
         if (MFA::isInSetupAfterLogin()) {
             MFA::endSetupAfterLogin();
 

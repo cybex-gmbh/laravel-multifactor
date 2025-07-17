@@ -2,6 +2,7 @@
 
 namespace Cybex\LaravelMultiFactor\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
@@ -9,15 +10,18 @@ use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorSetupViewResponseContract;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use Illuminate\Foundation\Application;
+use Cybex\LaravelMultiFactor\Http\Requests\MultiFactorLoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
+use Laravel\Fortify\Contracts\FailedTwoFactorLoginResponse;
+use Laravel\Fortify\Contracts\TwoFactorLoginResponse;
+use Laravel\Fortify\Events\RecoveryCodeReplaced;
+use Laravel\Fortify\Events\TwoFactorAuthenticationFailed;
+use Laravel\Fortify\Events\ValidTwoFactorAuthenticationCodeProvided;
 use MFA;
 
 class MultiFactorAuthController extends Controller
@@ -88,25 +92,6 @@ class MultiFactorAuthController extends Controller
         return $back ?? redirect()->back();
     }
 
-    public function verifyTwoFactorAuthCode(Request $request, MultiFactorAuthMethod $method, User $user = null, int $code = null): Application|Redirector|RedirectResponse
-    {
-        $code ??= $request->integer('code') ?? abort(403);
-
-        if (MFA::isCodeExpired() || MFA::getCode() !== $code) {
-            abort(403);
-        }
-
-        if (!$method->isUserMethod()) {
-            return $method->getHandler()->setup();
-        }
-
-        MFA::clear();
-        MFA::setVerified();
-        Auth::login(MFA::getUser());
-
-        return Redirect::intended();
-    }
-
     public function authenticateByEmailOnly(Request $request): RedirectResponse
     {
         $user = User::whereEmail($request->input('email'))->first();
@@ -115,9 +100,9 @@ class MultiFactorAuthController extends Controller
             return Redirect::back()->withErrors(['email' => __('auth.failed')]);
         }
 
-        Auth::login($user);
+        MFA::setLoginIdAndRemember($user, $request->boolean('remember'));
 
-        return Redirect::intended();
+        return redirect()->route('mfa.show');
     }
 
     public function multiFactorSettings(User $user)
@@ -126,6 +111,40 @@ class MultiFactorAuthController extends Controller
             return app(MultiFactorSettingsViewResponseContract::class, [$user]);
         }
 
-         abort(403);
+        abort(403);
+    }
+
+    public function store(MultiFactorLoginRequest $request, MultiFactorAuthMethod $method)
+    {
+        $user = $request->challengedUser();
+
+        if ($code = $request->validRecoveryCode()) {
+            $user->replaceRecoveryCode($code);
+
+            event(new RecoveryCodeReplaced($user, $code));
+        } elseif (!$request->hasValidMFACode($method)) {
+            event(new TwoFactorAuthenticationFailed($user));
+
+            return app(FailedTwoFactorLoginResponse::class)->toResponse($request);
+        }
+
+        event(new ValidTwoFactorAuthenticationCodeProvided($user));
+
+        MFA::setLoginIdAndRemember($user, $request->boolean('remember'));
+
+        if (!$method->isUserMethod()) {
+            return $method->getHandler()->setup();
+        }
+
+        if (!$method->isAllowed() && !MultiFactorAuthMode::isOptionalMode()) {
+            MFA::setSetupAfterLogin();
+            return redirect()->route('mfa.setup');
+        }
+
+        MFA::login($request->remember());
+
+        $request->session()->regenerate();
+
+        return app(TwoFactorLoginResponse::class);
     }
 }
