@@ -8,6 +8,7 @@ use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class MFAHelper
 {
@@ -15,7 +16,8 @@ class MFAHelper
     public const EMAIL_SENT = 'two_factor_auth_email_sent';
     public const VERIFIED = 'two_factor_auth_verified';
     public const SETUP_AFTER_LOGIN = 'two_factor_auth_setup_after_login';
-    public const SESSION_USER_ID = 'session_user_id';
+    public const LOGIN_ID = 'login.id';
+    public const LOGIN_REMEMBER = 'login.remember';
 
     public function clear(): void
     {
@@ -27,9 +29,10 @@ class MFAHelper
         ]);
     }
 
-    public function setUserId(User $user): void
+    public function setLoginIdAndRemember(User $user, bool $remember = false): void
     {
-        $this->putInSession(self::SESSION_USER_ID, $user->getKey());
+        $this->putInSession(self::LOGIN_ID, $user->getKey());
+        $this->putInSession(self::LOGIN_REMEMBER, $remember);
     }
 
     public function setVerified(bool $value = true): void
@@ -60,9 +63,14 @@ class MFAHelper
         return filled($this->getFromSession(self::VERIFIED));
     }
 
+    public function isPersistentLogin(): bool
+    {
+        return $this->isInSetupAfterLogin() && !collect(session()->all())->keys()->contains(fn($key) => str_starts_with($key, 'login_web_'));
+    }
+
     public function getUser(): Authenticatable|User
     {
-        return auth()->user() ?? User::find($this->getFromSession(self::SESSION_USER_ID));
+        return auth()->user() ?? User::find($this->getFromSession(self::LOGIN_ID));
     }
 
     public function getAuthCode()
@@ -115,6 +123,13 @@ class MFAHelper
         $sessionData = $this->getFromSession(self::CODE);
 
         return $sessionData && now()->greaterThan(Carbon::createFromTimestamp($sessionData['expires_at']));
+    }
+
+    public function login(bool $remember = false): void
+    {
+        $this->clear();
+        $this->setVerified();
+        Auth::guard()->login($this->getUser(), $remember);
     }
 
     public function getCode(): ?int
