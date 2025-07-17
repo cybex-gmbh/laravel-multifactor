@@ -13,12 +13,12 @@ Route::middleware(['web'])->group(function () {
 
     Route::as('mfa.')->group(function () {
         if (config('multi-factor.features.settings.enabled') && $path = config('multi-factor.features.settings.routePath')) {
-            Route::middleware(['auth'])->group(function () use ($path) {
+            Route::middleware(['auth', 'mfa'])->group(function () use ($path) {
                 Route::get($path, [MultiFactorAuthController::class, 'multiFactorSettings'])->name('settings');
             });
         }
 
-        Route::prefix('mfa')->group(function () {
+        Route::middleware('hasLoginId')->prefix('mfa')->group(function () {
             Route::delete('delete/{method}', [MultiFactorAuthController::class, 'deleteMultiFactorAuthMethod'])->name('delete.method');
             Route::get('setup/{method?}', [MultiFactorAuthController::class, 'setup'])->name('setup');
 
@@ -28,8 +28,8 @@ Route::middleware(['web'])->group(function () {
                 Route::middleware(['limitMultiFactorAuthAccess'])->group(function () {
                     Route::get('{method}', [MultiFactorAuthController::class, 'handleMultiFactorAuthMethod'])->name('method');
                     Route::post('{method}/send', [MultiFactorAuthController::class, 'send'])->name('method.send');
-                    Route::post('{method}/verify', [MultiFactorAuthController::class, 'verifyTwoFactorAuthCode'])->name('verify');
-                    Route::get('{method}/login/{user}/{code}', [MultiFactorAuthController::class, 'verifyTwoFactorAuthCode'])->middleware('signed')->name('login');
+                    Route::post('{method}/store', [MultiFactorAuthController::class, 'store'])->name('store');
+                    Route::get('{method}/login/{user}/{code}', [MultiFactorAuthController::class, 'store'])->middleware('signed')->name('login');
                 });
             });
         });
