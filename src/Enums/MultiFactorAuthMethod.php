@@ -11,11 +11,13 @@ use Illuminate\Support\Str;
 enum MultiFactorAuthMethod: string
 {
     case EMAIL = 'email';
+    case TOTP = 'totp';
 
     public function getHandler(): MultiFactorAuthMethodContract
     {
         return match ($this) {
             self::EMAIL => app(EmailHandler::class),
+            self::TOTP => app(EmailHandler::class),
         };
     }
 
