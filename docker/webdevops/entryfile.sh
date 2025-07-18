@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 if ${PULLPREVIEW:-false}; then
+    composer install --no-interaction --no-dev --no-scripts
     php /var/www/html/artisan migrate --force
     su -c "php /var/www/html/artisan key:generate --force" application
 
