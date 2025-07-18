@@ -18,8 +18,9 @@ jobs:
     with:
       PULLPREVIEW_ADMINS: jheusinger, gael-connan-cybex, holyfabi, lupinitylabs, mszulik
       INSTANCE_TYPE: nano
-    secrets:
+    inputs:
       ENV_FILE_NAME: exampleApp/.env
+    secrets:
       ENV_VARS: |
         APP_KEY="${{ secrets.PULLPREVIEW_APP_KEY }}"
         SEED_USER_NAME="${{ secrets.PULLPREVIEW_USER_NAME }}"
