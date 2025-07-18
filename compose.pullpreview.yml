@@ -2,8 +2,8 @@ services:
   app:
     container_name: ${COMPOSE_PROJECT_NAME}
     build:
-      context: ./exampleApp
-      dockerfile: ../docker/webdevops/Dockerfile
+      context: .
+      dockerfile: ./docker/webdevops/Dockerfile
     networks:
       - traefik
       - internal
@@ -18,9 +18,9 @@ services:
       APP_URL: https://${PULLPREVIEW_PUBLIC_DNS}
       WORKERS_AMOUNT: ${WORKERS_AMOUNT:-0}
     volumes:
-      - '.:/var/www/html'
+      - './exampleApp:/var/www/html'
       - 'app-storage:/var/www/html/storage'
-      - '../:/var/www/package'
+      - '.:/var/www/package'
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`)'
