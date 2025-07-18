@@ -18,7 +18,6 @@ jobs:
     with:
       PULLPREVIEW_ADMINS: jheusinger, gael-connan-cybex, holyfabi, lupinitylabs, mszulik
       INSTANCE_TYPE: nano
-    inputs:
       ENV_FILE_NAME: exampleApp/.env
     secrets:
       ENV_VARS: |
