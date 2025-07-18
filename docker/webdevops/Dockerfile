@@ -1,6 +1,6 @@
 FROM webdevops/php-nginx:8.4
 
-WORKDIR /var/www/html
+WORKDIR /var/www/html/exampleApp
 
 ENV WEB_DOCUMENT_ROOT /var/www/html/public
 
@@ -14,8 +14,7 @@ RUN composer install --no-interaction --no-dev --no-scripts
 
 COPY --chown=application:application . /var/www/html
 
-RUN mkdir -p /var/www/html/storage
-RUN chmod 755 /var/www/html/docker/webdevops/entryfile.sh /var/www/html/docker/shared/watchtower/post-update.sh /var/www/html/storage
+RUN chmod 755 /var/www/html/docker/webdevops/entryfile.sh /var/www/html/docker/shared/watchtower/post-update.sh /var/www/html/exampleApp/storage
 
 RUN apt update
 RUN apt install -y default-mysql-client
