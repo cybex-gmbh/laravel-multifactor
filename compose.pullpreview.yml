@@ -18,7 +18,6 @@ services:
       APP_URL: https://${PULLPREVIEW_PUBLIC_DNS}
       WORKERS_AMOUNT: ${WORKERS_AMOUNT:-0}
     volumes:
-      - './exampleApp:/var/www/html'
       - 'app-storage:/var/www/html/storage'
       - '.:/var/www/package'
     labels:

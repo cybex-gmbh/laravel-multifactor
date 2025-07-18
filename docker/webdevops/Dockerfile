@@ -1,6 +1,6 @@
 FROM webdevops/php-nginx:8.4
 
-WORKDIR /var/www/html/exampleApp
+WORKDIR /var/www/html/
 
 ENV WEB_DOCUMENT_ROOT /var/www/html/public
 
@@ -9,12 +9,13 @@ LABEL com.centurylinklabs.watchtower.lifecycle.post-update-timeout="1440"
 # Watchtower will run this script after restarting the updated container.
 LABEL com.centurylinklabs.watchtower.lifecycle.post-update="/var/www/html/docker/shared/watchtower/post-update.sh"
 
-COPY composer.json composer.lock /var/www/html/
+COPY . ../package
+COPY exampleApp/composer.json exampleApp/composer.lock ./
 RUN composer install --no-interaction --no-dev --no-scripts
 
-COPY --chown=application:application . /var/www/html
+COPY --chown=application:application exampleApp ./
 
-RUN chmod 755 /var/www/html/docker/webdevops/entryfile.sh /var/www/html/docker/shared/watchtower/post-update.sh /var/www/html/exampleApp/storage
+RUN chmod 755 ./docker/webdevops/entryfile.sh ./storage
 
 RUN apt update
 RUN apt install -y default-mysql-client
