@@ -2,50 +2,58 @@
     <x-slot name="title">@lang('multi-factor::auth.title')</x-slot>
 
     <x-multi-factor::auth-card>
-        {{--        <x-slot name="subtitle">--}}
-        {{--            <p>@lang('multi-factor::auth.email_challenge.subtitle', ['authenticationMethod' => $authenticationMethod, 'email' => $user->email])</p>--}}
-        {{--        </x-slot>--}}
+        <div id="mfa-setup">
+            @if(empty(MFA::getUser()->two_factor_secret) && empty(MFA::getUser()->two_factor_confirmed_at))
+                <x-multi-factor::form :action="route('two-factor.enable')" id="fortify-totp">
+                    <x-multi-factor::button type="submit" class="text-sm" form="fortify-totp">
+                        {{ __('Enable Totp') }}
+                    </x-multi-factor::button>
+                </x-multi-factor::form>
 
-        @empty(MFA::getUser()->two_factor_confirmed_at)
-            <x-multi-factor::form :action="route('two-factor.enable')" id="fortify-totp">
-                <x-multi-factor::button type="submit" class="text-sm" form="fortify-totp">
-                    {{ __('Enable Totp') }}
-                </x-multi-factor::button>
-            </x-multi-factor::form>
-        @endempty
+                @if(session('auth.password_confirmed_at'))
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            document.getElementById('fortify-totp')?.submit();
+                        });
+                    </script>
+                @endif
+            @endif
 
-        @if (session('status') == 'two-factor-authentication-enabled')
-            <div class="mb-4 font-medium text-sm">
-                Please finish configuring two factor authentication below.
-            </div>
-        @endif
+            @if (session('status') == 'two-factor-authentication-enabled')
+                <div class="mb-4 font-medium text-sm">
+                    Please finish configuring two factor authentication below.
+                </div>
+            @endif
 
-        @if(isset($user->two_factor_secret) && empty($user->two_factor_confirmed_at))
-            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <p>Scan the QR code below using an authenticator app</p>
-                {!! MFA::getUser()->twoFactorQrCodeSvg() !!}
-            </div>
-        @endif
+            @if(isset($user->two_factor_secret) && empty($user->two_factor_confirmed_at))
+                <div class="mfa-column mfa-gap-20">
+                    <div class="mfa-column">
+                        <p>Scan the QR code below using an authenticator app</p>
+                        <div class="mfa-qr-code">
+                            {!! MFA::getUser()->twoFactorQrCodeSvg() !!}
+                        </div>
+                    </div>
 
-        @if(empty(MFA::getUser()->two_factor_confirmed_at) && isset(MFA::getUser()->two_factor_secret))
-            <x-multi-factor::form :action="route('two-factor.confirm')" id="mfa-confirm">
-                <x-multi-factor::form.input field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
-            </x-multi-factor::form>
-        @endif
-
-        @if (session('status') == 'two-factor-authentication-confirmed')
-            <div class="mb-4 font-medium text-sm">
-                Two factor authentication confirmed and enabled successfully.
-            </div>
-        @endif
-
-
-        @if (empty(MFA::getUser()->two_factor_confirmed_at))
-            <div class="mfa-row mfa-flex-end">
-                <x-multi-factor::button type="submit" class="text-sm" form="mfa-confirm">
-                    {{ __('Submit Code') }}
-                </x-multi-factor::button>
-            </div>
-        @endif
+                    <div class="mfa-width-full" style="margin-top: 20px;">
+                        <a href="{{ route('mfa.method', $mfaMethod) }}">
+                            <x-multi-factor::button type="button" class="mfa-width-full">Continue</x-multi-factor::button>
+                        </a>
+                        <div class="mfa-row" style="margin: 20px 0;">
+                            <span class="mfa-separator"></span>
+                            <span class="mfa-separator-text">OR enter the code manually</span>
+                            <span class="mfa-separator"></span>
+                        </div>
+                        <div class="mfa-row mfa-gap-10">
+                            <x-multi-factor::form.input id="two_factor_secret_input" style="margin: 0;" field="two_factor_secret"
+                                                        value="{{ decrypt(MFA::getUser()->two_factor_secret) }}" readonly/>
+                            <x-multi-factor::button type="button" class="mfa-btn-fit-content"
+                                                    onclick="event.preventDefault(); var el=document.getElementById('two_factor_secret_input'); el && (el.select(), document.execCommand('copy'));">
+                                <x-multi-factor::svg icon="copy"/>
+                            </x-multi-factor::button>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
     </x-multi-factor::auth-card>
 </x-multi-factor::layout>
