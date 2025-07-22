@@ -35,9 +35,17 @@ class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewRespon
         $mfaMethod = $this->mfaMethod;
         $authenticationMethod = MFA::isEmailOnlyLoginActive() ? 'link' : 'code';
 
+        if ($mfaMethod === MultiFactorAuthMethod::TOTP) {
+            if(empty(MFA::getUser()->two_factor_confirmed_at) && isset(MFA::getUser()->two_factor_secret)) {
+                $action = 'two-factor.confirm';
+            } else {
+                $action = 'mfa.store';
+            }
+        }
+
         return match ($mfaMethod) {
             MultiFactorAuthMethod::EMAIL => view('laravel-multi-factor::pages.email-challenge', compact(['user', 'mfaMethod', 'authenticationMethod'])),
-            MultiFactorAuthMethod::TOTP => view('laravel-multi-factor::pages.totp-challenge', compact(['user', 'mfaMethod', 'authenticationMethod'])),
+            MultiFactorAuthMethod::TOTP => view('laravel-multi-factor::pages.totp-challenge', compact(['user', 'mfaMethod', 'authenticationMethod', 'action'])),
         };
     }
 }

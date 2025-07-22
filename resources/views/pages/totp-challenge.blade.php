@@ -6,13 +6,13 @@
             {{--            <p>@lang('multi-factor::auth.email_challenge.subtitle', ['authenticationMethod' => $authenticationMethod, 'email' => $user->email])</p>--}}
         </x-slot>
 
-        <x-multi-factor::form :action="route('mfa.store', $mfaMethod)" id="mfa-login">
+        <x-multi-factor::form :action="route($action, $action === 'two-factor.confirm' ? null : $mfaMethod)" id="mfa-login">
             <x-multi-factor::form.input field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
         </x-multi-factor::form>
 
         <div class="mfa-row mfa-flex-end">
             <x-multi-factor::button type="submit" class="text-sm" form="mfa-login">
-                {{ __('Log in') }}
+                {{ $action === 'two-factor.confirm' ? __('Verify') : __('Log in') }}
             </x-multi-factor::button>
         </div>
 
