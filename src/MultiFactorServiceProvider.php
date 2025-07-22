@@ -29,28 +29,21 @@ use Cybex\LaravelMultiFactor\Providers\FortifyServiceProvider;
 use Cybex\LaravelMultiFactor\View\Components\LegacyAuthCard;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\AliasLoader;
-use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Events\TwoFactorAuthenticationConfirmed;
-use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
-use Laravel\Fortify\Http\Controllers\ConfirmedPasswordStatusController;
-use Laravel\Fortify\Http\Controllers\ConfirmedTwoFactorAuthenticationController;
-use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
-use Laravel\Fortify\RoutePath;
 
 class MultiFactorServiceProvider extends ServiceProvider
 {
-    public function boot()
+    public function boot(): void
     {
         /*
          * Optional methods to load your package assets
          */
         $this->mergeConfigFrom(__DIR__ . '/../config/multi-factor.php', 'multi-factor');
-        $this->mergeConfigFrom(__DIR__ . '/../config/fortify.php', 'fortify');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'multi-factor');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-multi-factor');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
@@ -118,24 +111,11 @@ class MultiFactorServiceProvider extends ServiceProvider
                 $loginRoute->middleware('enforceEmailOnlyLogin');
             }
 
-            Route::middleware([StartSession::class, 'tempLoginForMFA', 'web', config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')])->group(function () {
-                Route::post(RoutePath::for('two-factor.enable', '/user/two-factor-authentication'), [TwoFactorAuthenticationController::class, 'store'])
-                    ->middleware('password.confirm')
-                    ->name('two-factor.enable');
-                Route::post(RoutePath::for('two-factor.confirm', '/user/confirmed-two-factor-authentication'), [ConfirmedTwoFactorAuthenticationController::class, 'store'])
-                    ->middleware('password.confirm')
-                    ->name('two-factor.confirm');
-                Route::get(RoutePath::for('password.confirm', '/user/confirm-password'), [ConfirmablePasswordController::class, 'show'])
-                    ->name('password.confirm');
-                Route::get(RoutePath::for('password.confirmation', '/user/confirmed-password-status'), [ConfirmedPasswordStatusController::class, 'show'])
-                    ->name('password.confirmation');
-                Route::post(RoutePath::for('password.confirm', '/user/confirm-password'), [ConfirmablePasswordController::class, 'store'])
-                    ->name('password.confirm.store');
-            });
+            require 'routes/overrides.php';
         });
     }
 
-    public function register()
+    public function register(): void
     {
         // Register the main class to use with the facade
         $this->app->singleton('mfa', MFAHelper::class);
@@ -144,6 +124,7 @@ class MultiFactorServiceProvider extends ServiceProvider
             AliasLoader::getInstance()->alias('MFA', MFA::class);
         });
 
+        $this->mergeConfigFrom(__DIR__ . '/../config/fortify.php', 'fortify');
         $this->app->register(FortifyServiceProvider::class);
 
         $this->app->bind(

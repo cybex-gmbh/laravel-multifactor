@@ -71,7 +71,5 @@ class FortifyServiceProvider extends ServiceProvider
                 PrepareAuthenticatedSession::class,
             ]);
         });
-
-        Config::set('fortify.home', '/');
     }
 }
