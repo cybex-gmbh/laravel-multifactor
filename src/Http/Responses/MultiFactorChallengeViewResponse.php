@@ -36,11 +36,7 @@ class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewRespon
         $authenticationMethod = MFA::isEmailOnlyLoginActive() ? 'link' : 'code';
 
         if ($mfaMethod === MultiFactorAuthMethod::TOTP) {
-            if(empty(MFA::getUser()->two_factor_confirmed_at) && isset(MFA::getUser()->two_factor_secret)) {
-                $action = 'two-factor.confirm';
-            } else {
-                $action = 'mfa.store';
-            }
+            $action = MFA::getUser()->hasTotpConfirmed() ? 'mfa.store' : 'two-factor.confirm';
         }
 
         return match ($mfaMethod) {
