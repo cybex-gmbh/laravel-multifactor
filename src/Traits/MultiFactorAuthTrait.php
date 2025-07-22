@@ -44,6 +44,11 @@ trait MultiFactorAuthTrait
         return filled($this->getAllowedMultiFactorAuthMethods());
     }
 
+    public function hasTotpConfirmed(): bool
+    {
+        return empty($this?->two_factor_confirmed_at) && isset($this?->two_factor_secret);
+    }
+
     /**
      * Returns the user's allowed MFA methods if available, otherwise all user methods.
      *
