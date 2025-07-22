@@ -1,4 +1,4 @@
-<div>
+<div style="width: 100%;">
     <label for="{{ $id }}" class="mfa-text-sm">{{ $label }}</label>
 
     <input id="{{ $id }}"

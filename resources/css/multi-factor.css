@@ -32,6 +32,21 @@
     padding: 10px 0;
 }
 
+.mfa-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mfa-gap-10 {
+    gap: 10px;
+}
+
+.mfa-gap-20 {
+    gap: 20px;
+}
+
 .mfa-flex-end {
     justify-content: flex-end;
     margin-top: 1rem;
@@ -92,6 +107,10 @@
     cursor: not-allowed;
 }
 
+.mfa-width-full {
+    width: 100%;
+}
+
 .mfa-svg {
     width: 40px;
     height: 40px;
@@ -134,6 +153,7 @@
 
 .mfa-has-errors {
     border-color: #fc8181;
+
     &:focus {
         outline: none;
         border-color: #fc8181;
@@ -145,4 +165,25 @@
     .multi-factor-auth {
         background-color: #1f2937;
     }
+}
+
+.mfa-qr-code {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 20px 0;
+    width: fit-content;
+}
+
+.mfa-separator {
+    flex: 1;
+    border-top: 1px solid #ccc;
+}
+
+.mfa-separator-text {
+    color: #888;
+}
+
+.mfa-btn-fit-content {
+    width: fit-content;
 }
