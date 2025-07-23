@@ -11,8 +11,6 @@ class LogUserInAfterTotpSetup
     {
         if (!MFA::isPersistentLogin()) {
             MFA::login();
-
-            redirect(config('fortify.home'));
         }
     }
 }
