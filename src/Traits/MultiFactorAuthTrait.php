@@ -51,6 +51,11 @@ trait MultiFactorAuthTrait
         return isset($this?->two_factor_confirmed_at) && isset($this?->two_factor_secret);
     }
 
+    public function hasStartedTotpSetup(): bool
+    {
+        return isset($this?->two_factor_secret) && empty($this?->two_factor_confirmed_at);
+    }
+
     /**
      * Returns the user's allowed MFA methods if available, otherwise all user methods.
      *
