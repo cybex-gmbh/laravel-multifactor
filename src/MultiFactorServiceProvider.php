@@ -32,7 +32,9 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
+use Laravel\Fortify\Contracts\TwoFactorConfirmedResponse;
 use Laravel\Fortify\Events\TwoFactorAuthenticationConfirmed;
+use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorTotpConfirmedResponse;
 
 class MultiFactorServiceProvider extends ServiceProvider
 {
@@ -41,6 +43,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         /*
          * Optional methods to load your package assets
          */
+
         $this->mergeConfigFrom(__DIR__ . '/../config/multi-factor.php', 'multi-factor');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'multi-factor');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-multi-factor');
@@ -93,6 +96,11 @@ class MultiFactorServiceProvider extends ServiceProvider
         }
 
         $this->app->booted(function () {
+            $this->app->singleton(
+                TwoFactorConfirmedResponse::class,
+                MultiFactorTotpConfirmedResponse::class
+            );
+
             $routes = Route::getRoutes();
             $routes->refreshNameLookups();
 
