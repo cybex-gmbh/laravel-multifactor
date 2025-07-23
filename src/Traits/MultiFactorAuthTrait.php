@@ -16,12 +16,9 @@ trait MultiFactorAuthTrait
     protected static function booted()
     {
         static::updated(function ($user) {
-            if ($user->isDirty('two_factor_confirmed_at') && $user->two_factor_confirmed_at !== null) {
-                $user->multiFactorAuthMethods()->attach(
-                    MultiFactorAuthMethod::firstOrCreate([
-                        'type' => MultiFactorAuthMethodEnum::TOTP,
-                    ])
-                );
+            if ($user->wasChanged('two_factor_confirmed_at') && isset($user->two_factor_confirmed_at)) {
+                $method = MultiFactorAuthMethod::firstOrCreate(['type' => MultiFactorAuthMethodEnum::TOTP]);
+                $user->multiFactorAuthMethods()->attach($method);
             }
         });
     }
