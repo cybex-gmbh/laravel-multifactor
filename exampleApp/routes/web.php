@@ -7,5 +7,5 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'mfa'])->group(function () {
-    Route::get('/home', fn() => view('home'))->name('home');
+    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 });
