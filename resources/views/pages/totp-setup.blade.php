@@ -3,7 +3,7 @@
 
     <x-multi-factor::auth-card>
         <div id="mfa-setup">
-            @if(empty(MFA::getUser()->two_factor_secret) && empty(MFA::getUser()->two_factor_confirmed_at))
+            @if(!$hasStartedTotpSetup)
                 <x-multi-factor::form :action="route('two-factor.enable')" id="fortify-totp">
                     <x-multi-factor::button type="submit" class="text-sm" form="fortify-totp">
                         {{ __('Enable Totp') }}
@@ -25,12 +25,12 @@
                 </div>
             @endif
 
-            @if(isset($user->two_factor_secret) && empty($user->two_factor_confirmed_at))
+            @if($hasStartedTotpSetup)
                 <div class="mfa-column mfa-gap-20">
                     <div class="mfa-column">
                         <p>Scan the QR code below using an authenticator app</p>
                         <div class="mfa-qr-code">
-                            {!! MFA::getUser()->twoFactorQrCodeSvg() !!}
+                            {!! $user->twoFactorQrCodeSvg() !!}
                         </div>
                     </div>
 
@@ -45,7 +45,7 @@
                         </div>
                         <div class="mfa-row mfa-gap-10">
                             <x-multi-factor::form.input id="two_factor_secret_input" style="margin: 0;" field="two_factor_secret"
-                                                        value="{{ decrypt(MFA::getUser()->two_factor_secret) }}" readonly/>
+                                                        value="{{ decrypt($user->two_factor_secret) }}" readonly/>
                             <x-multi-factor::button type="button" class="mfa-btn-fit-content"
                                                     onclick="event.preventDefault(); var el=document.getElementById('two_factor_secret_input'); el && (el.select(), document.execCommand('copy'));">
                                 <x-multi-factor::svg icon="copy"/>

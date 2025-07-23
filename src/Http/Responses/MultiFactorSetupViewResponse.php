@@ -32,9 +32,10 @@ class MultiFactorSetupViewResponse implements MultiFactorSetupViewResponseContra
     {
         $user = $this->user;
         $mfaMethod = $this->mfaMethod;
+        $hasStartedTotpSetup = $user->hasStartedTotpSetup();
 
         return match ($mfaMethod) {
-            MultiFactorAuthMethod::TOTP => view('laravel-multi-factor::pages.totp-setup', compact(['user', 'mfaMethod'])),
+            MultiFactorAuthMethod::TOTP => view('laravel-multi-factor::pages.totp-setup', compact(['user', 'mfaMethod', 'hasStartedTotpSetup', 'hasTotpEnabled'])),
         };
     }
 }
