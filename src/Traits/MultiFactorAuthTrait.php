@@ -46,7 +46,7 @@ trait MultiFactorAuthTrait
 
     public function hasTotpConfirmed(): bool
     {
-        return empty($this?->two_factor_confirmed_at) && isset($this?->two_factor_secret);
+        return isset($this?->two_factor_confirmed_at) && isset($this?->two_factor_secret);
     }
 
     /**

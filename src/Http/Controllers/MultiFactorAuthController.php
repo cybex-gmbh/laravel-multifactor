@@ -43,7 +43,6 @@ class MultiFactorAuthController extends Controller
             return Redirect::route('mfa.method', ['method' => Arr::first($userMethods)]);
         }
 
-        // fallback has to be tested that no other error occur
         return app(MultiFactorChooseViewResponseContract::class, $userMethods ?: MultiFactorAuthMethod::getAllowedMethods());
     }
 
