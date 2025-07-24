@@ -120,15 +120,9 @@ MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=false
 To allow users to manage their multi-factor authentication methods, add a link to the `mfa.settings` route on your users show page:
 
 ```php
-@if(config('multi-factor.features.settings.enabled') && Auth::user()->is($user) && !MultiFactorAuthMode::isForceMode())
+@if(Auth::user()->is($user) && !MultiFactorAuthMode::isForceMode())
     <a href="{{ route('mfa.settings', $user) }}">Manage Multi-Factor Authentication</a>
 @endif
-```
-
-You can disable the settings page via the `MULTI_FACTOR_AUTHENTICATION_SETTINGS` env variable:
-
-```env
-MULTI_FACTOR_AUTHENTICATION_SETTINGS=false
 ```
 
 ### Customizing Views (Optional)
