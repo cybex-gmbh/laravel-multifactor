@@ -23,7 +23,7 @@ return [
 
     'features' => [
         'email-login' => [
-            'enabled' => env('MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN', true),
+            'enabled' => env('MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN', false),
             'routePath' => 'mfa/email-login',
             'applicationLoginRouteName' => 'login',
         ],

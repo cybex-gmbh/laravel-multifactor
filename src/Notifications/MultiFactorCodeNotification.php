@@ -11,7 +11,7 @@ class MultiFactorCodeNotification extends Notification
 {
     use Queueable;
 
-    protected string $url;
+    protected ?string $url;
 
     public function __construct(?string $url)
     {
