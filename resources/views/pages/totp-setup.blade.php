@@ -21,14 +21,14 @@
 
             @if (session('status') == 'two-factor-authentication-enabled')
                 <div class="mb-4 font-medium text-sm">
-                    Please finish configuring two factor authentication below.
+                    @lang('multi-factor::auth.totp.setup_instructions')
                 </div>
             @endif
 
             @if($hasStartedTotpSetup)
                 <div class="mfa-column mfa-gap-20">
                     <div class="mfa-column">
-                        <p>Scan the QR code below using an authenticator app</p>
+                        <p>@lang('multi-factor::auth.totp.qr_code_instructions')</p>
                         <div class="mfa-qr-code">
                             {!! $user->twoFactorQrCodeSvg() !!}
                         </div>
@@ -40,7 +40,7 @@
                         </a>
                         <div class="mfa-row" style="margin: 20px 0;">
                             <span class="mfa-separator"></span>
-                            <span class="mfa-separator-text">OR enter the code manually</span>
+                            <span class="mfa-separator-text">@lang('multi-factor::auth.totp.manual_entry_instructions')</span>
                             <span class="mfa-separator"></span>
                         </div>
                         <div class="mfa-row mfa-gap-10">
