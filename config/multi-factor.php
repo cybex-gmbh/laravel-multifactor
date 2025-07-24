@@ -28,7 +28,6 @@ return [
             'applicationLoginRouteName' => 'login',
         ],
         'settings' => [
-            'enabled' => env('MULTI_FACTOR_AUTHENTICATION_SETTINGS', true),
             'routePath' => 'mfa/user/{user}/settings',
         ],
     ],
