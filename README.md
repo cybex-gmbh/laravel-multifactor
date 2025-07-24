@@ -109,7 +109,7 @@ Set your application's login route name in the multi-factor configuration:
 ],
 ```
 
-To disable email only login set the `MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN` env variable to `false`:
+To enable email only login set the `MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN` env variable to `true`:
 
 ```env
 MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=false
