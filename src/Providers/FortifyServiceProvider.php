@@ -51,15 +51,15 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Fortify::loginView(function () {
-            return view('auth.login');
+            return view(config('multi-factor.views.templates.login'));
         });
 
         Fortify::confirmPasswordView(function () {
-            return view('auth.confirm-password');
+            return view(config('multi-factor.views.templates.confirm-password'));
         });
 
         Fortify::twoFactorChallengeView(function () {
-            return view('home');
+            return view(config('multi-factor.views.templates.totp-challenge'));
         });
 
         Fortify::authenticateThrough(function () {
