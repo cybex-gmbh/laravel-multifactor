@@ -50,7 +50,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'multi-factor');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-multi-factor');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+        $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
 
         $router = $this->app['router'];
         $router->aliasMiddleware('hasMultiFactorAuthentication', HasMultiFactorAuthentication::class);
@@ -142,23 +142,23 @@ class MultiFactorServiceProvider extends ServiceProvider
 
         $this->app->singleton(
             MultiFactorChallengeViewResponseContract::class,
-            fn($app, $params): MultiFactorChallengeViewResponseContract => new (config('multi-factor.views.challenge'))(...$params)
+            fn($app, $params): MultiFactorChallengeViewResponseContract => new (config('multi-factor.views.responses.challenge'))(...$params)
         );
         $this->app->singleton(
             MultiFactorLoginViewResponseContract::class,
-            fn($app, $params): MultiFactorLoginViewResponseContract => new (config('multi-factor.views.login'))(...$params)
+            fn($app, $params): MultiFactorLoginViewResponseContract => new (config('multi-factor.views.responses.login'))(...$params)
         );
         $this->app->singleton(
             MultiFactorChooseViewResponseContract::class,
-            fn($app, $params): MultiFactorChooseViewResponseContract => new (config('multi-factor.views.choose'))($params)
+            fn($app, $params): MultiFactorChooseViewResponseContract => new (config('multi-factor.views.responses.choose'))($params)
         );
         $this->app->singleton(
             MultiFactorSettingsViewResponseContract::class,
-            fn($app, $params): MultiFactorSettingsViewResponseContract => new (config('multi-factor.views.settings'))(...$params)
+            fn($app, $params): MultiFactorSettingsViewResponseContract => new (config('multi-factor.views.responses.settings'))(...$params)
         );
         $this->app->singleton(
             MultiFactorSetupViewResponseContract::class,
-            fn($app, $params): MultiFactorSetupViewResponseContract => new (config('multi-factor.views.setup'))(...$params)
+            fn($app, $params): MultiFactorSetupViewResponseContract => new (config('multi-factor.views.responses.setup'))(...$params)
         );
     }
 }
