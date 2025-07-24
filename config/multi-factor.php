@@ -17,11 +17,18 @@ return [
     'forceMethod' => env('MULTI_FACTOR_AUTHENTICATION_FORCE_METHOD', 'email'),
 
     'views' => [
-        'challenge' => MultiFactorChallengeViewResponse::class,
-        'login' => MultiFactorLoginViewResponse::class,
-        'choose' => MultiFactorChooseViewResponse::class,
-        'settings' => MultiFactorSettingsViewResponse::class,
-        'setup' => MultiFactorSetupViewResponse::class,
+        'responses' => [
+            'challenge' => MultiFactorChallengeViewResponse::class,
+            'login' => MultiFactorLoginViewResponse::class,
+            'choose' => MultiFactorChooseViewResponse::class,
+            'settings' => MultiFactorSettingsViewResponse::class,
+            'setup' => MultiFactorSetupViewResponse::class,
+        ],
+        'templates' => [
+            'login' => 'auth.login',
+            'confirm-password' => 'auth.confirm-password',
+            'totp-challenge' => 'auth.two-factor-challenge',
+        ],
     ],
 
     'features' => [
