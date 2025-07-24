@@ -2,10 +2,6 @@
     <x-slot name="title">@lang('multi-factor::auth.title')</x-slot>
 
     <x-multi-factor::auth-card>
-        <x-slot name="subtitle">
-            {{--            <p>@lang('multi-factor::auth.email_challenge.subtitle', ['authenticationMethod' => $authenticationMethod, 'email' => $user->email])</p>--}}
-        </x-slot>
-
         <x-multi-factor::form :action="route($action, $action === 'two-factor.confirm' ? null : $mfaMethod)" id="mfa-login">
             <x-multi-factor::form.input field="code" label="Authentication Code" type="text" required autofocus autocomplete="one-time-code"/>
         </x-multi-factor::form>
@@ -18,7 +14,7 @@
 
         @if (session('status') == 'two-factor-authentication-confirmed')
             <div class="mb-4 font-medium text-sm">
-                Two factor authentication confirmed and enabled successfully.
+                @lang('multi-factor::auth.totp.confirmation_success')
             </div>
         @endif
     </x-multi-factor::auth-card>
