@@ -1,12 +1,12 @@
 <?php
 
-use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Http\Controllers\MultiFactorAuthController;
 use Illuminate\Support\Facades\Route;
+use MFA;
 
 Route::middleware(['web'])->group(function () {
     Route::middleware(['guest'])->group(function () {
-        if (MultiFactorAuthMethod::isEmailOnlyLoginActive() && $path = config('multi-factor.features.email-login.routePath')) {
+        if (MFA::isEmailOnlyLoginActive() && $path = config('multi-factor.features.email-login.routePath')) {
             Route::post($path, [MultiFactorAuthController::class, 'authenticateByEmailOnly'])->name('mfa.email.login');
         }
     });

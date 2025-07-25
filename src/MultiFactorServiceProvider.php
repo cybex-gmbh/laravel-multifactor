@@ -6,7 +6,6 @@ use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
-use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Facades\MFA;
 use Cybex\LaravelMultiFactor\Helpers\MFAHelper;
@@ -73,7 +72,7 @@ class MultiFactorServiceProvider extends ServiceProvider
         }
 
         if (MultiFactorAuthMode::isForceMode()) {
-            $forceMethod = MultiFactorAuthMethod::getForceMethod();
+            $forceMethod = MFA::getForceMethod();
 
             if (!$forceMethod->isAllowed()) {
                 abort(500);
