@@ -56,7 +56,7 @@ class EmailHandler implements MultiFactorAuthMethodContract
 
         MFA::setAuthCode($code, $expiresAt->timestamp);
 
-        if (MultiFactorAuthMethod::isEmailOnlyLoginActive()) {
+        if (MFA::isEmailOnlyLoginActive()) {
             $url = URL::temporarySignedRoute(
                 'mfa.login',
                 $expiresAt,

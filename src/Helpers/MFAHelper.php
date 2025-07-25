@@ -2,7 +2,10 @@
 
 namespace Cybex\LaravelMultiFactor\Helpers;
 
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class MFAHelper
 {
@@ -23,12 +26,12 @@ class MFAHelper
 
     public function setVerified(bool $value = true): void
     {
-        $this->put(self::VERIFIED, $value);
+        $this->putInSession(self::VERIFIED, $value);
     }
 
     public function setAuthCode(int $code, int $expiresAt): void
     {
-        $this->put(self::CODE, [
+        $this->putInSession(self::CODE, [
             'code' => $code,
             'expires_at' => $expiresAt,
         ]);
@@ -36,32 +39,57 @@ class MFAHelper
 
     public function setEmailSent(bool $value = true): void
     {
-        $this->put(self::EMAIL_SENT, $value);
+        $this->putInSession(self::EMAIL_SENT, $value);
     }
 
     public function setSetupAfterLogin(bool $value = true): void
     {
-        $this->put(self::SETUP_AFTER_LOGIN, $value);
+        $this->putInSession(self::SETUP_AFTER_LOGIN, $value);
     }
 
     public function isVerified(): bool
     {
-        return $this->get(self::VERIFIED) ?? false;
+        return $this->getFromSession(self::VERIFIED) ?? false;
     }
 
     public function getAuthCode()
     {
-        return $this->get(self::CODE);
+        return $this->getFromSession(self::CODE);
+    }
+
+    public function getForceMethod(): MultiFactorAuthMethod
+    {
+        return MultiFactorAuthMethod::from(config('multi-factor.forceMethod'));
+    }
+
+    public function getAllowedMethods(): array
+    {
+        return Arr::map($this->getAllowedMethodNames(), fn($value): MultiFactorAuthMethod => MultiFactorAuthMethod::from($value));
+    }
+
+    public function getAllowedMethodNames(): array
+    {
+        return Arr::map(config('multi-factor.allowedMethods'), fn($method): string => Str::lower($method));
+    }
+
+    public function getMethodsByNames(array $names): array
+    {
+        return array_map(fn($name) => MultiFactorAuthMethod::from($name), $names);
+    }
+
+    public function isEmailOnlyLoginActive(): bool
+    {
+        return config('multi-factor.features.email-login.enabled');
     }
 
     public function isInSetupAfterLogin()
     {
-        return $this->get(self::SETUP_AFTER_LOGIN);
+        return $this->getFromSession(self::SETUP_AFTER_LOGIN);
     }
 
     public function endSetupAfterLogin()
     {
-        $this->remove(self::SETUP_AFTER_LOGIN);
+        $this->removeFromSession(self::SETUP_AFTER_LOGIN);
     }
 
     public function isEmailSent(): bool
@@ -71,28 +99,28 @@ class MFAHelper
 
     public function isCodeExpired(): bool
     {
-        $sessionData = $this->get(self::CODE);
+        $sessionData = $this->getFromSession(self::CODE);
 
         return $sessionData && now()->greaterThan(Carbon::createFromTimestamp($sessionData['expires_at']));
     }
 
     public function getCode(): ?int
     {
-        return $this->get(self::CODE, 'code');
+        return $this->getFromSession(self::CODE, 'code');
     }
 
-    protected function get(string $key, string $subKey = null): mixed
+    protected function getFromSession(string $key, string $subKey = null): mixed
     {
         $data = session($key);
         return $subKey ? ($data[$subKey] ?? null) : $data;
     }
 
-    protected function put(string $key, mixed $value = true): void
+    protected function putInSession(string $key, mixed $value = true): void
     {
         session()->put($key, $value);
     }
 
-    public function remove(string $key): void
+    public function removeFromSession(string $key): void
     {
         session()->remove($key);
     }

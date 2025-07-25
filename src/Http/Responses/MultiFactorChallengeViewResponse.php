@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Auth\User;
+use MFA;
 
 class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewResponseContract
 {
@@ -32,7 +33,7 @@ class MultiFactorChallengeViewResponse implements MultiFactorChallengeViewRespon
     {
         $user = $this->user;
         $mfaMethod = $this->mfaMethod;
-        $authenticationMethod = MultiFactorAuthMethod::isEmailOnlyLoginActive() ? 'link' : 'code';
+        $authenticationMethod = MFA::isEmailOnlyLoginActive() ? 'link' : 'code';
 
         return view('laravel-multi-factor::pages.email-challenge', compact(['user', 'mfaMethod', 'authenticationMethod']));
     }

@@ -28,7 +28,7 @@ class LimitMultiFactorAuthAccess
             }
 
             if ($isForceMode) {
-                $forceMethod = MultiFactorAuthMethod::getForceMethod();
+                $forceMethod = MFA::getForceMethod();
 
                 if (!$method->isForceMethod() && $forceMethod->isAllowed() && $forceMethod->isUserMethod()) {
                     return redirect()->route('mfa.method', ['method' => $forceMethod]);

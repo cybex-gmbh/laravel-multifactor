@@ -2,11 +2,11 @@
 
 namespace Cybex\LaravelMultiFactor\Traits;
 
-use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod as MultiFactorAuthMethodEnum;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Models\MultiFactorAuthMethod;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
+use MFA;
 
 trait MultiFactorAuthTrait
 {
@@ -15,11 +15,13 @@ trait MultiFactorAuthTrait
         return $this->belongsToMany(MultiFactorAuthMethod::class, 'multi_factor_auth_method_user');
     }
 
-    public function getMultiFactorAuthMethodNames() {
+    public function getMultiFactorAuthMethodNames()
+    {
         return $this->multiFactorAuthMethods->map(fn($method) => $method->type->value)->toArray();
     }
 
-    public function getMultiFactorAuthMethods() {
+    public function getMultiFactorAuthMethods()
+    {
         return $this->multiFactorAuthMethods->pluck('type')->toArray();
     }
 
@@ -36,7 +38,7 @@ trait MultiFactorAuthTrait
     public function getUserMethods(): array
     {
         if ($this->hasAllowedMultiFactorAuthMethods()) {
-            return MultiFactorAuthMethodEnum::getMethodsByNames($this->getAllowedMultiFactorAuthMethods());
+            return MFA::getMethodsByNames($this->getAllowedMultiFactorAuthMethods());
         } else {
             return $this->getMultiFactorAuthMethods();
         }
@@ -55,9 +57,9 @@ trait MultiFactorAuthTrait
     public function getConfiguredMultiFactorAuthMethodNames(): array
     {
         if (MultiFactorAuthMode::isForceMode()) {
-            return [MultiFactorAuthMethodEnum::getForceMethod()->value];
+            return [MFA::getForceMethod()->value];
         } else {
-            return MultiFactorAuthMethodEnum::getAllowedMethodNames();
+            return MFA::getAllowedMethodNames();
         }
     }
 
