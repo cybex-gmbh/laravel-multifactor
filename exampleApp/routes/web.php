@@ -6,6 +6,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware(['auth', 'mfa'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 });
