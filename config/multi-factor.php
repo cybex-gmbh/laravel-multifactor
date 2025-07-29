@@ -35,7 +35,6 @@ return [
         'email-login' => [
             'enabled' => env('MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN', false),
             'routePath' => 'mfa/email-login',
-            'applicationLoginRouteName' => 'login',
         ],
         'settings' => [
             'routePath' => 'mfa/user/{user}/settings',
