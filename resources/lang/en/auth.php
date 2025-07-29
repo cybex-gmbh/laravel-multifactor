@@ -30,9 +30,9 @@ return [
         'subtitle_resend' => 'Didn\'t receive your :authenticationMethod?',
     ],
     'totp' => [
-        'setup_instructions' => 'Please finish configuring two-factor authentication below.',
+        'setup_instructions' => 'Please finish configuring totp authentication below.',
         'qr_code_instructions' => 'Scan the QR code below using an authenticator app.',
         'manual_entry_instructions' => 'Or enter the code manually.',
-        'confirmation_success' => 'Two-factor authentication confirmed and enabled successfully.',
+        'confirmation_success' => 'Totp authentication confirmed and enabled successfully.',
     ]
 ];
