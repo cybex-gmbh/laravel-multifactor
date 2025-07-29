@@ -105,13 +105,9 @@ class MultiFactorServiceProvider extends ServiceProvider
 
             $routes = Route::getRoutes();
             $routes->refreshNameLookups();
-            $loginRoute = $routes->getByName(config('multi-factor.features.email-login.applicationLoginRouteName'));
+            $loginRoute = $routes->getByName('login');
 
             if (MFA::isEmailOnlyLoginActive()) {
-                if (!$loginRoute) {
-                    throw new LoginRouteNotFoundException();
-                }
-
                 if (!MultiFactorAuthMode::isForceMode() || MFA::getForceMethod() !== MultiFactorAuthMethod::EMAIL) {
                     throw new InvalidEmailOnlyLoginConfigurationException();
                 }
