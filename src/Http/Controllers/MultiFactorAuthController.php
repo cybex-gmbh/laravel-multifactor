@@ -82,7 +82,8 @@ class MultiFactorAuthController extends Controller
 
     public function deleteMultiFactorAuthMethod(MultiFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
-        MFA::getUser()->multiFactorAuthMethods()->where('type', $method)->detach();
+        $query = MFA::getUser()->multiFactorAuthMethods()->where('type', $method);
+        $query->detach($query->first()->getKey());
 
         if ($method === MultiFactorAuthMethod::TOTP) {
             app(DisableTwoFactorAuthentication::class)(MFA::getUser());
