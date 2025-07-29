@@ -61,14 +61,9 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('hasLoginId', HasLoginId::class);
         $router->aliasMiddleware('tempLoginForMFA', TempLoginForMfa::class);
 
-        $router->middlewareGroup('mfa', [
-            'hasMultiFactorAuthentication',
-            'hasAllowedMultiFactorAuthMethods',
-        ]);
-
         Blade::componentNamespace('Cybex\\LaravelMultiFactor\\View\\Components', 'multi-factor');
 
-        Event::listen(Logout::class, HandleUserLogout::class);
+        Event::listen(Logout::class, HandleUserLogout::class);#
         Event::listen(TwoFactorAuthenticationConfirmed::class, LogUserInAfterTotpSetup::class);
 
         if ($this->app->runningInConsole()) {
