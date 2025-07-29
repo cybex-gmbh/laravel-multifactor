@@ -6,7 +6,10 @@ use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
+use Cybex\LaravelMultiFactor\Exceptions\InvalidEmailOnlyLoginConfigurationException;
+use Cybex\LaravelMultiFactor\Exceptions\LoginRouteNotFoundException;
 use Cybex\LaravelMultiFactor\Facades\MFA;
 use Cybex\LaravelMultiFactor\Helpers\MFAHelper;
 use Cybex\LaravelMultiFactor\Http\Middleware\EnforceEmailOnlyLogin;
@@ -67,7 +70,7 @@ class MultiFactorServiceProvider extends ServiceProvider
             ], ['multi-factor', 'multi-factor.public']);
 
             $this->publishes([
-                __DIR__.'/../resources/lang' => resource_path('lang/vendor/laravel-multi-factor'),
+                __DIR__ . '/../resources/lang' => resource_path('lang/vendor/laravel-multi-factor'),
             ], ['multi-factor', 'multi-factor.lang']);
         }
 
@@ -83,7 +86,19 @@ class MultiFactorServiceProvider extends ServiceProvider
             $routes = Route::getRoutes();
 
             $routes->refreshNameLookups();
-            $routes->getByName(config('multi-factor.features.email-login.applicationLoginRouteName'))->middleware('enforceEmailOnlyLogin');
+            $loginRoute = $routes->getByName(config('multi-factor.features.email-login.applicationLoginRouteName'));
+
+            if (MFA::isEmailOnlyLoginActive()) {
+                if (!$loginRoute) {
+                    throw new LoginRouteNotFoundException();
+                }
+
+                if (!MultiFactorAuthMode::isForceMode() || MFA::getForceMethod() !== MultiFactorAuthMethod::EMAIL) {
+                    throw new InvalidEmailOnlyLoginConfigurationException();
+                }
+
+                $loginRoute->middleware('enforceEmailOnlyLogin');
+            }
         });
     }
 
