@@ -1,8 +1,6 @@
 <?php
 
 use Cybex\LaravelMultiFactor\Http\Controllers\MultiFactorAuthController;
-use Illuminate\Support\Facades\Route;
-use MFA;
 
 Route::middleware(['web'])->group(function () {
     Route::middleware(['guest'])->group(function () {
