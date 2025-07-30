@@ -7,7 +7,7 @@ This package provides a flexible multi-factor authentication solution for Larave
 
 ## Features
 
-- Supports multiple two-factor authentication methods (e.g., email).
+- Supports multiple two-factor authentication methods (e.g., email or totp).
 - Configurable modes: `optional`, `required`, or `force`.
 - Customizable views and routes.
 - Email-only login with one-time codes or links.
@@ -20,6 +20,7 @@ This package provides a flexible multi-factor authentication solution for Larave
 
 **Supported Methods:**
 - **Email**: Users receive a login URL or one-time code via email.
+- **TOTP**: Users can set up Time-based One-Time Passwords using apps like Google Authenticator.
 
 ### Email-Only Login
 
@@ -34,6 +35,15 @@ Users can log in using a unique email link, enabling authentication with just th
 
 ```bash
 composer require cybex/laravel-multi-factor
+```
+
+All routes protected by the auth facade are automatically secured with multi-factor authentication.
+The package provides its own login endpoint, which must be used for multi-factor authentication to work.
+
+Ensure your login form sends a POST request to the `login.store` route:
+
+```html
+<form method="POST" action="{{ route('login.store') }}">
 ```
 
 ### Migrating
@@ -65,15 +75,6 @@ MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=true
 MULTI_FACTOR_AUTHENTICATION_SETTINGS=true
 ```
 
-### Apply Middlewares
-
-Guard your applications routes with multi-factor authentication using these middlewares:
-
-```php
-Route::middleware(['hasMultiFactorAuthentication', 'hasAllowedMultiFactorAuthMethods'])->group(function () {
-});
-```
-
 ### Multi-Factor Authentication Trait
 
 Implement the `MultiFactorAuthTrait` in your `User` model:
@@ -99,20 +100,10 @@ MAIL_PORT=2525
 
 ### Email Only Login
 
-Set your application's login route name in the multi-factor configuration:
-
-```php
-'features' => [
-    'email-login' => [
-        'applicationLoginRouteName' => 'login',
-    ],
-],
-```
-
 To enable email only login set the `MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN` env variable to `true`:
 
 ```env
-MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=false
+MULTI_FACTOR_AUTHENTICATION_EMAIL_ONLY_LOGIN=true
 ```
 
 ### Settings Page
