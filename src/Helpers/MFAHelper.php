@@ -18,6 +18,9 @@ class MFAHelper
     public const SETUP_AFTER_LOGIN = 'two_factor_auth_setup_after_login';
     public const LOGIN_ID = 'login.id';
     public const LOGIN_REMEMBER = 'login.remember';
+    public const SECRET_EXPIRY = 'secret_expiry';
+    public const SECRET = 'secret';
+    public const SECRET_HASH = 'secret_hash';
 
     public function clear(): void
     {
@@ -56,6 +59,27 @@ class MFAHelper
     public function setSetupAfterLogin(bool $value = true): void
     {
         $this->putInSession(self::SETUP_AFTER_LOGIN, $value);
+    }
+
+    public function setSecret(): void
+    {
+        $secret = bin2hex(random_bytes(32));
+
+        $this->putInSession(self::SECRET_EXPIRY, now()->addMinutes(10)->timestamp);
+        $this->putInSession(self::SECRET, encrypt($secret));
+        $this->putInSession(self::SECRET_HASH, hash_hmac('sha256', $this->getUser()->getKey(), $secret));
+    }
+
+    public function validateSecret(): bool
+    {
+        if (time() < $this->getFromSession(self::SECRET_EXPIRY)) {
+            $secret = decrypt($this->getFromSession(self::SECRET));
+            $expectedHash = hash_hmac('sha256', $this->getUser()->getKey(), $secret);
+
+            return hash_equals($expectedHash, $this->getFromSession(self::SECRET_HASH));
+        }
+
+        return false;
     }
 
     public function isVerified(): bool

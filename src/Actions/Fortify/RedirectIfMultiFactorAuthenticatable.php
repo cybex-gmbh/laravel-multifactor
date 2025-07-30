@@ -29,6 +29,8 @@ class RedirectIfMultiFactorAuthenticatable extends RedirectIfTwoFactorAuthentica
             if (!MultiFactorAuthMode::isOptionalMode()) {
                 MFA::setLoginIdAndRemember($user, $request->boolean('remember'));
                 MFA::setVerified();
+                MFA::setSecret();
+
                 return redirect()->route('mfa.setup');
             }
         }
@@ -49,4 +51,6 @@ class RedirectIfMultiFactorAuthenticatable extends RedirectIfTwoFactorAuthentica
             ? response()->json(['multi_factor' => true])
             : redirect()->route('mfa.show');
     }
+
+
 }

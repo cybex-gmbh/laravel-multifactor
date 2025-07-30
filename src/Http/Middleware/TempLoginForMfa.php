@@ -11,7 +11,7 @@ class TempLoginForMfa
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!auth()->check() && session()->has('login.id')) {
+        if (!auth()->check() && session()->has('login.id') && MFA::validateSecret()) {
             Auth::onceUsingId(MFA::getUser()->getKey());
         }
 
