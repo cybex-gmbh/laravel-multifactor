@@ -1,0 +1,94 @@
+services:
+  app:
+    container_name: ${COMPOSE_PROJECT_NAME}
+    build:
+      context: .
+      dockerfile: ./docker/webdevops/Dockerfile
+    networks:
+      - traefik
+      - internal
+    depends_on:
+      mysql:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+    environment:
+      PULLPREVIEW: true
+      PULLPREVIEW_FIRST_RUN: ${PULLPREVIEW_FIRST_RUN}
+      APP_URL: https://${PULLPREVIEW_PUBLIC_DNS}
+      WORKERS_AMOUNT: ${WORKERS_AMOUNT:-0}
+    volumes:
+      - 'app-storage:/var/www/html/storage'
+      - '.env:/var/www/html/.env'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`)'
+      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls=true'
+      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=production'
+  mysql:
+    image: 'mysql/mysql-server:8.0'
+    container_name: laravel-multi-factor-mysql-1
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - 'mysql:/var/lib/mysql'
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
+      retries: 3
+      timeout: 5s
+  traefik:
+    image: traefik:mimolette
+    container_name: ${COMPOSE_PROJECT_NAME}-traefik
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      TRAEFIK_GLOBAL_SENDANONYMOUSUSAGE: false
+      TRAEFIK_LOG: true
+      TRAEFIK_LOG_FILEPATH: '/logs/traefik.log'
+      TRAEFIK_LOG_LEVEL: DEBUG
+      TRAEFIK_API: false
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION: true
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_EMAIL: 'cloud@cybex-online.com'
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_CASERVER: 'https://acme-v02.api.letsencrypt.org/directory'
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_STORAGE: '/letsencrypt/acme.json'
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_HTTPCHALLENGE: true
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_HTTPCHALLENGE_ENTRYPOINT: web
+      TRAEFIK_ENTRYPOINTS_WEB: true
+      TRAEFIK_ENTRYPOINTS_WEB_ADDRESS: ':80'
+      TRAEFIK_ENTRYPOINTS_WEB_HTTP: true
+      TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_TO: websecure
+      TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME: https
+      TRAEFIK_ENTRYPOINTS_WEBSECURE: true
+      TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS: ':443'
+      TRAEFIK_PROVIDERS_DOCKER: true
+      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: false
+      TRAEFIK_PROVIDERS_DOCKER_NETWORK: traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./storage/letsencrypt:/letsencrypt
+      - ./storage/logs:/logs
+      - ./.htpasswd:/.htpasswd:ro
+    networks:
+      - traefik
+
+networks:
+  internal:
+    internal: true
+  traefik:
+    name: traefik
+
+volumes:
+  app-storage:
+    driver: local
+  mysql:
+    driver: local
