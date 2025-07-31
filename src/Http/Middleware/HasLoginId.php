@@ -10,7 +10,7 @@ class HasLoginId
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!session()->has('login.id') && !MFA::isVerified()) {
+        if (!auth()->check() && !session()->has('login.id') && !MFA::isVerified()) {
             return redirect()->route('login');
         }
 
