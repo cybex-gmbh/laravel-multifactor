@@ -20,7 +20,7 @@ class MultiFactorLoginRequest extends TwoFactorLoginRequest
     protected function verifyOneTimePassword(): bool
     {
         if (MFA::isCodeExpired() || MFA::getCode() !== (int) $this->code) {
-            abort(403);
+            return false;
         }
 
         return true;
