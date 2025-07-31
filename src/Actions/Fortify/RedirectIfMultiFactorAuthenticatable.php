@@ -48,7 +48,7 @@ class RedirectIfMultiFactorAuthenticatable extends RedirectIfTwoFactorAuthentica
         TwoFactorAuthenticationChallenged::dispatch($user);
 
         return $request->wantsJson()
-            ? response()->json(['multi_factor' => true])
+            ? response()->json(['multi_factor' => true, 'multi_factor_auth_methods' => MFA::getUser()->getUserMethodsWithRemainingAllowedMethods()])
             : redirect()->route('mfa.show');
     }
 
