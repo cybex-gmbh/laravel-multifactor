@@ -93,8 +93,8 @@ trait MultiFactorAuthTrait
      * @param $userMethods
      * @return array
      */
-    public function getUserMethodsWithRemainingAllowedMethods(array $allowedMethods, $userMethods): array
+    public function getUserMethodsWithRemainingAllowedMethods(): array
     {
-        return collect($allowedMethods)->merge($userMethods)->unique()->all();
+        return collect(MFA::getAllowedMethods())->merge($this->getMultiFactorAuthMethods())->unique()->all();
     }
 }
