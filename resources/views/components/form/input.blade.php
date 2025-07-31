@@ -1,4 +1,4 @@
-<div>
+<div class="mfa-input-wrapper">
     <label for="{{ $id }}" class="mfa-text-sm">{{ $label }}</label>
 
     <input id="{{ $id }}"

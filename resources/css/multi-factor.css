@@ -108,6 +108,10 @@
     line-height: 1;
 }
 
+.mfa-input-wrapper {
+    width: 100%;
+}
+
 .mfa-input {
     width: 100%;
     padding: 12px 20px;
