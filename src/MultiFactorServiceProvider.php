@@ -7,8 +7,8 @@ use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChooseViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorLoginViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorSettingsViewResponseContract;
-use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorSetupViewResponseContract;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Exceptions\InvalidEmailOnlyLoginConfigurationException;
 use Cybex\LaravelMultiFactor\Exceptions\LoginRouteNotFoundException;
@@ -22,11 +22,15 @@ use Cybex\LaravelMultiFactor\Http\Middleware\LimitMultiFactorAuthAccess;
 use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfInSetup;
 use Cybex\LaravelMultiFactor\Http\Middleware\RedirectIfMultiFactorAuthenticated;
 use Cybex\LaravelMultiFactor\Http\Middleware\TempLoginForMfa;
+use Cybex\LaravelMultiFactor\Http\Responses\FailedMultiFactorLoginResponse;
+use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorTotpConfirmedResponse;
 use Cybex\LaravelMultiFactor\Listeners\HandleFortifyTOTPLogin;
 use Cybex\LaravelMultiFactor\Listeners\HandleUserLogout;
 use Cybex\LaravelMultiFactor\Listeners\LogUserInAfterTotpSetup;
+use Cybex\LaravelMultiFactor\Listeners\MarkUserAsVerifiedAfterLogin;
 use Cybex\LaravelMultiFactor\Providers\FortifyServiceProvider;
 use Cybex\LaravelMultiFactor\View\Components\LegacyAuthCard;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
@@ -34,9 +38,9 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
+use Laravel\Fortify\Contracts\FailedTwoFactorLoginResponse;
 use Laravel\Fortify\Contracts\TwoFactorConfirmedResponse;
 use Laravel\Fortify\Events\TwoFactorAuthenticationConfirmed;
-use Cybex\LaravelMultiFactor\Http\Responses\MultiFactorTotpConfirmedResponse;
 
 class MultiFactorServiceProvider extends ServiceProvider
 {
@@ -63,8 +67,9 @@ class MultiFactorServiceProvider extends ServiceProvider
 
         Blade::componentNamespace('Cybex\\LaravelMultiFactor\\View\\Components', 'multi-factor');
 
-        Event::listen(Logout::class, HandleUserLogout::class);#
+        Event::listen(Logout::class, HandleUserLogout::class);
         Event::listen(TwoFactorAuthenticationConfirmed::class, LogUserInAfterTotpSetup::class);
+        Event::listen(Login::class, MarkUserAsVerifiedAfterLogin::class);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -96,6 +101,11 @@ class MultiFactorServiceProvider extends ServiceProvider
             $this->app->singleton(
                 TwoFactorConfirmedResponse::class,
                 MultiFactorTotpConfirmedResponse::class
+            );
+
+            $this->app->singleton(
+                FailedTwoFactorLoginResponse::class,
+                FailedMultiFactorLoginResponse::class
             );
 
             $routes = Route::getRoutes();

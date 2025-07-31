@@ -18,7 +18,7 @@
             </x-multi-factor::form>
 
             <x-multi-factor::button type="submit" class="text-sm" form="mfa-login">
-                {{ __('Log in') }}
+                {{ MFA::isVerified() ? __('Verify') : __('Log in') }}
             </x-multi-factor::button>
         </div>
     </x-multi-factor::auth-card>

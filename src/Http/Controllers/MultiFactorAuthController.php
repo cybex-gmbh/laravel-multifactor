@@ -116,6 +116,7 @@ class MultiFactorAuthController extends Controller
 
     public function store(MultiFactorLoginRequest $request, MultiFactorAuthMethod $method)
     {
+        MFA::setLoginIdAndRemember(MFA::getUser(), $request->boolean('remember'));
         $user = $request->challengedUser();
 
         if ($code = $request->validRecoveryCode()) {
