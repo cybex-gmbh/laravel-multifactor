@@ -18,6 +18,7 @@ services:
         volumes:
             - './exampleApp:/var/www/html'
             - './.env:/var/www/html/.env'
+            - './.env.testing:/var/www/html/.env.testing'
             - '.:/var/www/package'
         networks:
             - internal
@@ -33,6 +34,21 @@ services:
             MYSQL_DATABASE: '${DB_DATABASE:-laravel_multi_factor}'
             MYSQL_USER: '${DB_USERNAME}'
             MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        networks:
+            - internal
+        healthcheck:
+            test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
+            retries: 3
+            timeout: 5s
+    mysql_testing:
+        image: 'mysql/mysql-server:8.0'
+        environment:
+            MYSQL_ROOT_PASSWORD: 'multi_factor_test'
+            MYSQL_ROOT_HOST: "%"
+            MYSQL_DATABASE: 'multi_factor_test'
+            MYSQL_USER: 'multi_factor_test'
+            MYSQL_PASSWORD: 'multi_factor_test'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         networks:
             - internal
