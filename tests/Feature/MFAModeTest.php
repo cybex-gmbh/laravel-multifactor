@@ -233,29 +233,6 @@ class MFAModeTest extends BaseTest
     }
 
     /**
-     * @param User $user
-     * @return string|null
-     * @throws \Exception
-     */
-    public function assertMFAEmailSent(User $user): ?string
-    {
-        $mfaCode = null;
-
-        Notification::assertSentTo($user, MultiFactorCodeNotification::class, function ($notification) use (&$mfaCode, $user) {
-            $mailMessage = $notification->toMail($user);
-            $body = $mailMessage->render();
-
-            if (preg_match('/You can use the following MFA code: (\d{6})/', $body, $matches)) {
-                $mfaCode = $matches[1];
-            }
-
-            return true;
-        });
-
-        return $mfaCode;
-    }
-
-    /**
      * @return void
      */
     public function setupTotp(): void
@@ -277,36 +254,6 @@ class MFAModeTest extends BaseTest
 
         $this->post(route('two-factor.confirm'), [
             'code' => 123456,
-            '_token' => csrf_token(),
-        ]);
-    }
-
-    /**
-     * @param User $user
-     * @return TestResponse
-     */
-    public function login(User $user): TestResponse
-    {
-        return $this->post(route('login.store'), [
-            'email' => $user->email,
-            'password' => 'password',
-            '_token' => csrf_token(),
-        ]);
-    }
-
-    public function loginWithMFAMethod(MultiFactorAuthMethod $method, User $user): TestResponse
-    {
-        if ($method === MultiFactorAuthMethod::TOTP) {
-            $secret = decrypt($user->two_factor_secret);
-            $google2fa = new Google2FA();
-            $mfaCode = $google2fa->getCurrentOtp($secret);
-        } else {
-            $this->get(route('mfa.method', MultiFactorAuthMethod::EMAIL));
-            $mfaCode = $this->assertMFAEmailSent(MFA::getUser());
-        }
-
-        return $this->post(route('mfa.store', $method), [
-            'code' => $mfaCode,
             '_token' => csrf_token(),
         ]);
     }
