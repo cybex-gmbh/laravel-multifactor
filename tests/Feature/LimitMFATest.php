@@ -24,15 +24,10 @@ class LimitMFATest extends BaseTest
 
         $user = $this->makeUser(MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP);
 
-        $response = $this->login($user);
-        $this->followRedirects($response);
-
-        $currentRoute = Route::getCurrentRoute();
+        $this->followRedirects($this->login($user));
 
         $this->assertCurrentRouteIs('mfa.method', ['method' => MultiFactorAuthMethod::EMAIL]);
-
-        $this->get(route('mfa.method', ['method' => MultiFactorAuthMethod::TOTP]))
-            ->assertRedirect(route('mfa.method', ['method' => MultiFactorAuthMethod::EMAIL]));
+        $this->assertInaccessibleMethodRedirects($user, MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL);
     }
 
     #[DataProvider('provideForUserCanAccessOnlyHisMethodsDuringMfaLogin')]
@@ -42,14 +37,10 @@ class LimitMFATest extends BaseTest
 
         $user = $this->makeUser(...$userMethods);
 
-        $response = $this->login($user);
-        $finalResponse = $this->followRedirects($response);
+        $finalResponse = $this->followRedirects($this->login($user));
 
         $this->assertMFARedirect($userMethods, $finalResponse, $methodToLogin);
-
-        $response = $this->get(route('mfa.method', ['method' => $inaccessibleMethod]));
-        $this->followRedirects($response);
-        $this->assertCurrentRouteIs('mfa.method', ['method' => $methodToLogin]);
+        $this->assertInaccessibleMethodRedirects($user, $inaccessibleMethod, $methodToLogin);
     }
 
     public static function provideForUserCanAccessOnlyHisMethodsDuringMfaLogin(): array
@@ -89,15 +80,12 @@ class LimitMFATest extends BaseTest
 
         $user = $this->makeUser(...$userMethods);
 
-        $response = $this->login($user);
-        $this->followRedirects($response);
+        $this->followRedirects($this->login($user));
 
-        $response = $this->loginWithMFAMethod($methodToLogin, $user);
-        $finalResponse = $this->followRedirects($response);
+        $finalResponse = $this->followRedirects($this->loginWithMFAMethod($methodToLogin, $user));
 
         $this->assertMFARedirect($userMethods, $finalResponse, $methodToLogin, true);
-
-        $this->get(route('mfa.method', $inaccessibleMethod))->assertRedirect(route('mfa.method', $methodToLogin));
+        $this->assertInaccessibleMethodRedirects($user, $inaccessibleMethod, $methodToLogin);
     }
 
     public static function provideForUserCanNotAccessOtherMethodsDuringMfaSetup(): array
@@ -120,14 +108,10 @@ class LimitMFATest extends BaseTest
 
         $user = $this->makeUser(...[MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP]);
 
-        $response = $this->login($user);
-        $this->followRedirects($response);
+        $this->followRedirects($this->login($user));
 
-        $this->get((route('mfa.method', ['method' => $methodToLogin])))
-            ->assertStatus(200);
-
-        $this->get(route('mfa.method', ['method' => $otherMethod]))
-            ->assertStatus(200);
+        $this->assertAccessibleMethod($methodToLogin);
+        $this->assertAccessibleMethod($otherMethod);
     }
 
     public static function provideForUserCanAccessOtherMethodsDuringMfaLogin(): array
@@ -145,6 +129,20 @@ class LimitMFATest extends BaseTest
     {
         $currentRoute = Route::getCurrentRoute();
         $this->assertEquals(route($routeName, $params), route($currentRoute->getName(), $currentRoute->parameters()));
+    }
+
+    private function assertAccessibleMethod($method)
+    {
+        $this->get(route('mfa.method', ['method' => $method]))->assertStatus(200);
+    }
+
+    private function assertInaccessibleMethodRedirects($user, $inaccessibleMethod, $methodToLogin)
+    {
+        $response = $this->get(route('mfa.method', ['method' => $inaccessibleMethod]));
+
+        $this->followRedirects($response);
+
+        $this->assertCurrentRouteIs('mfa.method', ['method' => $methodToLogin]);
     }
 
     public function assertMFARedirect($userMethods, Response|TestResponse $finalResponse, $methodToLogin, bool $isInSetup = false): void
