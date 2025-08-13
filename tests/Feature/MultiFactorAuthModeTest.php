@@ -2,10 +2,8 @@
 
 namespace Cybex\LaravelMultiFactor\Tests\Feature;
 
-use App\Models\User;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use Cybex\LaravelMultiFactor\Notifications\MultiFactorCodeNotification;
 use Cybex\LaravelMultiFactor\Tests\BaseTest;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
@@ -15,9 +13,8 @@ use Illuminate\Testing\TestResponse;
 use MFA;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Throws;
-use PragmaRX\Google2FA\Google2FA;
 
-class MFAModeTest extends BaseTest
+class MultiFactorAuthModeTest extends BaseTest
 {
     #[DataProvider('loginOptionalModeProvider')]
     public function testUserCanLoginInOptionalMode(array $allowedMethods, array $userMethods)

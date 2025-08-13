@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class LimitMFATest extends BaseTest
+class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
 {
     protected function setUp(): void
     {
