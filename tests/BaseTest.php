@@ -28,7 +28,7 @@ abstract class BaseTest extends TestCase
         ]);
     }
 
-    public function makeUser(MultiFactorAuthMethod ...$methods): User
+    public function makeUser(array $methods): User
     {
         $attributes = [
             'name' => 'Test User',
@@ -40,14 +40,14 @@ abstract class BaseTest extends TestCase
 
         $user->saveQuietly();
 
-        if ($methods) {
-            $this->addMFAMethodsToUser($user, ...$methods);
+        if (filled($methods)) {
+            $this->addMFAMethodsToUser($user, $methods);
         }
 
         return $user;
     }
 
-    public function addMFAMethodsToUser(User $user, MultiFactorAuthMethod ...$methods): void
+    public function addMFAMethodsToUser(User $user, array $methods): void
     {
         if (in_array(MultiFactorAuthMethod::TOTP, $methods)) {
             $provider = app(TwoFactorAuthenticationProvider::class);
@@ -112,5 +112,15 @@ abstract class BaseTest extends TestCase
         });
 
         return $mfaCode;
+    }
+
+    protected function assertUserDoesNotHaveMethod($user, $method): void
+    {
+        $this->assertFalse($user->multiFactorAuthMethods->contains('type', $method));
+    }
+
+    protected function assertUserHasMethod($user, $method): void
+    {
+        $this->assertTrue($user->multiFactorAuthMethods->contains('type', $method));
     }
 }
