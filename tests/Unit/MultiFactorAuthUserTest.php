@@ -18,7 +18,7 @@ class MultiFactorAuthUserTest extends BaseTest
             allowedMethods: $allowedMethods
         );
 
-        $user = $this->makeUser(...$userMethods);
+        $user = $this->makeUser($userMethods);
 
         $this->actingAs($user);
 
@@ -29,10 +29,10 @@ class MultiFactorAuthUserTest extends BaseTest
             $this->assertNull($user->two_factor_confirmed_at);
         }
 
-        $this->assertFalse($user->multiFactorAuthMethods->contains('type', $methodToDelete));
+        $this->assertUserDoesNotHaveMethod($user, $methodToDelete);
 
         foreach (Arr::where($userMethods, fn($method) => $method !== $methodToDelete) as $method) {
-            $this->assertTrue($user->multiFactorAuthMethods->contains('type', $method));
+            $this->assertUserHasMethod($user, $method);
         }
     }
 
@@ -61,7 +61,7 @@ class MultiFactorAuthUserTest extends BaseTest
             forceMethod: $forceMethod
         );
 
-        $user = $this->makeUser(...$userMethods);
+        $user = $this->makeUser($userMethods);
 
         $this->assertEqualsCanonicalizing($expectedMethods, $user->getUserMethods());
     }
@@ -114,7 +114,7 @@ class MultiFactorAuthUserTest extends BaseTest
     {
         $this->configureMFA(mode: $mode->value, allowedMethods: $allowedMethods);
 
-        $user = $this->makeUser(...$userMethods);
+        $user = $this->makeUser($userMethods);
 
         $this->assertEqualsCanonicalizing($expectedMethods, $user->getUserMethodsWithRemainingAllowedMethods());
     }

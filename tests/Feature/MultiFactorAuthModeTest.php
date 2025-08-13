@@ -21,9 +21,7 @@ class MultiFactorAuthModeTest extends BaseTest
     {
         $this->configureMFA(allowedMethods: $allowedMethods);
 
-        $user = $this->makeUser(...$userMethods);
-
-        $this->login($user);
+        $this->login($this->makeUser($userMethods));
 
         $this->assertAuthenticated();
         $this->assertTrue(MFA::isVerified());
@@ -47,7 +45,7 @@ class MultiFactorAuthModeTest extends BaseTest
     public function testUserCanLoginWithAllowedMethods(array $allowedMethods, array $userMethods, MultiFactorAuthMethod $methodToLogin, MultiFactorAuthMode $mode)
     {
         $this->configureMFA(mode: $mode->value, allowedMethods: $allowedMethods);
-        $user = $this->makeUser(...$userMethods);
+        $user = $this->makeUser($userMethods);
         Notification::fake();
 
         $response = $this->login($user)->assertRedirect(route('mfa.show'));
@@ -113,7 +111,7 @@ class MultiFactorAuthModeTest extends BaseTest
     ) {
         $this->configureMFA(mode: MultiFactorAuthMode::REQUIRED->value, allowedMethods: $allowedMethods);
 
-        $user = $this->makeUser(...$userMethods);
+        $user = $this->makeUser($userMethods);
 
         Notification::fake();
 
@@ -151,7 +149,7 @@ class MultiFactorAuthModeTest extends BaseTest
 
             $this->loginWithMFAMethod($methodToSetup, $user);
 
-            $this->assertTrue($user->multiFactorAuthMethods->contains('type', $methodToSetup));
+            $this->assertUserHasMethod($user, $methodToSetup);
             $this->assertAuthenticated();
         }
     }
@@ -179,7 +177,7 @@ class MultiFactorAuthModeTest extends BaseTest
     {
         $this->configureMFA(mode: MultiFactorAuthMode::FORCE->value, allowedMethods: $allowedMethods, forceMethod: $forceMethod->value);
 
-        $user = $this->makeUser(...$userMethods);
+        $user = $this->makeUser($userMethods);
 
         Notification::fake();
 

@@ -22,12 +22,12 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
     {
         $this->configureMFA(mode: 'force', allowedMethods: ['email', 'totp'], forceMethod: 'email');
 
-        $user = $this->makeUser(MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP);
+        $user = $this->makeUser([MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP]);
 
         $this->followRedirects($this->login($user));
 
         $this->assertCurrentRouteIs('mfa.method', ['method' => MultiFactorAuthMethod::EMAIL]);
-        $this->assertInaccessibleMethodRedirects($user, MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL);
+        $this->assertInaccessibleMethodRedirects(MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL);
     }
 
     #[DataProvider('provideForUserCanAccessOnlyHisMethodsDuringMfaLogin')]
@@ -35,12 +35,12 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
     {
         $this->configureMFA(mode: $mode);
 
-        $user = $this->makeUser(...$userMethods);
+        $user = $this->makeUser($userMethods);
 
         $finalResponse = $this->followRedirects($this->login($user));
 
         $this->assertMFARedirect($userMethods, $finalResponse, $methodToLogin);
-        $this->assertInaccessibleMethodRedirects($user, $inaccessibleMethod, $methodToLogin);
+        $this->assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToLogin);
     }
 
     public static function provideForUserCanAccessOnlyHisMethodsDuringMfaLogin(): array
@@ -78,14 +78,14 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
     {
         $this->configureMFA(mode: $mode, allowedMethods: $allowedMethods);
 
-        $user = $this->makeUser(...$userMethods);
+        $user = $this->makeUser($userMethods);
 
         $this->followRedirects($this->login($user));
 
         $finalResponse = $this->followRedirects($this->loginWithMFAMethod($methodToLogin, $user));
 
         $this->assertMFARedirect($userMethods, $finalResponse, $methodToLogin, true);
-        $this->assertInaccessibleMethodRedirects($user, $inaccessibleMethod, $methodToLogin);
+        $this->assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToLogin);
     }
 
     public static function provideForUserCanNotAccessOtherMethodsDuringMfaSetup(): array
@@ -106,7 +106,7 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
     {
         $this->configureMFA(mode: 'optional', allowedMethods: ['email', 'totp'], forceMethod: 'email');
 
-        $user = $this->makeUser(...[MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP]);
+        $user = $this->makeUser([MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP]);
 
         $this->followRedirects($this->login($user));
 
@@ -125,18 +125,18 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
         ];
     }
 
-    private function assertCurrentRouteIs($routeName, $params = [])
+    private function assertCurrentRouteIs($routeName, $params = []): void
     {
         $currentRoute = Route::getCurrentRoute();
         $this->assertEquals(route($routeName, $params), route($currentRoute->getName(), $currentRoute->parameters()));
     }
 
-    private function assertAccessibleMethod($method)
+    private function assertAccessibleMethod($method): void
     {
         $this->get(route('mfa.method', ['method' => $method]))->assertStatus(200);
     }
 
-    private function assertInaccessibleMethodRedirects($user, $inaccessibleMethod, $methodToLogin)
+    private function assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToLogin): void
     {
         $response = $this->get(route('mfa.method', ['method' => $inaccessibleMethod]));
 
@@ -150,7 +150,7 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
         $currentRoute = Route::getCurrentRoute();
 
         if (count($userMethods) > 1) {
-            $this->assertEquals(route('mfa.show'), $currentRoute->getName());
+            $this->assertCurrentRouteIs('mfa.show');
             $this->assertEquals($userMethods, $finalResponse->viewData('userMethods'));
             $this->get(route('mfa.method', $methodToLogin));
         } else {
@@ -160,10 +160,7 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
                     $currentRoute->getName()
                 );
             } else {
-                $this->assertEquals(
-                    route('mfa.method', $methodToLogin),
-                    route($currentRoute->getName(), $currentRoute->parameters())
-                );
+                $this->assertCurrentRouteIs('mfa.method', [$methodToLogin]);
             }
         }
     }
