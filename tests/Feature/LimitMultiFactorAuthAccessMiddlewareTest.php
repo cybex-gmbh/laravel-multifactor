@@ -74,7 +74,7 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
     }
 
     #[DataProvider('provideForUserCanNotAccessOtherMethodsDuringMfaSetup')]
-    public function testUserCanNotAccessOtherMethodsDuringMfaSetup($mode, $allowedMethods, $userMethods, $methodToLogin, $inaccessibleMethod)
+    public function testUserCanNotAccessOtherMethodsDuringMfaSetup($mode, $allowedMethods, $userMethods, $methodToLogin, $methodToSetup, $inaccessibleMethod)
     {
         $this->configureMFA(mode: $mode, allowedMethods: $allowedMethods);
 
@@ -85,17 +85,19 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
         $finalResponse = $this->followRedirects($this->loginWithMFAMethod($methodToLogin, $user));
 
         $this->assertMFARedirect($userMethods, $finalResponse, $methodToLogin, true);
-        $this->assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToLogin);
+
+        $this->assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToSetup);
     }
 
     public static function provideForUserCanNotAccessOtherMethodsDuringMfaSetup(): array
     {
         return [
-            'email optional' => [
+            'email required' => [
                 'mode' => 'required',
                 'allowedMethods' => ['email'],
                 'userMethods' => [MultiFactorAuthMethod::TOTP],
                 'methodToLogin' => MultiFactorAuthMethod::TOTP,
+                'methodToSetup' => MultiFactorAuthMethod::EMAIL,
                 'inaccessibleMethod' => MultiFactorAuthMethod::TOTP,
             ],
         ];
