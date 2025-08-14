@@ -35,7 +35,7 @@ class LimitMultiFactorAuthAccess
                 }
             }
         } else if (!$method->isAllowed() || $method->isUserMethod()) {
-            if ($isForceMode) {
+            if ($isForceMode || MFA::isInSetupAfterLogin()) {
                 return redirect()->back();
             }
 
