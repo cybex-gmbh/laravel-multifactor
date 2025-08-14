@@ -23,6 +23,10 @@ class RedirectIfMultiFactorAuthenticatable extends RedirectIfTwoFactorAuthentica
 
         if (Fortify::confirmsTwoFactorAuthentication() || !$user->multiFactorAuthMethods()->exists()) {
             if ($user->multiFactorAuthMethods()->exists()) {
+                if (MultiFactorAuthMode::isOptionalMode() && !$user->hasAllowedMultiFactorAuthMethods()) {
+                    return $next($request);
+                }
+
                 return $this->twoFactorChallengeResponse($request, $user);
             }
 
