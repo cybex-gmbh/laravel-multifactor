@@ -14,9 +14,7 @@ class MultiFactorAuthUserTest extends BaseTest
     #[DataProvider('deleteMfaMethodProvider')]
     public function testDeletesUsersMfaMethod($allowedMethods, $userMethods, $methodToDelete)
     {
-        $this->configureMFA(
-            allowedMethods: $allowedMethods
-        );
+        $this->configureMFA(allowedMethods: $allowedMethods);
 
         $user = $this->makeUser($userMethods);
 
@@ -53,10 +51,10 @@ class MultiFactorAuthUserTest extends BaseTest
     }
 
     #[DataProvider('userMethodsProvider')]
-    public function testReturnsUserMethods($mode, $allowedMethods, $userMethods, $expectedMethods, $forceMethod = MultiFactorAuthMethod::EMAIL->value)
+    public function testReturnsUserMethods($mode, $allowedMethods, $userMethods, $expectedMethods, $forceMethod = MultiFactorAuthMethod::EMAIL)
     {
         $this->configureMFA(
-            mode: $mode->value,
+            mode: $mode,
             allowedMethods: $allowedMethods,
             forceMethod: $forceMethod
         );
@@ -104,15 +102,15 @@ class MultiFactorAuthUserTest extends BaseTest
                 'allowedMethods' => [MultiFactorAuthMethod::TOTP->value, MultiFactorAuthMethod::EMAIL->value],
                 'userMethods' => [MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL],
                 'expectedMethods' => [MultiFactorAuthMethod::EMAIL],
-                'forceMethod' => MultiFactorAuthMethod::EMAIL->value,
+                'forceMethod' => MultiFactorAuthMethod::EMAIL,
             ],
         ];
     }
 
     #[DataProvider('userMethodsWithRemainingAllowedMethodsProvider')]
-    public function testReturnsUserMethodsWithRemainingAllowedMethods($mode, $allowedMethods, $userMethods, $expectedMethods,)
+    public function testReturnsUserMethodsWithRemainingAllowedMethods($mode, $allowedMethods, $userMethods, $expectedMethods)
     {
-        $this->configureMFA(mode: $mode->value, allowedMethods: $allowedMethods);
+        $this->configureMFA(mode: $mode, allowedMethods: $allowedMethods);
 
         $user = $this->makeUser($userMethods);
 

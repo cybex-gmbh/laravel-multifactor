@@ -5,17 +5,18 @@ namespace Cybex\LaravelMultiFactor\Tests\Feature;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Tests\BaseTest;
-use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Testing\TestResponse;
-use MFA;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Throws;
 
 class MultiFactorAuthModeTest extends BaseTest
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Notification::fake();
+    }
+
     #[DataProvider('loginOptionalModeProvider')]
     public function testUserCanLoginInOptionalMode(array $allowedMethods, array $userMethods)
     {
@@ -23,8 +24,7 @@ class MultiFactorAuthModeTest extends BaseTest
 
         $this->login($this->makeUser($userMethods));
 
-        $this->assertAuthenticated();
-        $this->assertTrue(MFA::isVerified());
+        $this->assertMultiFactorAuthenticated();
     }
 
     public static function loginOptionalModeProvider(): array
@@ -44,19 +44,16 @@ class MultiFactorAuthModeTest extends BaseTest
     #[DataProvider('loginWithAllowedMethodsProvider')]
     public function testUserCanLoginWithAllowedMethods(array $allowedMethods, array $userMethods, MultiFactorAuthMethod $methodToLogin, MultiFactorAuthMode $mode)
     {
-        $this->configureMFA(mode: $mode->value, allowedMethods: $allowedMethods);
+        $this->configureMFA(mode: $mode, allowedMethods: $allowedMethods);
         $user = $this->makeUser($userMethods);
-        Notification::fake();
 
-        $response = $this->login($user)->assertRedirect(route('mfa.show'));
-        $finalResponse = $this->followRedirects($response);
+        $response = $this->loginAndRedirect($user);
 
-        $this->assertCorrectMFARedirect($userMethods, $finalResponse, $methodToLogin);
+        $this->assertMFARedirect($userMethods, $response, $methodToLogin);
 
         $this->loginWithMFAMethod($methodToLogin, $user);
 
-        $this->assertAuthenticated();
-        $this->assertTrue(MFA::isVerified());
+        $this->assertMultiFactorAuthenticated();
     }
 
     public static function loginWithAllowedMethodsProvider(): array
@@ -109,49 +106,35 @@ class MultiFactorAuthModeTest extends BaseTest
         ?MultiFactorAuthMethod $methodToLogin = null,
         ?MultiFactorAuthMethod $methodToSetup = null
     ) {
-        $this->configureMFA(mode: MultiFactorAuthMode::REQUIRED->value, allowedMethods: $allowedMethods);
+        $this->configureMFA(mode: MultiFactorAuthMode::REQUIRED, allowedMethods: $allowedMethods);
 
         $user = $this->makeUser($userMethods);
 
-        Notification::fake();
+        $response = $this->loginAndRedirect($user);
 
-        $response = $this->login($user);
-
-        $userMethodsNames = Arr::map($userMethods, fn($method) => $method->value);
-        $hasAllowedMethods = array_intersect($userMethodsNames, $allowedMethods);
-
-        $response->assertRedirect(route($userMethods ? 'mfa.show' : 'mfa.setup'));
-        $finalResponse = $this->followRedirects($response);
-
-        $this->assertCorrectMFARedirect($userMethods, $finalResponse, $methodToLogin);
+        $this->assertMFARedirect($userMethods, $response, $methodToLogin);
 
         if ($userMethods) {
             $response = $this->loginWithMFAMethod($methodToLogin, $user);
 
-            $this->assertGuest();
-            $this->assertTrue(MFA::isVerified());
-            $response->assertRedirect(route('mfa.setup'));
+            $this->assertGuestRedirectedToMFASetup($response);
 
             $this->followRedirects($response);
 
-            $currentRoute = Route::getCurrentRoute();
-
-            $this->assertEquals(
-                route($methodToSetup === MultiFactorAuthMethod::TOTP ? 'mfa.setup' : 'mfa.method', $methodToSetup),
-                route($currentRoute->getName(), $currentRoute->parameters())
-            );
+            $this->assertCurrentRouteIs($methodToSetup === MultiFactorAuthMethod::TOTP ? 'mfa.setup' : 'mfa.method', $methodToSetup);
         }
 
-        if (!$hasAllowedMethods && $userMethods) {
+        if (!$user->refresh()->hasAllowedMultiFactorAuthMethods()) {
             if ($methodToSetup === MultiFactorAuthMethod::TOTP) {
                 $this->setupTotp();
             }
 
             $this->loginWithMFAMethod($methodToSetup, $user);
 
-            $this->assertUserHasMethod($user, $methodToSetup);
-            $this->assertAuthenticated();
+            $this->assertUserHasMethod($user->refresh(), $methodToSetup);
         }
+
+        $this->assertMultiFactorAuthenticated();
     }
 
     public static function loginWithSetupInRequiredModeProvider(): array
@@ -164,7 +147,7 @@ class MultiFactorAuthModeTest extends BaseTest
                 'methodToSetup' => MultiFactorAuthMethod::EMAIL,
             ],
             'has no methods' => [
-                'allowedMethods' => [],
+                'allowedMethods' => ['email', 'totp'],
                 'userMethods' => [],
                 'methodToLogin' => null,
                 'methodToSetup' => MultiFactorAuthMethod::EMAIL,
@@ -175,28 +158,19 @@ class MultiFactorAuthModeTest extends BaseTest
     #[DataProvider('loginWithSetupInForceModeProvider')]
     public function testUserCanLoginWithSetupInForceMode($allowedMethods, $userMethods, $methodToLogin, $forceMethod)
     {
-        $this->configureMFA(mode: MultiFactorAuthMode::FORCE->value, allowedMethods: $allowedMethods, forceMethod: $forceMethod->value);
+        $this->configureMFA(mode: MultiFactorAuthMode::FORCE, allowedMethods: $allowedMethods, forceMethod: $forceMethod);
 
         $user = $this->makeUser($userMethods);
 
-        Notification::fake();
+        $response = $this->loginAndRedirect($user);
 
-        $response = $this->login($user);
+        $this->assertMFARedirect($userMethods, $response, $methodToLogin);
 
-        $userMethodsNames = Arr::map($userMethods, fn($method) => $method->value);
-        $hasAllowedMethods = array_intersect($userMethodsNames, $allowedMethods);
+        $response = $this->loginWithMFAMethod($methodToLogin, $user);
 
-        $response->assertRedirect(route(filled($userMethods) ? 'mfa.show' : 'mfa.setup'));
-
-        $finalResponse = $this->followRedirects($response);
-        $this->assertCorrectMFARedirect($userMethods, $finalResponse, $userMethods ? $methodToLogin : $forceMethod);
-
-        $response = $this->loginWithMFAMethod($userMethods ? $methodToLogin : $forceMethod, $user);
-
-        if (!$hasAllowedMethods && $userMethods) {
-
+        if (!$user->refresh()->hasAllowedMultiFactorAuthMethods()) {
             $finalResponse = $this->followRedirects($response);
-            $this->assertCorrectMFARedirect($userMethods, $finalResponse, $forceMethod);
+            $this->assertMFARedirect($userMethods, $finalResponse, $forceMethod);
 
             if ($forceMethod === MultiFactorAuthMethod::TOTP) {
                 $this->setupTotp();
@@ -205,8 +179,7 @@ class MultiFactorAuthModeTest extends BaseTest
             $this->loginWithMFAMethod($forceMethod, $user);
         }
 
-        $this->assertAuthenticated();
-        $this->assertTrue(MFA::isVerified());
+        $this->assertMultiFactorAuthenticated();
     }
 
     public static function loginWithSetupInForceModeProvider(): array
@@ -221,15 +194,12 @@ class MultiFactorAuthModeTest extends BaseTest
             'has no methods' => [
                 'allowedMethods' => ['email', 'totp'],
                 'userMethods' => [],
-                'methodToLogin' => null,
+                'methodToLogin' => MultiFactorAuthMethod::EMAIL,
                 'forceMethod' => MultiFactorAuthMethod::EMAIL,
             ],
         ];
     }
 
-    /**
-     * @return void
-     */
     public function setupTotp(): void
     {
         $response = $this->post(route('two-factor.enable'), [
@@ -251,30 +221,5 @@ class MultiFactorAuthModeTest extends BaseTest
             'code' => 123456,
             '_token' => csrf_token(),
         ]);
-    }
-
-    /**
-     * @param array $userMethods
-     * @param Response|TestResponse $finalResponse
-     * @param MultiFactorAuthMethod|null $methodToLogin
-     * @return void
-     */
-    public function assertCorrectMFARedirect(array $userMethods, Response|TestResponse $finalResponse, ?MultiFactorAuthMethod $methodToLogin): void
-    {
-        if (count($userMethods) > 1) {
-            if (!MultiFactorAuthMode::isForceMode()) {
-                $this->assertEquals($userMethods, $finalResponse->viewData('userMethods'));
-            }
-
-            $this->get(route('mfa.method', $methodToLogin));
-        } elseif ($userMethods) {
-            $this->assertEquals('mfa.method', Route::currentRouteName());
-        } else {
-            if ($methodToLogin === MultiFactorAuthMethod::TOTP || !$methodToLogin) {
-                $this->assertEquals('mfa.setup', Route::currentRouteName());
-            } else {
-                $this->assertEquals('mfa.method', Route::currentRouteName());
-            }
-        }
     }
 }
