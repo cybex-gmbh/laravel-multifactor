@@ -4,10 +4,13 @@ namespace Cybex\LaravelMultiFactor\Tests;
 
 use App\Models\User;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Models\MultiFactorAuthMethod as MultiFactorAuthMethodModel;
 use Cybex\LaravelMultiFactor\Notifications\MultiFactorCodeNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\TestResponse;
 use Laravel\Fortify\TwoFactorAuthenticationProvider;
 use PragmaRX\Google2FA\Google2FA;
@@ -79,6 +82,15 @@ abstract class BaseTest extends TestCase
         ]);
     }
 
+    public function loginAndRedirect(User $user): TestResponse
+    {
+        $response = $this->login($user);
+
+        $response->assertRedirect(route(filled($user->getMultiFactorAuthMethods()) ? 'mfa.show' : 'mfa.setup'));
+
+        return $this->followRedirects($response);
+    }
+
     public function loginWithMFAMethod(MultiFactorAuthMethod $method, User $user): TestResponse
     {
         if ($method === MultiFactorAuthMethod::TOTP) {
@@ -87,7 +99,7 @@ abstract class BaseTest extends TestCase
             $mfaCode = $google2fa->getCurrentOtp($secret);
         } else {
             $this->get(route('mfa.method', MultiFactorAuthMethod::EMAIL));
-            $mfaCode = $this->assertMFAEmailSent(MFA::getUser());
+            $mfaCode = $this->assertMFAEmailSent($user);
         }
 
         return $this->post(route('mfa.store', $method), [
@@ -122,5 +134,43 @@ abstract class BaseTest extends TestCase
     protected function assertUserHasMethod($user, $method): void
     {
         $this->assertTrue($user->multiFactorAuthMethods->contains('type', $method));
+    }
+
+    protected function assertCurrentRouteIs($routeName, $params = []): void
+    {
+        $currentRoute = Route::getCurrentRoute();
+        $this->assertEquals(route($routeName, $params), route($currentRoute->getName(), $currentRoute->parameters()));
+    }
+
+    public function assertMFARedirect($userMethods, Response|TestResponse $finalResponse, $methodToLogin, bool $isInSetup = false): void
+    {
+        $currentRoute = Route::getCurrentRoute();
+
+        if (count($userMethods) > 1) {
+            if (!MultiFactorAuthMode::isForceMode()) {
+                $this->assertCurrentRouteIs('mfa.show');
+                $this->assertEquals($userMethods, $finalResponse->viewData('userMethods'));
+            }
+
+            $this->get(route('mfa.method', $methodToLogin));
+        } else {
+            if ($isInSetup) {
+                $this->assertEquals(
+                    $methodToLogin === MultiFactorAuthMethod::TOTP ? 'mfa.method' : 'mfa.setup',
+                    $currentRoute->getName()
+                );
+            } elseif (!$methodToLogin) {
+                $this->assertEquals('mfa.setup', $currentRoute->getName());
+            }
+            else {
+                $this->assertCurrentRouteIs('mfa.method', [$methodToLogin]);
+            }
+        }
+    }
+
+    public function assertMultiFactorAuthenticated(): void
+    {
+        $this->assertAuthenticated();
+        $this->assertTrue(MFA::isVerified());
     }
 }

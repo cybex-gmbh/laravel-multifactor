@@ -4,10 +4,7 @@ namespace Cybex\LaravelMultiFactor\Tests\Feature;
 
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Tests\BaseTest;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
@@ -127,12 +124,6 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
         ];
     }
 
-    private function assertCurrentRouteIs($routeName, $params = []): void
-    {
-        $currentRoute = Route::getCurrentRoute();
-        $this->assertEquals(route($routeName, $params), route($currentRoute->getName(), $currentRoute->parameters()));
-    }
-
     private function assertAccessibleMethod($method): void
     {
         $this->get(route('mfa.method', ['method' => $method]))->assertStatus(200);
@@ -145,25 +136,5 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
         $this->followRedirects($response);
 
         $this->assertCurrentRouteIs('mfa.method', ['method' => $methodToLogin]);
-    }
-
-    public function assertMFARedirect($userMethods, Response|TestResponse $finalResponse, $methodToLogin, bool $isInSetup = false): void
-    {
-        $currentRoute = Route::getCurrentRoute();
-
-        if (count($userMethods) > 1) {
-            $this->assertCurrentRouteIs('mfa.show');
-            $this->assertEquals($userMethods, $finalResponse->viewData('userMethods'));
-            $this->get(route('mfa.method', $methodToLogin));
-        } else {
-            if ($isInSetup) {
-                $this->assertEquals(
-                    $methodToLogin === MultiFactorAuthMethod::TOTP ? 'mfa.method' : 'mfa.setup',
-                    $currentRoute->getName()
-                );
-            } else {
-                $this->assertCurrentRouteIs('mfa.method', [$methodToLogin]);
-            }
-        }
     }
 }
