@@ -66,7 +66,13 @@ class MultiFactorAuthController extends Controller
         $methods = $method?->isAllowed() ? [$method] : MFA::getAllowedMethods();
 
         if (MultiFactorAuthMode::isForceMode()) {
-            return Redirect::route('mfa.method', ['method' => MFA::getForceMethod()]);
+            $forceMethod = MFA::getForceMethod();
+
+            if ($forceMethod === MultiFactorAuthMethod::TOTP) {
+                return app(MultiFactorSetupViewResponseContract::class, [MFA::getUser(), $forceMethod]);
+            }
+
+            return Redirect::route('mfa.method', ['method' => $forceMethod]);
         }
 
         if (count($methods) === 1 && Arr::first($methods) === MultiFactorAuthMethod::TOTP) {
@@ -139,8 +145,10 @@ class MultiFactorAuthController extends Controller
 
         Mfa::setVerified();
 
-        if (!$method->isAllowed() && !MultiFactorAuthMode::isOptionalMode()) {
+        if (!$method->isAllowed() && !MultiFactorAuthMode::isOptionalMode() || MultiFactorAuthMode::isForceMode() && !$method->isForceMethod()) {
             MFA::setSetupAfterLogin();
+            MFA::setSecret();
+
             return redirect()->route('mfa.setup');
         }
 
