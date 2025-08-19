@@ -94,9 +94,17 @@ abstract class BaseTest extends TestCase
     public function loginWithMFAMethod(MultiFactorAuthMethod $method, User $user): TestResponse
     {
         if ($method === MultiFactorAuthMethod::TOTP) {
+            $user->refresh();
             $secret = decrypt($user->two_factor_secret);
             $google2fa = new Google2FA();
             $mfaCode = $google2fa->getCurrentOtp($secret);
+
+            if (!$user->hasTotpConfirmed()) {
+                return $this->post(route('two-factor.confirm'), [
+                    'code' => $mfaCode,
+                    '_token' => csrf_token(),
+                ]);
+            }
         } else {
             $this->get(route('mfa.method', MultiFactorAuthMethod::EMAIL));
             $mfaCode = $this->assertMFAEmailSent($user);

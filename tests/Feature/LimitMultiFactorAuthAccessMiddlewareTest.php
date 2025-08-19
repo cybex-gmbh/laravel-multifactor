@@ -125,12 +125,12 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
         ];
     }
 
-    private function assertAccessibleMethod($method): void
+    protected function assertAccessibleMethod($method): void
     {
         $this->get(route('mfa.method', ['method' => $method]))->assertStatus(200);
     }
 
-    private function assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToLogin): void
+    protected function assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToLogin): void
     {
         $response = $this->get(route('mfa.method', ['method' => $inaccessibleMethod]));
 
