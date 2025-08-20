@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use Laravel\Fortify\Contracts\FailedTwoFactorLoginResponse;
 use Laravel\Fortify\Contracts\TwoFactorLoginResponse;
 use Laravel\Fortify\Events\RecoveryCodeReplaced;
@@ -48,10 +47,7 @@ class MultiFactorAuthController extends Controller
 
     public function handleMultiFactorAuthMethod(MultiFactorAuthMethod $method): MultiFactorChallengeViewResponseContract
     {
-        return match ($method) {
-            MultiFactorAuthMethod::EMAIL => $method->getHandler()->challenge(),
-            MultiFactorAuthMethod::TOTP => app(MultiFactorChallengeViewResponseContract::class, [MFA::getUser(), $method]),
-        };
+        return $method->getHandler()->challenge();
     }
 
     public function send(MultiFactorAuthMethod $method): RedirectResponse
@@ -65,22 +61,16 @@ class MultiFactorAuthController extends Controller
     {
         $methods = $method?->isAllowed() ? [$method] : MFA::getAllowedMethods();
 
-        if (MultiFactorAuthMode::isForceMode()) {
-            $forceMethod = MFA::getForceMethod();
-
-            if ($forceMethod === MultiFactorAuthMethod::TOTP) {
-                return app(MultiFactorSetupViewResponseContract::class, [MFA::getUser(), $forceMethod]);
-            }
-
-            return Redirect::route('mfa.method', ['method' => $forceMethod]);
+        if ($method) {
+            return $method->getHandler()->showSetup();
         }
 
-        if (count($methods) === 1 && Arr::first($methods) === MultiFactorAuthMethod::TOTP) {
-            return app(MultiFactorSetupViewResponseContract::class, [MFA::getUser(), Arr::first($methods)]);
+        if (MultiFactorAuthMode::isForceMode()) {
+            return Redirect::route('mfa.setup', ['method' => MFA::getForceMethod()]);
         }
 
         if (count($methods) === 1) {
-            return Redirect::route('mfa.method', ['method' => Arr::first($methods)]);
+            return Redirect::route('mfa.setup', ['method' => Arr::first($methods)]);
         }
 
         return app(MultiFactorChooseViewResponseContract::class, $methods);
@@ -88,12 +78,7 @@ class MultiFactorAuthController extends Controller
 
     public function deleteMultiFactorAuthMethod(MultiFactorAuthMethod $method, RedirectResponse $back = null): RedirectResponse
     {
-        $query = MFA::getUser()->multiFactorAuthMethods()->where('type', $method);
-        $query->detach($query->first()->getKey());
-
-        if ($method === MultiFactorAuthMethod::TOTP) {
-            app(DisableTwoFactorAuthentication::class)(MFA::getUser());
-        }
+        $method->getHandler()->delete();
 
         return $back ?? redirect()->back();
     }

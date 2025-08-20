@@ -11,7 +11,11 @@ interface MultiFactorAuthMethodContract
      *
      * @return RedirectResponse
      */
+    public function challenge(): MultiFactorChallengeViewResponseContract;
+
+    public function showSetup(): RedirectResponse|MultiFactorSetupViewResponseContract;
+
     public function setup(): RedirectResponse;
 
-    public function challenge(): MultiFactorChallengeViewResponseContract;
+    public function delete(): void;
 }

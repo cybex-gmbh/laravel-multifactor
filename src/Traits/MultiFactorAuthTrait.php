@@ -97,4 +97,10 @@ trait MultiFactorAuthTrait
     {
         return collect(MFA::getAllowedMethods())->merge($this->getMultiFactorAuthMethods())->unique()->all();
     }
+
+    public function detachMultiFactorAuthMethod(MultiFactorAuthMethodEnum $methodToDelete): void
+    {
+        $query = $this->multiFactorAuthMethods()->where('type', $methodToDelete);
+        $query->detach($query->first()->getKey());
+    }
 }

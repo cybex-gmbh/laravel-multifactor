@@ -6,17 +6,16 @@ use Cybex\LaravelMultiFactor\Contracts\MultiFactorAuthMethodContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorChallengeViewResponseContract;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorSetupViewResponseContract;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
-use Cybex\LaravelMultiFactor\Notifications\MultiFactorCodeNotification;
+use Cybex\LaravelMultiFactor\Models\MultiFactorAuthMethod as MultiFactorAuthMethodModel;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
-use Cybex\LaravelMultiFactor\Models\MultiFactorAuthMethod as MultiFactorAuthMethodModel;
+use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use MFA;
 
-class EmailHandler implements MultiFactorAuthMethodContract
+class TotpHandler implements MultiFactorAuthMethodContract
 {
-    protected MultiFactorAuthMethod $method = MultiFactorAuthMethod::EMAIL;
+    protected MultiFactorAuthMethod $method = MultiFactorAuthMethod::TOTP;
     protected User $user;
 
     public function __construct()
@@ -24,19 +23,14 @@ class EmailHandler implements MultiFactorAuthMethodContract
         $this->user = MFA::getUser();
     }
 
-    public function challenge(): MultifactorChallengeViewResponseContract
+    public function challenge(): MultiFactorChallengeViewResponseContract
     {
-        if (!MFA::isEmailSent()) {
-            $this->sendEmail();
-            MFA::setEmailSent();
-        }
-
         return app(MultiFactorChallengeViewResponseContract::class, [$this->user, $this->method]);
     }
 
     public function showSetup(): MultiFactorSetupViewResponseContract|RedirectResponse
     {
-        return redirect()->route('mfa.method', ['method' => $this->method]);
+        return app(MultiFactorSetupViewResponseContract::class, [$this->user, $this->method]);
     }
 
     public function setup(): RedirectResponse
@@ -61,30 +55,7 @@ class EmailHandler implements MultiFactorAuthMethodContract
     public function delete(): void
     {
         $this->user->detachMultiFactorAuthMethod($this->method);
-    }
 
-    public function sendEmail(): RedirectResponse
-    {
-        $code = random_int(100000, 999999);
-        $userKey = $this->user->getKey();
-        $expiresAt = now()->addMinutes(10);
-
-        MFA::setAuthCode($code, $expiresAt->timestamp);
-
-        if (MFA::isEmailOnlyLoginActive()) {
-            $url = URL::temporarySignedRoute(
-                'mfa.login',
-                $expiresAt,
-                [
-                    'method' => $this->method,
-                    'user' => $userKey,
-                    'code' => $code
-                ]
-            );
-        }
-
-        $this->user->notify(new MultiFactorCodeNotification($url ?? null));
-
-        return redirect()->back();
+        app(DisableTwoFactorAuthentication::class)($this->user);
     }
 }

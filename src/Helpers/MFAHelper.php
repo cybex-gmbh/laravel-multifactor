@@ -89,7 +89,7 @@ class MFAHelper
 
     public function isPersistentLogin(): bool
     {
-        return $this->isInSetupAfterLogin() && !collect(session()->all())->keys()->contains(fn($key) => str_starts_with($key, 'login_web_'));
+        return !$this->isInSetupAfterLogin() && collect(session()->all())->keys()->contains(fn($key) => str_starts_with($key, 'login_web_'));
     }
 
     public function getUser(): Authenticatable|User

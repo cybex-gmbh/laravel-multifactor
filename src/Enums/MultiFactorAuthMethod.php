@@ -3,6 +3,7 @@
 namespace Cybex\LaravelMultiFactor\Enums;
 
 use Cybex\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler\EmailHandler;
+use Cybex\LaravelMultiFactor\Classes\MultiFactorAuthMethodHandler\TotpHandler;
 use Cybex\LaravelMultiFactor\Contracts\MultiFactorAuthMethodContract;
 use MFA;
 
@@ -15,7 +16,7 @@ enum MultiFactorAuthMethod: string
     {
         return match ($this) {
             self::EMAIL => app(EmailHandler::class),
-            self::TOTP => app(EmailHandler::class),
+            self::TOTP => app(TotpHandler::class),
         };
     }
 
@@ -32,5 +33,13 @@ enum MultiFactorAuthMethod: string
     public function isForceMethod(): bool
     {
         return $this === MFA::getForceMethod();
+    }
+
+    public function doesNeedUserSetup(): bool
+    {
+        return match ($this) {
+            self::EMAIL => false,
+            self::TOTP => true,
+        };
     }
 }
