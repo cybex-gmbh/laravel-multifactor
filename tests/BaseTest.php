@@ -22,6 +22,9 @@ abstract class BaseTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected const TOTP_SECRET_FIELD = 'two_factor_secret';
+    protected const TOTP_CONFIRMED_AT_FIELD = 'two_factor_confirmed_at';
+
     public function configureMFA(MultiFactorAuthMode $mode = MultiFactorAuthMode::OPTIONAL, array $allowedMethods = ['email', 'totp'], MultiFactorAuthMethod $forceMethod = MultiFactorAuthMethod::EMAIL): void
     {
         config()->set([
@@ -56,8 +59,8 @@ abstract class BaseTest extends TestCase
             $provider = app(TwoFactorAuthenticationProvider::class);
             $secret = $provider->generateSecretKey();
 
-            $totpAttributes['two_factor_secret'] = encrypt($secret);
-            $totpAttributes['two_factor_confirmed_at'] = now();
+            $totpAttributes[self::TOTP_SECRET_FIELD] = encrypt($secret);
+            $totpAttributes[self::TOTP_CONFIRMED_AT_FIELD] = now();
         }
 
         if (isset($totpAttributes)) {
@@ -95,7 +98,7 @@ abstract class BaseTest extends TestCase
     {
         if ($method === MultiFactorAuthMethod::TOTP) {
             $user->refresh();
-            $secret = decrypt($user->two_factor_secret);
+            $secret = decrypt($user->{self::TOTP_SECRET_FIELD});
             $google2fa = new Google2FA();
             $mfaCode = $google2fa->getCurrentOtp($secret);
 
@@ -121,10 +124,9 @@ abstract class BaseTest extends TestCase
         $mfaCode = null;
 
         Notification::assertSentTo($user, MultiFactorCodeNotification::class, function ($notification) use (&$mfaCode, $user) {
-            $mailMessage = $notification->toMail($user);
-            $body = $mailMessage->render();
+            $body = $notification->toMail($user)->render();
 
-            if (preg_match('/You can use the following MFA code: (\d{6})/', $body, $matches)) {
+            if (preg_match('/MFA code: (\d{6})/', $body, $matches)) {
                 $mfaCode = $matches[1];
             }
 
@@ -150,30 +152,23 @@ abstract class BaseTest extends TestCase
         $this->assertEquals(route($routeName, $params), route($currentRoute->getName(), $currentRoute->parameters()));
     }
 
-    protected function assertMFARedirect($userMethods, Response|TestResponse $finalResponse, $methodToLogin, bool $isInSetup = false): void
+    protected function assertMFARedirectToExpectedRoute($userMethods, TestResponse $response, $methodToLogin): void
     {
-        $currentRoute = Route::getCurrentRoute();
-
-        if (count($userMethods) > 1) {
-            if (!MultiFactorAuthMode::isForceMode()) {
-                $this->assertCurrentRouteIs('mfa.show');
-                $this->assertEquals($userMethods, $finalResponse->viewData('userMethods'));
-            }
-
-            $this->get(route('mfa.method', $methodToLogin));
-        } else {
-            if ($isInSetup) {
-                $this->assertEquals(
-                    $methodToLogin === MultiFactorAuthMethod::TOTP ? 'mfa.method' : 'mfa.setup',
-                    $currentRoute->getName()
-                );
-            } elseif (!$methodToLogin) {
-                $this->assertEquals('mfa.setup', $currentRoute->getName());
-            }
-            else {
-                $this->assertCurrentRouteIs('mfa.method', [$methodToLogin]);
-            }
+        if (!$methodToLogin) {
+            $this->assertCurrentRouteIs('mfa.setup');
+            return;
         }
+
+        $nextRouteName = $methodToLogin->doesNeedUserSetup() && !$methodToLogin->isUserMethod() ? 'mfa.setup' : 'mfa.method';
+
+        if (count($userMethods) > 1 && !MultiFactorAuthMode::isForceMode()) {
+            $this->assertCurrentRouteIs('mfa.show');
+            $this->assertEquals($userMethods, $response->viewData('userMethods'));
+
+            $this->get(route($nextRouteName, $methodToLogin));
+        }
+
+        $this->assertCurrentRouteIs($nextRouteName, $methodToLogin);
     }
 
     protected function assertMultiFactorAuthenticated(): void

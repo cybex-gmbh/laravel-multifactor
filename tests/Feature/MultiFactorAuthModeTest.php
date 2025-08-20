@@ -6,6 +6,7 @@ use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Tests\BaseTest;
 use Illuminate\Support\Facades\Notification;
+use Laravel\Fortify\Features;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Throws;
 
@@ -45,11 +46,11 @@ class MultiFactorAuthModeTest extends BaseTest
     public function testUserCanLoginWithAllowedMethods(array $allowedMethods, array $userMethods, MultiFactorAuthMethod $methodToLogin, MultiFactorAuthMode $mode)
     {
         $this->configureMFA(mode: $mode, allowedMethods: $allowedMethods);
-        $user = $this->makeUser($userMethods);
 
+        $user = $this->makeUser($userMethods);
         $response = $this->loginAndRedirect($user);
 
-        $this->assertMFARedirect($userMethods, $response, $methodToLogin);
+        $this->assertMFARedirectToExpectedRoute($userMethods, $response, $methodToLogin);
 
         $this->loginWithMFAMethod($methodToLogin, $user);
 
@@ -109,25 +110,23 @@ class MultiFactorAuthModeTest extends BaseTest
         $this->configureMFA(mode: MultiFactorAuthMode::REQUIRED, allowedMethods: $allowedMethods);
 
         $user = $this->makeUser($userMethods);
-
         $response = $this->loginAndRedirect($user);
 
-        $this->assertMFARedirect($userMethods, $response, $methodToLogin);
+        $this->assertMFARedirectToExpectedRoute($userMethods, $response, $methodToLogin);
 
         if ($userMethods) {
             $response = $this->loginWithMFAMethod($methodToLogin, $user);
 
             $this->assertGuestRedirectedToMFASetup($response);
 
-            $this->followRedirects($response);
+            $finalResponse = $this->followRedirects($response);
 
-            // decide if totp setup should be on /mfa/setup or /mfa/setup/totp
-//            $this->assertCurrentRouteIs($methodToSetup === MultiFactorAuthMethod::TOTP ? 'mfa.setup' : 'mfa.method', $methodToSetup);
+            $this->assertMFARedirectToExpectedRoute($userMethods, $finalResponse, $methodToSetup);
         }
 
         if (!$user->refresh()->hasAllowedMultiFactorAuthMethods()) {
-            if ($methodToSetup === MultiFactorAuthMethod::TOTP) {
-                $this->setupTotp();
+            if ($methodToSetup->doesNeedUserSetup()) {
+                $this->setupMethod($methodToSetup);
             }
 
             $this->loginWithMFAMethod($methodToSetup, $user);
@@ -168,19 +167,18 @@ class MultiFactorAuthModeTest extends BaseTest
         $this->configureMFA(mode: MultiFactorAuthMode::FORCE, allowedMethods: $allowedMethods, forceMethod: $forceMethod);
 
         $user = $this->makeUser($userMethods);
-
         $response = $this->loginAndRedirect($user);
 
-        $this->assertMFARedirect($userMethods, $response, $methodToLogin);
+        $this->assertMFARedirectToExpectedRoute($userMethods, $response, $methodToLogin);
 
         $response = $this->loginWithMFAMethod($methodToLogin, $user);
 
         if (!$user->refresh()->hasAllowedMultiFactorAuthMethods()) {
             $finalResponse = $this->followRedirects($response);
-//            $this->assertMFARedirect($userMethods, $finalResponse, $forceMethod);
+            $this->assertMFARedirectToExpectedRoute($userMethods, $finalResponse, $forceMethod);
 
-            if ($forceMethod === MultiFactorAuthMethod::TOTP) {
-                $this->setupTotp();
+            if ($forceMethod->doesNeedUserSetup()) {
+                $this->setupMethod($forceMethod);
             }
 
             $this->loginWithMFAMethod($forceMethod, $user);
@@ -213,6 +211,15 @@ class MultiFactorAuthModeTest extends BaseTest
         ];
     }
 
+    protected function setupMethod(MultiFactorAuthMethod $method): void
+    {
+        switch ($method) {
+            case MultiFactorAuthMethod::TOTP:
+                $this->setupTotp();
+                break;
+        }
+    }
+
     protected function setupTotp(): void
     {
         $response = $this->post(route('two-factor.enable'), [
@@ -221,20 +228,22 @@ class MultiFactorAuthModeTest extends BaseTest
 
         $this->followRedirects($response);
 
-        $response = $this->post(route('password.confirm.store'), [
-            'password' => 'password',
-            '_token' => csrf_token(),
-        ]);
+        if (Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')) {
+            $response = $this->post(route('password.confirm.store'), [
+                'password' => 'password',
+                '_token' => csrf_token(),
+            ]);
 
-        $response->assertRedirect(route('mfa.setup'));
+            $response->assertRedirect(route('mfa.setup', MultiFactorAuthMethod::TOTP));
 
-        $this->followRedirects($response);
+            $this->followRedirects($response);
 
-        $response = $this->post(route('two-factor.enable'), [
-            '_token' => csrf_token(),
-        ]);
+            $response = $this->post(route('two-factor.enable'), [
+                '_token' => csrf_token(),
+            ]);
 
-        $this->followRedirects($response);
+            $this->followRedirects($response);
+        }
 
         $this->get(route('mfa.method', MultiFactorAuthMethod::TOTP));
 

@@ -18,7 +18,7 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
 
     public function testUserCanAccessOnlyHisMethodsDuringMfaLoginInForceMode()
     {
-        $this->configureMFA(mode: MultiFactorAuthMode::FORCE, allowedMethods: ['email', 'totp'], forceMethod: MultiFactorAuthMethod::EMAIL);
+        $this->configureMFA(mode: MultiFactorAuthMode::FORCE);
 
         $user = $this->makeUser([MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP]);
 
@@ -37,7 +37,7 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
 
         $finalResponse = $this->followRedirects($this->login($user));
 
-        $this->assertMFARedirect($userMethods, $finalResponse, $methodToLogin);
+        $this->assertMFARedirectToExpectedRoute($userMethods, $finalResponse, $methodToLogin);
         $this->assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToLogin);
     }
 
@@ -82,7 +82,7 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
 
         $finalResponse = $this->followRedirects($this->loginWithMFAMethod($methodToLogin, $user));
 
-        $this->assertMFARedirect($userMethods, $finalResponse, $methodToLogin, true);
+        $this->assertMFARedirectToExpectedRoute($userMethods, $finalResponse, $methodToSetup);
 
         $this->assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToSetup);
     }
@@ -104,28 +104,28 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
     #[DataProvider('provideForUserCanAccessOtherMethodsDuringMfaLogin')]
     public function testUserCanAccessOtherMethodsDuringMfaLogin($userMethods, $methodToLogin, $otherMethod)
     {
-        $this->configureMFA(mode: MultiFactorAuthMode::OPTIONAL, allowedMethods: ['email', 'totp'], forceMethod: MultiFactorAuthMethod::EMAIL);
+        $this->configureMFA();
 
-        $user = $this->makeUser([MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP]);
+        $user = $this->makeUser($userMethods);
 
         $this->followRedirects($this->login($user));
 
-        $this->assertAccessibleMethod($methodToLogin);
-        $this->assertAccessibleMethod($otherMethod);
+        $this->assertMethodIsAccessible($methodToLogin);
+        $this->assertMethodIsAccessible($otherMethod);
     }
 
     public static function provideForUserCanAccessOtherMethodsDuringMfaLogin(): array
     {
         return [
             'email optional' => [
-                'userMethods' => [MultiFactorAuthMethod::EMAIL],
+                'userMethods' => [MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP],
                 'methodToLogin' => MultiFactorAuthMethod::EMAIL,
                 'otherMethod' => MultiFactorAuthMethod::TOTP,
             ],
         ];
     }
 
-    protected function assertAccessibleMethod($method): void
+    protected function assertMethodIsAccessible($method): void
     {
         $this->get(route('mfa.method', ['method' => $method]))->assertStatus(200);
     }
