@@ -25,12 +25,13 @@ abstract class BaseTest extends TestCase
     protected const TOTP_SECRET_FIELD = 'two_factor_secret';
     protected const TOTP_CONFIRMED_AT_FIELD = 'two_factor_confirmed_at';
 
-    public function configureMFA(MultiFactorAuthMode $mode = MultiFactorAuthMode::OPTIONAL, array $allowedMethods = ['email', 'totp'], MultiFactorAuthMethod $forceMethod = MultiFactorAuthMethod::EMAIL): void
+    public function configureMFA(MultiFactorAuthMode $mode = MultiFactorAuthMode::OPTIONAL, array $allowedMethods = ['email', 'totp'], MultiFactorAuthMethod $forceMethod = MultiFactorAuthMethod::EMAIL, bool $emailOnlyMode = false): void
     {
         config()->set([
             'multi-factor.mode' => $mode->value,
             'multi-factor.allowedMethods' => $allowedMethods,
             'multi-factor.forceMethod' => $forceMethod->value,
+            'multi-factor.features.email-login.enabled' => $emailOnlyMode,
         ]);
     }
 
@@ -83,6 +84,18 @@ abstract class BaseTest extends TestCase
             'password' => 'password',
             '_token' => csrf_token(),
         ]);
+    }
+
+    public function loginWithEmailAndRedirect(User $user): TestResponse
+    {
+        $response = $this->post(route('mfa.email.login'), [
+            'email' => $user->email,
+            '_token' => csrf_token(),
+        ]);
+
+        $response->assertRedirect(route('mfa.show'));
+
+        return $this->followRedirects($response);
     }
 
     public function loginAndRedirect(User $user): TestResponse

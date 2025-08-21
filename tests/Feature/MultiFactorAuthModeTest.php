@@ -99,7 +99,6 @@ class MultiFactorAuthModeTest extends BaseTest
         ];
     }
 
-    // required tests
     #[DataProvider('loginWithSetupInRequiredModeProvider')]
     public function testUserCanLoginWithSetupInRequiredMode(
         array $allowedMethods,
