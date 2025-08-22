@@ -14,7 +14,6 @@ use Cybex\LaravelMultiFactor\Exceptions\InvalidEmailOnlyLoginConfigurationExcept
 use Cybex\LaravelMultiFactor\Exceptions\LoginRouteNotFoundException;
 use Cybex\LaravelMultiFactor\Facades\MFA;
 use Cybex\LaravelMultiFactor\Helpers\MFAHelper;
-use Cybex\LaravelMultiFactor\Http\Middleware\EnforceEmailOnlyLogin;
 use Cybex\LaravelMultiFactor\Http\Middleware\HasAllowedMultiFactorAuthMethods;
 use Cybex\LaravelMultiFactor\Http\Middleware\HasLoginId;
 use Cybex\LaravelMultiFactor\Http\Middleware\HasMultiFactorAuthentication;
@@ -35,7 +34,6 @@ use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Contracts\FailedTwoFactorLoginResponse;
@@ -49,7 +47,6 @@ class MultiFactorServiceProvider extends ServiceProvider
         /*
          * Optional methods to load your package assets
          */
-
         $this->mergeConfigFrom(__DIR__ . '/../config/multi-factor.php', 'multi-factor');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'multi-factor');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-multi-factor');
@@ -61,7 +58,6 @@ class MultiFactorServiceProvider extends ServiceProvider
         $router->aliasMiddleware('hasAllowedMultiFactorAuthMethods', HasAllowedMultiFactorAuthMethods::class);
         $router->aliasMiddleware('redirectIfMultiFactorAuthenticated', RedirectIfMultiFactorAuthenticated::class);
         $router->aliasMiddleware('limitMultiFactorAuthAccess', LimitMultiFactorAuthAccess::class);
-        $router->aliasMiddleware('enforceEmailOnlyLogin', EnforceEmailOnlyLogin::class);
         $router->aliasMiddleware('hasLoginId', HasLoginId::class);
         $router->aliasMiddleware('tempLoginForMFA', TempLoginForMfa::class);
 
@@ -108,16 +104,10 @@ class MultiFactorServiceProvider extends ServiceProvider
                 FailedMultiFactorLoginResponse::class
             );
 
-            $routes = Route::getRoutes();
-            $routes->refreshNameLookups();
-            $loginRoute = $routes->getByName('login');
-
             if (MFA::isEmailOnlyLoginActive()) {
                 if (!MultiFactorAuthMode::isForceMode() || MFA::getForceMethod() !== MultiFactorAuthMethod::EMAIL) {
                     throw new InvalidEmailOnlyLoginConfigurationException();
                 }
-
-                $loginRoute->middleware('enforceEmailOnlyLogin');
             }
 
             require 'routes/overrides.php';

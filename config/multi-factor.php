@@ -25,9 +25,7 @@ return [
             'setup' => MultiFactorSetupViewResponse::class,
         ],
         'templates' => [
-            'login' => 'auth.login',
             'confirm-password' => 'auth.confirm-password',
-            'totp-challenge' => 'auth.two-factor-challenge',
         ],
     ],
 

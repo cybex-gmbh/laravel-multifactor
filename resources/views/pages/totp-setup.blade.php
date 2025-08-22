@@ -10,7 +10,7 @@
                     </x-multi-factor::button>
                 </x-multi-factor::form>
 
-                @if(session('auth.password_confirmed_at'))
+                @if(session('auth.password_confirmed_at') && !$user->hasTotpConfirmed())
                     <script>
                         document.addEventListener('DOMContentLoaded', () => {
                             document.getElementById('fortify-totp')?.submit();
@@ -36,7 +36,7 @@
 
                     <div class="mfa-width-full" style="margin-top: 20px;">
                         <a href="{{ route('mfa.method', $mfaMethod) }}">
-                            <x-multi-factor::button type="button" class="mfa-width-full">Continue</x-multi-factor::button>
+                            <x-multi-factor::button type="button" class="mfa-width-full">@lang('multi-factor::button.continue')</x-multi-factor::button>
                         </a>
                         <div class="mfa-row" style="margin: 20px 0;">
                             <span class="mfa-separator"></span>

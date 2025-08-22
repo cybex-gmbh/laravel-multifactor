@@ -5,4 +5,5 @@ return [
     'disable' => 'Disable',
     'login' => 'Login',
     'resend_mfa' => 'Resend :authenticationMethod',
+    'continue' => 'Continue',
 ];

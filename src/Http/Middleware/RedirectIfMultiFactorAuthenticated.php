@@ -5,6 +5,7 @@ namespace Cybex\LaravelMultiFactor\Http\Middleware;
 use Closure;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use MFA;
 
@@ -17,7 +18,7 @@ class RedirectIfMultiFactorAuthenticated
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (MFA::isVerified() && MultiFactorAuthMode::isForceMode() && $request->route('method')?->isUserMethod()) {
+        if (Auth::check() && MFA::isVerified() && MultiFactorAuthMode::isForceMode() && $request->route('method')?->isUserMethod()) {
             return redirect()->intended();
         }
 
