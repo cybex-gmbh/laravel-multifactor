@@ -1,0 +1,193 @@
+#mfa-body {
+    margin: 0;
+}
+
+.multi-factor-auth {
+    background-color: #f3f4f6;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.mfa-auth-card {
+    display: flex;
+    flex-direction: column;
+    width: 35em;
+    padding: 10px 50px 50px 50px;
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: black;
+}
+
+.mfa-row {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 30px;
+    padding: 10px 0;
+}
+
+.mfa-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mfa-gap-10 {
+    gap: 10px;
+}
+
+.mfa-gap-20 {
+    gap: 20px;
+}
+
+.mfa-flex-end {
+    justify-content: flex-end;
+    margin-top: 1rem;
+    gap: 10px;
+}
+
+#mfa-login {
+    margin-top: 1rem;
+}
+
+#mfa-resend-code-form {
+    text-decoration: underline;
+    display: inline;
+    color: #1C3D5A;
+}
+
+.mfa-list-item {
+    justify-content: space-between;
+    border-bottom: 1px solid #e3e2e8;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.mfa-button {
+    display: inline-block;
+    cursor: pointer;
+    border: none;
+    height: 45px;
+    width: 110px;
+    border-radius: 7px;
+    color: white;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    background-color: #0070f3;
+    box-shadow: 0 4px 14px 0 rgb(0 118 255 / 39%);
+}
+
+.mfa-button:hover {
+    &:not(.mfa-button-disabled) {
+        background: rgba(0, 118, 255, 0.9);
+        box-shadow: 0 6px 20px rgb(0 118 255 / 23%);
+    }
+}
+
+.mfa-button-danger {
+    background-color: #ef4444;
+    box-shadow: 0 4px 14px 0 rgb(213 37 37 / 39%);
+}
+
+.mfa-button.mfa-button-danger:hover {
+    background: rgba(220, 38, 38, 0.9);
+    box-shadow: 0 4px 14px 0 rgb(213 37 37 / 23%);
+}
+
+.mfa-button-disabled {
+    background-color: #d1d5db;
+    box-shadow: 0 4px 14px 0 rgb(209 213 219 / 39%);
+    cursor: not-allowed;
+}
+
+.mfa-width-full {
+    width: 100%;
+}
+
+.mfa-svg {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+}
+
+.mfa-svg-circle {
+    background-color: #f5f4f9;
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.mfa-header {
+    line-height: 1;
+}
+
+.mfa-input-wrapper {
+    width: 100%;
+}
+
+.mfa-input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0 0;
+    box-sizing: border-box;
+
+    &:focus:not(.mfa-has-errors) {
+        border-color: #3b82f6;
+    }
+}
+
+.mfa-text-active {
+    color: #4ade80;
+}
+
+.mfa-text-danger {
+    color: #ef4444;
+}
+
+.mfa-text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.mfa-has-errors {
+    border-color: #fc8181;
+
+    &:focus {
+        outline: none;
+        border-color: #fc8181;
+        box-shadow: 0 0 0 2px rgb(213, 37, 37, 0.7);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .multi-factor-auth {
+        background-color: #1f2937;
+    }
+}
+
+.mfa-qr-code {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 20px 0;
+    width: fit-content;
+}
+
+.mfa-separator {
+    flex: 1;
+    border-top: 1px solid #ccc;
+}
+
+.mfa-separator-text {
+    color: #888;
+}
+
+.mfa-btn-fit-content {
+    width: fit-content;
+}

@@ -30,6 +30,18 @@
                         >
                             Dashboard
                         </a>
+                        @if(!Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode::isForceMode())
+                            <a href="{{ route('mfa.settings', Auth::user()) }}"
+                               class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
+                                Manage Multi-Factor Authentication
+                            </a>
+                        @endif
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
+                                Log out
+                            </button>
+                        </form>
                     @else
                         <a
                             href="{{ route('login') }}"

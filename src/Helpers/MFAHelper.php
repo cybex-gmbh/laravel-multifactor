@@ -1,0 +1,179 @@
+<?php
+
+namespace Cybex\LaravelMultiFactor\Helpers;
+
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+
+class MFAHelper
+{
+    public const CODE = 'two_factor_auth_code';
+    public const EMAIL_SENT = 'two_factor_auth_email_sent';
+    public const VERIFIED = 'two_factor_auth_verified';
+    public const SETUP_AFTER_LOGIN = 'two_factor_auth_setup_after_login';
+    public const LOGIN_ID = 'login.id';
+    public const LOGIN_REMEMBER = 'login.remember';
+    public const SECRET_EXPIRY = 'secret_expiry';
+    public const SECRET = 'secret';
+    public const SECRET_HASH = 'secret_hash';
+
+    public function clear(): void
+    {
+        session()->forget([
+            self::CODE,
+            self::EMAIL_SENT,
+            self::VERIFIED,
+            self::SETUP_AFTER_LOGIN
+        ]);
+    }
+
+    public function setLoginIdAndRemember(User $user, bool $remember = false): void
+    {
+        $this->putInSession(self::LOGIN_ID, $user->getKey());
+        $this->putInSession(self::LOGIN_REMEMBER, $remember);
+    }
+
+    public function setVerified(bool $value = true): void
+    {
+        $this->putInSession(self::VERIFIED, $value);
+    }
+
+    public function setAuthCode(int $code, int $expiresAt): void
+    {
+        $this->putInSession(self::CODE, [
+            'code' => $code,
+            'expires_at' => $expiresAt,
+        ]);
+    }
+
+    public function setEmailSent(bool $value = true): void
+    {
+        $this->putInSession(self::EMAIL_SENT, $value);
+    }
+
+    public function setSetupAfterLogin(bool $value = true): void
+    {
+        $this->putInSession(self::SETUP_AFTER_LOGIN, $value);
+    }
+
+    public function setSecret(): void
+    {
+        $secret = bin2hex(random_bytes(32));
+
+        $this->putInSession(self::SECRET_EXPIRY, now()->addMinutes(10)->timestamp);
+        $this->putInSession(self::SECRET, encrypt($secret));
+        $this->putInSession(self::SECRET_HASH, hash_hmac('sha256', $this->getUser()->getKey(), $secret));
+    }
+
+    public function validateSecret(): bool
+    {
+        if (time() < $this->getFromSession(self::SECRET_EXPIRY)) {
+            $secret = decrypt($this->getFromSession(self::SECRET));
+            $expectedHash = hash_hmac('sha256', $this->getUser()->getKey(), $secret);
+
+            return hash_equals($expectedHash, $this->getFromSession(self::SECRET_HASH));
+        }
+
+        return false;
+    }
+
+    public function isVerified(): bool
+    {
+        return filled($this->getFromSession(self::VERIFIED));
+    }
+
+    public function isPersistentLogin(): bool
+    {
+        return !$this->isInSetupAfterLogin() && collect(session()->all())->keys()->contains(fn($key) => str_starts_with($key, 'login_web_'));
+    }
+
+    public function getUser(): Authenticatable|User
+    {
+        return auth()->user() ?? User::find($this->getFromSession(self::LOGIN_ID));
+    }
+
+    public function getAuthCode()
+    {
+        return $this->getFromSession(self::CODE);
+    }
+
+    public function getForceMethod(): MultiFactorAuthMethod
+    {
+        return MultiFactorAuthMethod::from(config('multi-factor.forceMethod'));
+    }
+
+    public function getAllowedMethods(): array
+    {
+        return Arr::map($this->getAllowedMethodNames(), fn($value): MultiFactorAuthMethod => MultiFactorAuthMethod::from($value));
+    }
+
+    public function getAllowedMethodNames(): array
+    {
+        return Arr::map(config('multi-factor.allowedMethods'), fn($method): string => Str::lower($method));
+    }
+
+    public function getMethodsByNames(array $names): array
+    {
+        return array_map(fn($name) => MultiFactorAuthMethod::from($name), $names);
+    }
+
+    public function isEmailOnlyLoginActive(): bool
+    {
+        return config('multi-factor.features.email-login.enabled');
+    }
+
+    public function isInSetupAfterLogin()
+    {
+        return $this->getFromSession(self::SETUP_AFTER_LOGIN);
+    }
+
+    public function endSetupAfterLogin()
+    {
+        $this->removeFromSession(self::SETUP_AFTER_LOGIN);
+    }
+
+    public function isEmailSent(): bool
+    {
+        return session()->has(self::EMAIL_SENT);
+    }
+
+    public function isCodeExpired(): bool
+    {
+        $sessionData = $this->getFromSession(self::CODE);
+
+        return $sessionData && now()->greaterThan(Carbon::createFromTimestamp($sessionData['expires_at']));
+    }
+
+    public function login(bool $remember = false): void
+    {
+        $this->clear();
+        $this->setVerified();
+        Auth::guard()->login($this->getUser(), $remember);
+    }
+
+    public function getCode(): ?int
+    {
+        return $this->getFromSession(self::CODE, 'code');
+    }
+
+    protected function getFromSession(string $key, string $subKey = null): mixed
+    {
+        $data = session($key);
+        return $subKey ? ($data[$subKey] ?? null) : $data;
+    }
+
+    protected function putInSession(string $key, mixed $value = true): void
+    {
+        session()->put($key, $value);
+    }
+
+    public function removeFromSession(string $key): void
+    {
+        session()->remove($key);
+    }
+}
