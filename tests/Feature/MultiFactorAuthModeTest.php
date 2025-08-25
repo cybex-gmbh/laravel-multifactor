@@ -4,13 +4,13 @@ namespace Cybex\LaravelMultiFactor\Tests\Feature;
 
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use Cybex\LaravelMultiFactor\Tests\BaseTest;
+use Cybex\LaravelMultiFactor\Tests\TestCase;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Fortify\Features;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Throws;
 
-class MultiFactorAuthModeTest extends BaseTest
+class MultiFactorAuthModeTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -170,11 +170,10 @@ class MultiFactorAuthModeTest extends BaseTest
 
         $this->assertMFARedirectToExpectedRoute($userMethods, $response, $methodToLogin);
 
-        $response = $this->loginWithMFAMethod($methodToLogin, $user);
+        $response = $this->loginWithMFAMethodAndRedirect($methodToLogin, $user);
 
         if (!$user->refresh()->hasAllowedMultiFactorAuthMethods()) {
-            $finalResponse = $this->followRedirects($response);
-            $this->assertMFARedirectToExpectedRoute($userMethods, $finalResponse, $forceMethod);
+            $this->assertMFARedirectToExpectedRoute($userMethods, $response, $forceMethod);
 
             if ($forceMethod->doesNeedUserSetup()) {
                 $this->setupMethod($forceMethod);

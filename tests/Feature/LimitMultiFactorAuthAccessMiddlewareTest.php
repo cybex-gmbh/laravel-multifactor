@@ -4,11 +4,11 @@ namespace Cybex\LaravelMultiFactor\Tests\Feature;
 
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
-use Cybex\LaravelMultiFactor\Tests\BaseTest;
+use Cybex\LaravelMultiFactor\Tests\TestCase;
 use Illuminate\Support\Facades\Notification;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
+class LimitMultiFactorAuthAccessMiddlewareTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -22,7 +22,7 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
 
         $user = $this->makeUser([MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP]);
 
-        $this->followRedirects($this->login($user));
+        $this->loginAndRedirect($user);
 
         $this->assertCurrentRouteIs('mfa.method', ['method' => MultiFactorAuthMethod::EMAIL]);
         $this->assertInaccessibleMethodRedirects(MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL);
@@ -35,9 +35,9 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
 
         $user = $this->makeUser($userMethods);
 
-        $finalResponse = $this->followRedirects($this->login($user));
+        $response = $this->loginAndRedirect($user);
 
-        $this->assertMFARedirectToExpectedRoute($userMethods, $finalResponse, $methodToLogin);
+        $this->assertMFARedirectToExpectedRoute($userMethods, $response, $methodToLogin);
         $this->assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToLogin);
     }
 
@@ -78,11 +78,11 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
 
         $user = $this->makeUser($userMethods);
 
-        $this->followRedirects($this->login($user));
+        $this->loginAndRedirect($user);
 
-        $finalResponse = $this->followRedirects($this->loginWithMFAMethod($methodToLogin, $user));
+        $response = $this->loginWithMFAMethodAndRedirect($methodToLogin, $user);
 
-        $this->assertMFARedirectToExpectedRoute($userMethods, $finalResponse, $methodToSetup);
+        $this->assertMFARedirectToExpectedRoute($userMethods, $response, $methodToSetup);
 
         $this->assertInaccessibleMethodRedirects($inaccessibleMethod, $methodToSetup);
     }
@@ -108,7 +108,7 @@ class LimitMultiFactorAuthAccessMiddlewareTest extends BaseTest
 
         $user = $this->makeUser($userMethods);
 
-        $this->followRedirects($this->login($user));
+        $this->loginAndRedirect($user);
 
         $this->assertMethodIsAccessible($methodToLogin);
         $this->assertMethodIsAccessible($otherMethod);

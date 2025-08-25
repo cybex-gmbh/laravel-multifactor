@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\TestResponse;
 use Laravel\Fortify\TwoFactorAuthenticationProvider;
 use PragmaRX\Google2FA\Google2FA;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use MFA;
 
 
-abstract class BaseTest extends TestCase
+abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
 
@@ -65,8 +65,8 @@ abstract class BaseTest extends TestCase
         }
 
         if (isset($totpAttributes)) {
-            $user->two_factor_secret = $totpAttributes['two_factor_secret'];
-            $user->two_factor_confirmed_at = $totpAttributes['two_factor_confirmed_at'];
+            $user->{self::TOTP_SECRET_FIELD} = $totpAttributes[self::TOTP_SECRET_FIELD];
+            $user->{self::TOTP_CONFIRMED_AT_FIELD} = $totpAttributes[self::TOTP_CONFIRMED_AT_FIELD];
             $user->saveQuietly();
         }
 
@@ -86,7 +86,7 @@ abstract class BaseTest extends TestCase
         ]);
     }
 
-    public function loginWithEmailAndRedirect(User $user): TestResponse
+    public function loginWithEmailOnlyAndRedirect(User $user): TestResponse
     {
         $response = $this->post(route('mfa.email.login'), [
             'email' => $user->email,
@@ -130,6 +130,13 @@ abstract class BaseTest extends TestCase
             'code' => $mfaCode,
             '_token' => csrf_token(),
         ]);
+    }
+
+    public function loginWithMFAMethodAndRedirect(MultiFactorAuthMethod $method, User $user): TestResponse
+    {
+        $response = $this->loginWithMFAMethod($method, $user);
+
+        return $this->followRedirects($response);
     }
 
     protected function assertMFAEmailSent(User $user): ?string

@@ -19,6 +19,7 @@ services:
             - './exampleApp:/var/www/html'
             - './.env:/var/www/html/.env'
             - './.env.testing:/var/www/html/.env.testing'
+            - './phpunit.xml:/var/www/html/phpunit.xml'
             - '.:/var/www/package'
         networks:
             - internal

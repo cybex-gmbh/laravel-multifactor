@@ -4,13 +4,13 @@
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Exceptions\InvalidEmailOnlyLoginConfigurationException;
-use Cybex\LaravelMultiFactor\Tests\BaseTest;
+use Cybex\LaravelMultiFactor\Tests\TestCase;
 use Illuminate\Support\Facades\Notification;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Throws;
 use Cybex\LaravelMultiFactor\MultiFactorServiceProvider;
 
-class EmailOnlyModeTest extends BaseTest
+class EmailOnlyModeTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -23,7 +23,7 @@ class EmailOnlyModeTest extends BaseTest
     {
         $this->expectException(InvalidEmailOnlyLoginConfigurationException::class);
 
-        $this->configureMFA(mode: $mode, emailOnlyMode: true, forceMethod: $forceMethod);
+        $this->configureMFA(mode: $mode, forceMethod: $forceMethod, emailOnlyMode: true);
         $this->reloadServiceProvider();
     }
 
@@ -48,7 +48,7 @@ class EmailOnlyModeTest extends BaseTest
         $this->reloadServiceProvider();
 
         $user = $this->makeUser($userMethods);
-        $response = $this->loginWithEmailAndRedirect($user);
+        $response = $this->loginWithEmailOnlyAndRedirect($user);
 
         $this->assertMFARedirectToExpectedRoute($userMethods, $response, MultiFactorAuthMethod::EMAIL);
 
@@ -82,14 +82,13 @@ class EmailOnlyModeTest extends BaseTest
         $this->reloadServiceProvider();
 
         $user = $this->makeUser($userMethods);
-        $response = $this->loginWithEmailAndRedirect($user);
+        $response = $this->loginWithEmailOnlyAndRedirect($user);
 
         $this->assertMFARedirectToExpectedRoute($userMethods, $response, $methodToLogin);
 
         $response = $this->loginWithMFAMethod($methodToLogin, $user);
 
         $this->followRedirects($response);
-
         $this->assertMFARedirectToExpectedRoute($userMethods, $response, MultiFactorAuthMethod::EMAIL);
 
         $this->loginWithMFAMethod(MultiFactorAuthMethod::EMAIL, $user);

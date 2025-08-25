@@ -5,11 +5,11 @@ namespace Cybex\LaravelMultiFactor\Tests\Unit;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMethod;
 use Cybex\LaravelMultiFactor\Enums\MultiFactorAuthMode;
 use Cybex\LaravelMultiFactor\Http\Controllers\MultiFactorAuthController;
-use Cybex\LaravelMultiFactor\Tests\BaseTest;
+use Cybex\LaravelMultiFactor\Tests\TestCase;
 use Illuminate\Support\Arr;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class MultiFactorAuthUserTest extends BaseTest
+class MultiFactorAuthUserTest extends TestCase
 {
     #[DataProvider('deleteMfaMethodProvider')]
     public function testDeletesUsersMfaMethod($allowedMethods, $userMethods, $methodToDelete)
@@ -23,8 +23,8 @@ class MultiFactorAuthUserTest extends BaseTest
         app(MultiFactorAuthController::class)->deleteMultiFactorAuthMethod($methodToDelete);
 
         if ($methodToDelete === MultiFactorAuthMethod::TOTP) {
-            $this->assertNull($user->two_factor_secret);
-            $this->assertNull($user->two_factor_confirmed_at);
+            $this->assertNull($user->{self::TOTP_SECRET_FIELD});
+            $this->assertNull($user->{self::TOTP_CONFIRMED_AT_FIELD});
         }
 
         $this->assertUserDoesNotHaveMethod($user, $methodToDelete);
@@ -34,15 +34,15 @@ class MultiFactorAuthUserTest extends BaseTest
         }
     }
 
-    public static function deleteMfaMethodProvider()
+    public static function deleteMfaMethodProvider(): array
     {
         return [
-            'user_has_email_and_totp_and_deletes_email' => [
+            'user has email and totp and deletes email' => [
                 'allowedMethods' => [MultiFactorAuthMethod::EMAIL->value],
                 'userMethods' => [MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP],
                 'methodToDelete' => MultiFactorAuthMethod::EMAIL,
             ],
-            'user_has_totp_and_deletes_totp' => [
+            'user has totp and deletes totp' => [
                 'allowedMethods' => [MultiFactorAuthMethod::TOTP->value],
                 'userMethods' => [MultiFactorAuthMethod::TOTP],
                 'methodToDelete' => MultiFactorAuthMethod::TOTP,
@@ -67,37 +67,37 @@ class MultiFactorAuthUserTest extends BaseTest
     public static function userMethodsProvider(): array
     {
         return [
-            'user_has_one_method' => [
+            'user has one method' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [MultiFactorAuthMethod::EMAIL->value],
                 'userMethods' => [MultiFactorAuthMethod::EMAIL],
                 'expectedMethods' => [MultiFactorAuthMethod::EMAIL],
             ],
-            'user_has_multiple_methods' => [
+            'user has multiple methods' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [MultiFactorAuthMethod::TOTP->value, MultiFactorAuthMethod::EMAIL->value],
                 'userMethods' => [MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL],
                 'expectedMethods' => [MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL],
             ],
-            'user_has_one_allowed_and_one_unallowed_method' => [
+            'user has one allowed and one unallowed method' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [MultiFactorAuthMethod::EMAIL->value],
                 'userMethods' => [MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP],
                 'expectedMethods' => [MultiFactorAuthMethod::EMAIL],
             ],
-            'user_has_no_allowed_methods' => [
+            'user has no allowed methods' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [],
                 'userMethods' => [MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP],
                 'expectedMethods' => [MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP],
             ],
-            'user_has_no_methods' => [
+            'user has no methods' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [MultiFactorAuthMethod::EMAIL->value, MultiFactorAuthMethod::TOTP->value],
                 'userMethods' => [],
                 'expectedMethods' => [],
             ],
-            'user_has_multiple_methods_in_force_mode' => [
+            'user has multiple methods in force mode' => [
                 'mode' => MultiFactorAuthMode::FORCE,
                 'allowedMethods' => [MultiFactorAuthMethod::TOTP->value, MultiFactorAuthMethod::EMAIL->value],
                 'userMethods' => [MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL],
@@ -117,34 +117,34 @@ class MultiFactorAuthUserTest extends BaseTest
         $this->assertEqualsCanonicalizing($expectedMethods, $user->getUserMethodsWithRemainingAllowedMethods());
     }
 
-    public static function userMethodsWithRemainingAllowedMethodsProvider()
+    public static function userMethodsWithRemainingAllowedMethodsProvider(): array
     {
         return [
-            'user_has_one_method' => [
+            'user has one method' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [MultiFactorAuthMethod::EMAIL->value],
                 'userMethods' => [MultiFactorAuthMethod::EMAIL],
                 'expectedMethods' => [MultiFactorAuthMethod::EMAIL],
             ],
-            'user_has_multiple_methods' => [
+            'user has multiple methods' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [MultiFactorAuthMethod::TOTP->value, MultiFactorAuthMethod::EMAIL->value],
                 'userMethods' => [MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL],
                 'expectedMethods' => [MultiFactorAuthMethod::TOTP, MultiFactorAuthMethod::EMAIL],
             ],
-            'user_has_one_allowed_and_one_unallowed_method' => [
+            'user has one allowed and one unallowed method' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [MultiFactorAuthMethod::EMAIL->value],
                 'userMethods' => [MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP],
                 'expectedMethods' => [MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP],
             ],
-            'user_has_no_allowed_methods' => [
+            'user has no allowed methods' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [],
                 'userMethods' => [MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP],
                 'expectedMethods' => [MultiFactorAuthMethod::EMAIL, MultiFactorAuthMethod::TOTP],
             ],
-            'user_has_no_methods' => [
+            'user has no methods' => [
                 'mode' => MultiFactorAuthMode::OPTIONAL,
                 'allowedMethods' => [MultiFactorAuthMethod::EMAIL->value, MultiFactorAuthMethod::TOTP->value],
                 'userMethods' => [],
